@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 import Error from "../components/ErrorMessage";
-import logoImage from '../assets/images/logo-here.png';
+import logoImage from '../assets/images/logo.png';
 
 /**
  * Componente de la página de inicio de sesión.

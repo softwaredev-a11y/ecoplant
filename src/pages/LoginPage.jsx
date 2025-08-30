@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import authApi from '../api/authApi';
 import Logo from "../components/Logo";
 import Error from "../components/ErrorMessage";
 import logoImage from '../assets/images/logo.png';
@@ -42,20 +43,24 @@ function FormLogin() {
 
     /**
      * Maneja el envío del formulario.
-     * Previene el comportamiento por defecto y simula una llamada de autenticación.
-     * @param {React.FormEvent<HTMLFormElement>} e - El evento de envío del formulario.
+     * Previene el comportamiento por defecto y realiza una llamada de autenticación.
+     * @param {React.FormEvent<HTMLFormElement>} event - El evento de envío del formulario.
      */
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // --- Simulación de Login ---
-        // En una aplicación real, aquí se haría una llamada a una API para autenticar.
-        if (dataForm.username === "admin@test.com" && dataForm.password === "123456") {
-            setError(null); // Limpiar error si las credenciales son correctas.
-            navigate("/dashboard"); // Redirigir al dashboard.
-        } else {
-            setError("Email y/o contraseña incorrectos.");
+    async function authUser(event) {
+        event.preventDefault();
+        try {
+            const response = await authApi.login(dataForm);
+            console.log('Login successful:', response.data);
+            sessionStorage.setItem('token', response.data.auth);
+            navigate(`/dashboard`);
+        } catch (err) {
+            if (err.response?.status === 401) {
+                setError('Email y/o contraseña incorrectos.');
+            } else {
+                setError(err.response?.data?.message || 'Ocurrió un error inesperado.');
+            }
         }
-    };
+    }
 
     return (
         <div className="form-container w-full flex flex-col gap-6">
@@ -66,7 +71,7 @@ function FormLogin() {
             </div>
 
             {/* Formulario */}
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6 flex-1">
+            <form onSubmit={authUser} className="flex flex-col gap-6 flex-1">
                 <label htmlFor="username-input" className="font-semibold flex flex-col gap-1.5 text-sm text-gray-600">
                     Email
                     <input

@@ -50,7 +50,6 @@ function FormLogin() {
         event.preventDefault();
         try {
             const response = await authApi.login(dataForm);
-            console.log('Login successful:', response.data);
             sessionStorage.setItem('token', response.data.auth);
             navigate(`/dashboard`);
         } catch (err) {

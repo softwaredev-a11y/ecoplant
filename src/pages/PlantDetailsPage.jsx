@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import notAvailableImg from '../assets/images/image-not-available.jpg'
 
 import {
@@ -37,25 +38,24 @@ function PlantDetailsPage() {
  * @returns {JSX.Element}
  */
 function DescriptionPanel() {
-    // Datos de ejemplo. En una aplicación real, esto vendría de props o una API.
     const descriptionData = [
         [ // Primer grupo
-            { label: '[Ítem]', value: '[Valor]' },
-            { label: '[Ítem]', value: '[Valor]' },
+            { label: 'Descripción', value: `` },
+            { label: 'Versión del script', value: `` },
         ],
         [ // Segundo grupo
-            { label: '[Ítem]', value: '[Valor]' },
-            { label: '[Ítem]', value: '[Valor]' },
-            { label: '[Ítem]', value: '[Valor]' },
+            { label: 'Estado de conectividad del celular', value: `` },
+            { label: 'Estado del accesorio expansor', value: `` },
+            { label: 'Estado del GPS', value: `` },
         ],
         [ // Tercer grupo
-            { label: '[Ítem]', value: '[Valor]' },
-            { label: '[Ítem]', value: '[Valor]' },
+            { label: 'Proceso en ejecución actualmente', value: `` },
+            { label: 'Flujo actual', value: `` },
         ],
     ];
     return (
         <div className="description-container flex flex-col border border-[#ccc] mb-4 p-0  overflow-y-auto">
-            <HeaderPanel title={"[Título Panel 1]"} />
+            <HeaderPanel title={"Descripción"} />
             <div>
                 <img src={notAvailableImg} alt="" className="w-3/5 max-w-[250px] h-auto block object-contain my-4 mx-auto" />
             </div>
@@ -74,17 +74,17 @@ function OperationsPanel() {
 
     return (
         <div className="operations-container  flex flex-col border border-[#ccc] mb-4 p overflow-y-auto">
-            <HeaderPanel title={"[Título Panel 2]"} />
+            <HeaderPanel title={"Párametros de operación"} />
             <div className='flex flex-col p-3.5'>
                 <div className="flex flex-col gap-6">
                     <div>
-                        < Operations typeOperation={"[Acción]"} buttonOperation={"[Realizar Acción]"} />
-                        < Operations typeOperation={"[Acción]"} buttonOperation={"[Realizar Acción]"} />
-                        < Operations typeOperation={"[Acción]"} buttonOperation={"[Realizar Acción]"} />
+                        < Operations typeOperation={"Filtración"} currentlyValue={""} buttonOperation={"Cambiar filtración"} />
+                        < Operations typeOperation={"Retrolavado"} currentlyValue={""} buttonOperation={"Cambiar retrolavado"} />
+                        < Operations typeOperation={"Enjuague"} currentlyValue={""} buttonOperation={"Cambiar enjuague"} />
                     </div>
                     <div>
-                        < Operations typeOperation={"[Acción]"} buttonOperation={"[Realizar Acción]"} />
-                        < Operations typeOperation={"[Acción]"} buttonOperation={"[Realizar Acción]"} />
+                        < Operations typeOperation={"Alerta de flujo disminuyendo"} currentlyValue={""} buttonOperation={"Cambiar umbral GPM"} />
+                        < Operations typeOperation={"Alerta por flujo insuficiente"} currentlyValue={""} buttonOperation={"Cambiar umbral GPM"} />
                     </div>
                 </div>
             </div>
@@ -128,25 +128,25 @@ function AcummulatedPanel() {
     // Datos de ejemplo. En una aplicación real, esto vendría de props o una API.
     const accumulatedData = [
         [ // Primer grupo
-            { id: '1a', label: '[Ítem]', value: '[Value]', showButton: true, showValue: false, buttonText: '[Realizar Acción]' },
-            { id: '1b', label: '[Ítem]', value: '[Value]', showButton: false, showValue: true },
+            { id: '1a', label: 'Acumulado Filtración mes anterior', value: ``, showButton: true, showValue: false, buttonText: 'Consultar mes anterior' },
+            { id: '1b', label: 'Acumulado Filtración mes actual', value: ``, showButton: false, showValue: true },
         ],
         [ // Segundo grupo
-            { id: '2a', label: '[Ítem]', value: '[Value]', showButton: true, showValue: false, buttonText: '[Realizar Acción]' },
-            { id: '2b', label: '[Ítem]', value: '[Value]', showButton: false, showValue: true },
+            { id: '2a', label: 'Acumulado Enjuague mes anterior', value: ``, showButton: true, showValue: false, buttonText: 'Consultar mes anterior' },
+            { id: '2b', label: 'Acumulado Enjuague mes actual', value: ``, showButton: false, showValue: true },
         ],
         [ // Tercer grupo
-            { id: '3a', label: '[Ítem]', value: '[Value]', showButton: true, showValue: false, buttonText: '[Realizar Acción]' },
-            { id: '3b', label: '[Ítem]', value: '[Value]', showButton: false, showValue: true },
+            { id: '3a', label: 'Acumulado Retrolavado mes anterior', value: ``, showButton: true, showValue: false, buttonText: 'Consultar mes anterior' },
+            { id: '3b', label: 'Acumulado Retrolavado mes actual', value: ``, showButton: false, showValue: true },
         ],
         [ // Cuarto grupo (solo una fila, con valor oculto y sin botón)
-            { id: '4a', label: '[Ítem]', value: '[Value]', showButton: false, showValue: true },
+            { id: '4a', label: 'Acumulado Purgado mes actual', value: ``, showButton: false, showValue: true },
         ]
     ];
 
     return (
         <div className="months-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
-            <HeaderPanel title={"[Título Panel 3]"} />
+            <HeaderPanel title={"Acumulados del mes actual y mes anterior"} />
             <div className="items-panel flex flex-col p-3.5 gap-8">
                 {accumulatedData.map((group, groupIndex) => (
                     <div key={groupIndex} className="flex flex-col gap-1.5">
@@ -211,25 +211,50 @@ function InfoPanel({ itemGroups }) {
  * @param {{ typeOperation: string, buttonOperation: string }} props - Propiedades del componente.
  * @returns {JSX.Element}
  */
-function Operations({ typeOperation, buttonOperation }) {
+function Operations({ typeOperation, currentlyValue, buttonOperation }) {
+
+    const [timeValue, setTimeValue] = useState("");
+    const [timeUnit, setTimeUnit] = useState('none');
+    const isButtonDisabled = !timeValue || timeUnit === 'none';
+
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'timeValue') {
+            setTimeValue(value);
+        } else if (name === 'timeUnit') {
+            setTimeUnit(value);
+        }
+    };
     return (
         <div className="flex flex-col gap-1 p-1">
-            <span className="text-gray-600 font-semibold mr-1.5 break-words  text-sm md:text-base lg:text-base">{typeOperation}: <span className="font-normal text-gray-600  text-sm md:text-base lg:text-base">[Valor Actual]</span></span>
+            <span className="text-gray-600 font-semibold mr-1.5 break-words  text-sm md:text-base lg:text-base">{typeOperation}: <span className="font-normal text-gray-600  text-sm md:text-base lg:text-base">{currentlyValue}</span></span>
             <div className="item-operation  grid grid-cols-[70px_85px_1fr] gap-1.5">
-                <input type="number" name="" id="" className="border border-[#ccc]  text-sm p-0.5 text-gray-600 rounded-sm " />
-                <select name="" id="" className="border border-[#ccc]  text-sm p-0.5 text-gray-600 rounded-sm">
-                    <option value=""></option>
-                    <option value="seconds">Segundos</option>
-                    <option value="minutes">Minutos</option>
-                    <option value="hours">Horas</option>
+                <input
+                    type="number"
+                    name="timeValue"
+                    value={timeValue}
+                    onChange={handleChange}
+                    className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm"
+                />
+                <select
+                    name="timeUnit"
+                    value={timeUnit}
+                    onChange={handleChange}
+                    className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm"
+                >
+                    <option value="none"></option>
+                    <option value="segundos">Segundos</option>
+                    <option value="minutos">Minutos</option>
+                    <option value="horas">Horas</option>
                 </select>
                 <AlertDialog>
-                    <AlertDialogTrigger className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide">{buttonOperation}</AlertDialogTrigger>
+                    <AlertDialogTrigger disabled={isButtonDisabled} className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide">{buttonOperation}</AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
                             <AlertDialogDescription className="text-sm text-gray-600" >
-                                Se cambiará el parámetro de <span className="text-red-700 font-bold">{typeOperation}</span> al valor <span className="text-red-700 font-bold">[Nuevos Valores]</span>.
+                                Se cambiará el parámetro de <span className="text-red-700 font-bold">{typeOperation}</span> al valor de <span className="text-red-700 font-bold">{`${timeValue} ${timeUnit}`}</span>.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

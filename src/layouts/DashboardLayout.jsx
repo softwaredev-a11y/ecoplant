@@ -5,6 +5,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useState } from "react";
 import { getPlantModel } from "../utils/plantUtils";
+import { usePlants } from "../hooks/usePlants";
+
 
 /**
  * Componente principal del layout del Dashboard.
@@ -138,7 +140,7 @@ function InputSearch({ searchTerm, setSearchTerm }) {
  * @returns {JSX.Element}
  */
 function PanelLeftItems({ searchTerm }) {
-    const { plants } = [];
+    const { plants } = usePlants();
     const navigate = useNavigate();
     const handleNavigate = (idPlanta) => {
         navigate(`planta/${idPlanta}`);

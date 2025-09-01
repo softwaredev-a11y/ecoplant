@@ -2,16 +2,9 @@ import Logo from "../components/Logo";
 import logoImage from '../assets/images/logo.png';
 import searchIcon from '../assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
-
-
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useState } from "react";
-
-
+import { getPlantModel } from "../utils/plantUtils";
 
 /**
  * Componente principal del layout del Dashboard.
@@ -94,6 +87,7 @@ function MainLayout({ isOpen, toggleMenu }) {
  * @returns {JSX.Element}
  */
 function PanelLeft({ isOpen, toggleMenu }) {
+    const [searchTerm, setSearchTerm] = useState('');
     return (
         <div
             className={`panel-left-container bg-white flex flex-col min-h-0 transition-transform duration-300 ease-in-out
@@ -112,8 +106,8 @@ function PanelLeft({ isOpen, toggleMenu }) {
                     ✕
                 </button>
             </div>
-            <InputSearch />
-            <PanelLeftItems />
+            <InputSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <PanelLeftItems searchTerm={searchTerm} />
             <FilterBar />
         </div>
     );
@@ -123,18 +117,16 @@ function PanelLeft({ isOpen, toggleMenu }) {
  * Componente de búsqueda para el panel izquierdo.
  * @returns {JSX.Element}
  */
-function InputSearch() {
+function InputSearch({ searchTerm, setSearchTerm }) {
     return (
         <div className="search-container flex justify-between items-center p-2">
-            <img
-                src={searchIcon}
-                alt="Ícono de búsqueda"
-                className="max-w-[30px]"
-            />
+            <img src={searchIcon} alt="Ícono de búsqueda" className="max-w-[30px]" />
             <input type="search"
-                name=""
-                id=""
+                name="searchTerm"
+                id="searchTerm"
+                value={searchTerm}
                 placeholder="Buscar Ecoplanta"
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-[90%] h-10 border-0 p-[0.2rem] border-b border-gray-300 mb-[0.3rem] font-normal text-gray-600 focus:outline-none focus:border-b focus:border-gray-300"
             />
         </div>
@@ -145,31 +137,41 @@ function InputSearch() {
  * Renderiza la lista de items (plantas) en el panel izquierdo.
  * @returns {JSX.Element}
  */
-function PanelLeftItems() {
+function PanelLeftItems({ searchTerm }) {
+    const { plants } = [];
     const navigate = useNavigate();
     const handleNavigate = (idPlanta) => {
-        // Usamos la función navigate para ir a la ruta deseada,
-        // reemplazando el parámetro dinámico :idPlanta con el id real.
         navigate(`planta/${idPlanta}`);
     };
-    const items = [];
-    for (let i = 0; i < 10; i++) {
-        items.push(
-            <Tooltip key={i}>
-                <TooltipTrigger onClick={() => handleNavigate(i)} className="break-all text-start cursor-pointer bg-white p-[0.4rem] border-0 border-b border-gray-300 mb-[0.3rem] text-neutral-600 hover:border hover:border-gray-300 hover:bg-gray-300 hover:rounded-sm">
-                    <strong>[Nombre de la planta {i + 1}]</strong> <br /> Modelo:   <br />  Imei:
-                </TooltipTrigger>
-                <TooltipContent className="hidden">
-                    <p>[Íconos u otra información]</p>
-                </TooltipContent>
-            </Tooltip>
-        );
-    }
+    const filteredPlants = plants.filter((plant) =>
+        plant.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="menu-items flex-1 flex flex-col p-2 gap-1 overflow-auto min-h-0 max-h-[85%]">
-            {items}
+            {filteredPlants.length > 0 ? (
+                filteredPlants.map((plant) => (
+                    <Tooltip key={plant.id}>
+                        <TooltipTrigger
+                            onClick={() => handleNavigate(plant.id)}
+                            className="break-all text-start cursor-pointer bg-white p-[0.4rem] border-0 border-b border-gray-300 mb-[0.3rem] text-neutral-600 hover:border hover:border-gray-300 hover:bg-gray-300 hover:rounded-sm"
+                        >
+                            <strong>{plant.name}</strong> <br />
+                            Modelo: {getPlantModel(plant.info.description)} <br />
+                            Imei: {plant.device}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>[Íconos u otra información]</p>
+                        </TooltipContent>
+                    </Tooltip>
+                ))
+            ) : (
+                <p className="text-center text-gray-500 mt-4">
+                    No se encontraron resultados.
+                </p>
+            )}
         </div>
-    )
+    );
 }
 
 /**

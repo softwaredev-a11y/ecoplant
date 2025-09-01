@@ -1,5 +1,5 @@
 import Logo from "../components/Logo";
-import logoImage from '../assets/images/logo.png';
+import logoImage from '../assets/images/logo.webp';
 import searchIcon from '../assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import notAvailableImg from '../assets/images/image-not-available.jpg'
+import notAvailableImg from '../assets/images/image-not-available.webp'
 
 import {
     AlertDialog,

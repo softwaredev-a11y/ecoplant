@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import authApi from '../api/authApi';
 import Logo from "../components/Logo";
 import Error from "../components/ErrorMessage";
-import logoImage from '../assets/images/logo.png';
+import logoImage from '../assets/images/logo.webp';
 
 /**
  * Componente de la página de inicio de sesión.

@@ -1,5 +1,5 @@
 import Logo from "../components/Logo";
-import logoImage from '../assets/images/logo-here.png';
+import logoImage from '../assets/images/logo.png';
 import searchIcon from '../assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -63,9 +63,9 @@ function Header({ toggleMenu }) {
             <div className="righ-options flex overflow-x-auto 
                       w-full justify-center 
                       lg:w-auto lg:justify-start">
-                <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">[Botón]</button>
-                <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">[Botón]</button>
-                <button onClick={()=>handleNavigate()} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Cerrar sesión</button>
+                <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Historial de accesos</button>
+                <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Diagnóstico</button>
+                <button onClick={() => handleNavigate()} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Cerrar sesión</button>
             </div>
         </div>
     );
@@ -107,7 +107,7 @@ function PanelLeft({ isOpen, toggleMenu }) {
         >
             {/* Botón de cierre, solo visible en móvil/tablet */}
             <div className="flex justify-between lg:hidden mb-4">
-                <Logo url={logoImage} className="w-[100px] h-auto" />
+                <Logo url={logoImage} className="w-[200px] h-auto" />
                 <button onClick={toggleMenu} className="text-[#004275] hover:text-black text-2xl font-bold">
                     ✕
                 </button>
@@ -134,7 +134,7 @@ function InputSearch() {
             <input type="search"
                 name=""
                 id=""
-                placeholder="[Realizar Búsqueda]"
+                placeholder="Buscar Ecoplanta"
                 className="w-[90%] h-10 border-0 p-[0.2rem] border-b border-gray-300 mb-[0.3rem] font-normal text-gray-600 focus:outline-none focus:border-b focus:border-gray-300"
             />
         </div>
@@ -157,9 +157,9 @@ function PanelLeftItems() {
         items.push(
             <Tooltip key={i}>
                 <TooltipTrigger onClick={() => handleNavigate(i)} className="break-all text-start cursor-pointer bg-white p-[0.4rem] border-0 border-b border-gray-300 mb-[0.3rem] text-neutral-600 hover:border hover:border-gray-300 hover:bg-gray-300 hover:rounded-sm">
-                    <strong>[Nombre de la planta {i + 1}]</strong> <br /> [Modelo]  <br />  [Imei]
+                    <strong>[Nombre de la planta {i + 1}]</strong> <br /> Modelo:   <br />  Imei:
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent className="hidden">
                     <p>[Íconos u otra información]</p>
                 </TooltipContent>
             </Tooltip>
@@ -178,7 +178,7 @@ function PanelLeftItems() {
  */
 function FilterBar() {
     return (
-        <div className="mt-auto mb-1 border border-[#ccc] flex justify-center w-[98%] ml-auto">
+        <div className="mt-auto mb-1 border border-[#ccc] flex hidden justify-center w-[98%] ml-auto">
             <p className="text-gray-600">[Filtros]</p>
         </div>
     )

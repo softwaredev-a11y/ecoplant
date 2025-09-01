@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import plantsApi from "../api/plantsApi"; // llamada a la API
+import plantsApi from "../api/plants"; // llamada a la API
 
 export const PlantContext = createContext();
 

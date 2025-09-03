@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useState } from "react";
 import { getPlantModel } from "../utils/plantUtils";
 import { usePlants } from "../hooks/usePlants";
+import { useAuth } from "../hooks/useAuth";
 
 
 /**
@@ -15,7 +16,6 @@ import { usePlants } from "../hooks/usePlants";
  */
 function DashboardLayout() {
     const [isOpen, setIsOpen] = useState(false);
-
     const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
@@ -34,11 +34,7 @@ function DashboardLayout() {
  * @returns {JSX.Element}
  */
 function Header({ toggleMenu }) {
-    const navigate = useNavigate();
-    const handleNavigate = () => {
-        navigate(`/`);
-    };
-
+    const { logout } = useAuth();
     return (
         <div className="header flex justify-between bg-white p-2 items-center">
             {/* Contenedor izquierdo: Hamburguesa + Logo */}
@@ -60,7 +56,7 @@ function Header({ toggleMenu }) {
                       lg:w-auto lg:justify-start">
                 <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Historial de accesos</button>
                 <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Diagnóstico</button>
-                <button onClick={() => handleNavigate()} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Cerrar sesión</button>
+                <button onClick={logout} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Cerrar sesión</button>
             </div>
         </div>
     );

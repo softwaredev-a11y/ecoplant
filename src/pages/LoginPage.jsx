@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import authApi from '../api/authApi';
+import { useAuth } from "../hooks/useAuth";
 import Logo from "../components/Logo";
 import Error from "../components/ErrorMessage";
 import logoImage from '../assets/images/logo.webp';
@@ -30,7 +29,7 @@ function LoginPage() {
 function FormLogin() {
     const [error, setError] = useState(null);
     const [dataForm, setDataForm] = useState({ username: '', password: '' });
-    const navigate = useNavigate();
+    const { login } = useAuth();
 
     /**
      * Maneja los cambios en los campos del formulario y actualiza el estado.
@@ -49,9 +48,7 @@ function FormLogin() {
     async function authUser(event) {
         event.preventDefault();
         try {
-            const response = await authApi.login(dataForm);
-            sessionStorage.setItem('token', response.data.auth);
-            navigate(`/dashboard`);
+            await login(dataForm);
         } catch (err) {
             if (err.response?.status === 401) {
                 setError('Email y/o contraseña incorrectos.');
@@ -60,7 +57,6 @@ function FormLogin() {
             }
         }
     }
-
     return (
         <div className="form-container w-full flex flex-col gap-6">
             {/* Header del formulario */}

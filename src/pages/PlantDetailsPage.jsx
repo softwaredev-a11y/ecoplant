@@ -229,7 +229,7 @@ function Operations({ typeOperation, currentlyValue, buttonOperation }) {
     return (
         <div className="flex flex-col gap-1 p-1">
             <span className="text-gray-600 font-semibold mr-1.5 break-words  text-sm md:text-base lg:text-base">{typeOperation}: <span className="font-normal text-gray-600  text-sm md:text-base lg:text-base">{currentlyValue}</span></span>
-            <div className="item-operation  grid grid-cols-[70px_85px_1fr] gap-1.5">
+            <div className="item-operation  grid grid-cols-[65px_100px_1fr] gap-1.5">
                 <input
                     type="number"
                     name="timeValue"

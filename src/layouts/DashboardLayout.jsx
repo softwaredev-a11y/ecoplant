@@ -162,7 +162,7 @@ function PanelLeftItems({ searchTerm }) {
                             Modelo: {getPlantModel(plant.info.description)} <br />
                             Imei: {plant.device}
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent className="hidden" >
                             <p>[Íconos u otra información]</p>
                         </TooltipContent>
                     </Tooltip>

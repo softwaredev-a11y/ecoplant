@@ -4,7 +4,7 @@ import DashboardIndexPage from "../pages/DashboardIndexPage";
 import PlantDetailsPage from "../pages/PlantDetailsPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import { PlantProvider } from "../context/PlantContext";
-import { UserProvider } from "../context/UserContext";
+import { UserProvider } from "../context/UserInfoContext";
 
 function PrivateRoutes() {
   return (

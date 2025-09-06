@@ -77,3 +77,27 @@ export const useCommandExecution = () => {
   }, []);
   return { isLoading, executedCids, error, executeMultipleCommands };
 };
+
+export const useRawDataConsult = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [rawData, setRawData] = useState([]);
+  const [error, setError] = useState(null);
+
+  const rawDataConsult = useCallback(async (startDate, endDate, idPlant, command) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await plants.getRawData(startDate, endDate, idPlant, command);
+      setRawData(response);
+      return response; // 👈 corregido
+    } catch (error) {
+      setError('Error al consultar el RawData.');
+      console.error(error);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { isLoading, rawData, error, rawDataConsult };
+};

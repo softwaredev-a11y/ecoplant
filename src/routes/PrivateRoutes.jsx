@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import DashboardIndexPage from "../pages/DashboardIndexPage";
-import PlantDetailsPage from "../pages/PlantDetailsPage";
+import PlantDetailsPage from  "../pages/informationplant/PlantDetailsPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import { PlantProvider } from "../context/PlantContext";
 import { UserProvider } from "../context/UserInfoContext";

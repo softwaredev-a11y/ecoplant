@@ -178,7 +178,7 @@ function PanelLeftItems({ searchTerm }) {
  */
 function FilterBar() {
     return (
-        <div className="mt-auto mb-1 border border-[#ccc] flex hidden justify-center w-[98%] ml-auto">
+        <div className="mt-auto mb-1 border border-[#ccc] hidden justify-center w-[98%] ml-auto">
             <p className="text-gray-600">[Filtros]</p>
         </div>
     )

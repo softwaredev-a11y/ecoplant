@@ -26,7 +26,9 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue }) {
             const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
 
             const dataFiltrado = await rawDataConsult(beginDate, currentlyDate, idPlant, 65);
+            await new Promise(resolve => setTimeout(resolve, 2000));
             const dataEnjuague = await rawDataConsult(beginDate, currentlyDate, idPlant, 32);
+            await new Promise(resolve => setTimeout(resolve, 2000));
             const dataRetrolavado = await rawDataConsult(beginDate, currentlyDate, idPlant, 12);
 
             const adc_average = dataFiltrado.data.events[0].promedio_adc;

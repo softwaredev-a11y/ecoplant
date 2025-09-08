@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useRawDataConsult } from '../../../hooks/usePlants';
-import { getMvZeroText, buildDate, thousandsSeparator } from "../../../utils/plantUtils";
+import { getMvZeroText, buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse,calculateAccumulatedValueBackwash } from "../../../utils/plantUtils";
 import HeaderPanel from "./HeaderPanel";
 
 function AcummulatedPanel({ plant }) {
-    const [mvZeroValue, setMvZeroValue] = useState(getMvZeroText(plant.info.description));
+    const [mvZeroValue, setMvZeroValue]= useState(getMvZeroText(plant.info.description));
+
     const [filtracionActual, setFiltracionActual] = useState("");
     const [enjuagueActual, setEnjuagueActual] = useState("");
     const [retrolavadoActual, setRetrolavadoActual] = useState("");
@@ -12,12 +13,13 @@ function AcummulatedPanel({ plant }) {
     const [filtracionAnterior, setFiltracionAnterior] = useState("");
     const [enjuagueAnterior, setEnjuagueAnterior] = useState("");
     const [retrolavadoAnterior, setRetrolavadoAnterior] = useState("");
+
     const [purgadoMesActual, setPurgadoMesActual] = useState("");
 
     const { rawDataConsult } = useRawDataConsult();
 
     useEffect(() => {
-        const consultRawData = async () => {
+        const consultRawData = async (mvZeroValue) => {
             await new Promise(resolve => setTimeout(resolve, 20000));
             const date = new Date();
             const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
@@ -27,29 +29,28 @@ function AcummulatedPanel({ plant }) {
             const dataEnjuague = await rawDataConsult(beginDate, currentlyDate, plant.id, 32);
             const dataRetrolavado = await rawDataConsult(beginDate, currentlyDate, plant.id, 12);
 
-            const countFiltrado = dataFiltrado.data.events[0].count;
             const adc_average = dataFiltrado.data.events[0].promedio_adc;
             const caudal = ((adc_average - mvZeroValue) / 100);
-            const filtracion = (((adc_average - mvZeroValue) / 100) * countFiltrado * 2);
-            setFiltracionActual(`${thousandsSeparator(Math.round(filtracion))} gal.`);
+
+            const countFiltrado = dataFiltrado.data.events[0].count;
+            const filtracion = calculateAccumulatedValueFiltration(caudal, countFiltrado);
+            setFiltracionActual(`${filtracion} gal.`);
 
             const countEnjuague = dataEnjuague.data.events[0].count;
-            const resEnjuague = (caudal * countEnjuague * 2);
-            setEnjuagueActual(`${thousandsSeparator(Math.round(resEnjuague))} gal.`);
+            const resEnjuague = calculateAccumulatedValueRinse(caudal, countEnjuague);
+            setEnjuagueActual(`${resEnjuague} gal.`);
 
             const countRetrolavado = dataRetrolavado.data.events[0].count;
-            const resRetrolavado = (caudal * countRetrolavado * 3);
-            setRetrolavadoActual(`${thousandsSeparator(Math.round(resRetrolavado))} gal.`);
+            const resRetrolavado = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
+            setRetrolavadoActual(`${resRetrolavado} gal.`);
 
             const total_purga_mes_actual = (resEnjuague + resRetrolavado);
             const multiply_purga = total_purga_mes_actual * 0.00378;
             setPurgadoMesActual(`${thousandsSeparator(Math.round(total_purga_mes_actual))} gal (${multiply_purga.toFixed(2)}`);
         };
-
-        consultRawData();
-    }, [mvZeroValue, plant.id, rawDataConsult]);
-
-
+        consultRawData(mvZeroValue);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div className="months-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
@@ -78,7 +79,7 @@ function AcummulatedPanel({ plant }) {
                         Acumulado Purgado mes actual:
                     </span>
                     <span className="bg-gray-200 rounded-sm align-middle font-semibold text-gray-600 text-sm md:text-base lg:text-base p-0.5">
-                        {purgadoMesActual === "" ? "Consultando." : (<> {purgadoMesActual} m<sup>3</sup>{")"}</>)}
+                        {purgadoMesActual === "" ? "Consultando." : (<> {purgadoMesActual} m<sup>3</sup>{")."}</>)}
                     </span>
                 </div>
 

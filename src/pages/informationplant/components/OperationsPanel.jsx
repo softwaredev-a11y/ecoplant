@@ -4,7 +4,7 @@ import { useCommandExecution, usePlantDetailSocket } from '../../../hooks/usePla
 import { processSocketMessage, getMvZeroText, formatTime } from '../../../utils/plantUtils';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../../components/ui/alert-dialog';
 
-function OperationsPanel({ plant, isOnline }) {
+function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
     const { executeMultipleCommands } = useCommandExecution();
     const { lastEvent, isConnected } = usePlantDetailSocket();
 
@@ -28,7 +28,7 @@ function OperationsPanel({ plant, isOnline }) {
     }, [plant.id]);
 
     useEffect(() => {
-        if (!isConnected || !isOnline) return;
+        if (isLoadingStatus || !isConnected || !isOnline) return;
 
         if (hasRunRef.current) return;
         hasRunRef.current = true;
@@ -39,7 +39,7 @@ function OperationsPanel({ plant, isOnline }) {
         };
 
         runCommands();
-    }, [isConnected, isOnline, plant.id, executeMultipleCommands]);
+    }, [isLoadingStatus, isConnected, isOnline, plant.id, executeMultipleCommands]);
 
 
     useEffect(() => {

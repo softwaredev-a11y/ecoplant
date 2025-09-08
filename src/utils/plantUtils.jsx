@@ -186,3 +186,18 @@ export function thousandsSeparator(num) {
     num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return num_parts.join(".");
 }
+
+export function calculateAccumulatedValueFiltration(caudalValue, countFiltered) {
+    const filtration = (caudalValue * countFiltered * 2);
+    return thousandsSeparator(Math.round(filtration));
+}
+
+export function calculateAccumulatedValueRinse(caudalValue, countFiltered) {
+    const rinse = (caudalValue * countFiltered * 2);
+    return thousandsSeparator(Math.round(rinse));
+}
+
+export function calculateAccumulatedValueBackwash(caudalValue, countBackwash) {
+    const backwash = (caudalValue * countBackwash * 3);
+    return thousandsSeparator(Math.round(backwash));
+}

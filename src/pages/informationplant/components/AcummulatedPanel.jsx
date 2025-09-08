@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRawDataConsult } from '../../../hooks/usePlants';
-import { getMvZeroText, buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse,calculateAccumulatedValueBackwash } from "../../../utils/plantUtils";
+import { getMvZeroText, buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash } from "../../../utils/plantUtils";
 import HeaderPanel from "./HeaderPanel";
 
 function AcummulatedPanel({ plant }) {
-    const [mvZeroValue, setMvZeroValue]= useState(getMvZeroText(plant.info.description));
+    const [mvZeroValue, setMvZeroValue] = useState(getMvZeroText(plant.info.description));
 
     const [filtracionActual, setFiltracionActual] = useState("");
     const [enjuagueActual, setEnjuagueActual] = useState("");

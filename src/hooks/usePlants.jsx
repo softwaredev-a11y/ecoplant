@@ -89,7 +89,7 @@ export const useRawDataConsult = () => {
       setError(null);
       const response = await plants.getRawData(startDate, endDate, idPlant, command);
       setRawData(response);
-      return response; // 👈 corregido
+      return response;
     } catch (error) {
       setError('Error al consultar el RawData.');
       console.error(error);

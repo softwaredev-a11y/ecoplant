@@ -112,7 +112,9 @@ function Operations({ typeOperation, currentlyValue, buttonOperation }) {
             <div className='div grid grid-cols-[130px_35px_1fr] gap-1.5 mb-0.5 items-center'>
                 <span className="text-gray-600 font-semibold mr-1.5 break-words text-sm md:text-base lg:text-base">{typeOperation}: </ span>
                 <span className=''></span>
-                <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${currentlyValue === "" ? "" : "p-0.5 bg-gray-200 rounded-sm"} text-center max-w-[300px]`}>{currentlyValue}</span>
+                <div className='flex w-full justify-end'>
+                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${currentlyValue === "" ? "" : "p-0.5 bg-gray-200 rounded-sm"} text-center w-full  max-w-[300px]`}>{currentlyValue}</span>
+                </div>
             </div>
             <div className="item-operation  grid grid-cols-[70px_95px_1fr] gap-1.5">
                 <input
@@ -134,21 +136,23 @@ function Operations({ typeOperation, currentlyValue, buttonOperation }) {
                     <option value="minutos">Minutos</option>
                     <option value="horas">Horas</option>
                 </select>
-                <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                    <AlertDialogTrigger disabled={isButtonDisabled} className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide max-w-[300px]">{buttonOperation}</AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm text-gray-600" >
-                                Se cambiará el parámetro de <span className="text-red-700 font-bold">{typeOperation}</span> al valor de <span className="text-red-700 font-bold"> {isOpen ? formatTime(timeUnit, timeValue) : null}</span>.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-                            <AlertDialogAction className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <div className='flex w-full justify-end'>
+                    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+                        <AlertDialogTrigger disabled={isButtonDisabled} className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide w-full max-w-[300px]">{buttonOperation}</AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
+                                <AlertDialogDescription className="text-sm text-gray-600" >
+                                    Se cambiará el parámetro de <span className="text-red-700 font-bold">{typeOperation}</span> al valor de <span className="text-red-700 font-bold"> {isOpen ? formatTime(timeUnit, timeValue) : null}</span>.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
+                                <AlertDialogAction className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
 
             </div>
         </ div>

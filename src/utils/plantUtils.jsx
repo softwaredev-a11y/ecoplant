@@ -188,16 +188,14 @@ export function thousandsSeparator(num) {
 }
 
 export function calculateAccumulatedValueFiltration(caudalValue, countFiltered) {
-    const filtration = (caudalValue * countFiltered * 2);
-    return thousandsSeparator(Math.round(filtration));
+    return (caudalValue * countFiltered * 2);
+
 }
 
 export function calculateAccumulatedValueRinse(caudalValue, countFiltered) {
-    const rinse = (caudalValue * countFiltered * 2);
-    return thousandsSeparator(Math.round(rinse));
+    return caudalValue * countFiltered * 2;
 }
 
 export function calculateAccumulatedValueBackwash(caudalValue, countBackwash) {
-    const backwash = (caudalValue * countBackwash * 3);
-    return thousandsSeparator(Math.round(backwash));
+    return caudalValue * countBackwash * 3;
 }

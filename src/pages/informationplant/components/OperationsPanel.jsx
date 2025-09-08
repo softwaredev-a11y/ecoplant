@@ -101,7 +101,11 @@ function Operations({ typeOperation, currentlyValue, buttonOperation }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'timeValue') {
-            setTimeValue(value);
+            if (value > 0) {
+                setTimeValue(value);
+            } else {
+                setTimeValue(""); // o no cambiarlo
+            }
         } else if (name === 'timeUnit') {
             setTimeUnit(value);
         }
@@ -117,7 +121,7 @@ function Operations({ typeOperation, currentlyValue, buttonOperation }) {
             </div>
             <div className="item-operation  grid grid-cols-[70px_95px_1fr] gap-1.5">
                 <input
-                    min={1}
+                    min="1"
                     type="number"
                     name="timeValue"
                     value={timeValue}

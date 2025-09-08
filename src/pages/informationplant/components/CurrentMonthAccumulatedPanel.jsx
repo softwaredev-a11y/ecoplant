@@ -36,15 +36,15 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue }) {
 
             const countFiltrado = dataFiltrado.data.events[0].count;
             const filtracion = calculateAccumulatedValueFiltration(caudal, countFiltrado);
-            setFiltracionActual(`${thousandsSeparator(Math.round(filtracion))} gal.`);
+            setFiltracionActual(`${thousandsSeparator(Math.round(filtracion))} gal`);
 
             const countEnjuague = dataEnjuague.data.events[0].count;
             const resEnjuague = calculateAccumulatedValueRinse(caudal, countEnjuague);
-            setEnjuagueActual(`${thousandsSeparator(Math.round(resEnjuague))} gal.`);
+            setEnjuagueActual(`${thousandsSeparator(Math.round(resEnjuague))} gal`);
 
             const countRetrolavado = dataRetrolavado.data.events[0].count;
             const resRetrolavado = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
-            setRetrolavadoActual(`${thousandsSeparator(Math.round(resRetrolavado))} gal.`);
+            setRetrolavadoActual(`${thousandsSeparator(Math.round(resRetrolavado))} gal`);
 
             const total_purga_mes_actual = (resEnjuague + resRetrolavado);
             const multiply_purga = total_purga_mes_actual * 0.00378;

@@ -82,8 +82,8 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                     <Operations typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando." : enjuague : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar enjuague" />
                 </div>
                 <div className='border-b border-b-[#ccc]'>
-                    <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando." : `${valorAlertaFlujo} gpm.` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
-                    <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando." : `${valorAlarmaInsuficiente} gpm.` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
+                    <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando." : `${valorAlertaFlujo} gpm` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
+                    <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando." : `${valorAlarmaInsuficiente} gpm` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
                 </div>
 
             </div>

@@ -41,10 +41,9 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
             { label: "Versión del script", value: `${getSoftwareVersion(plant.configuration)}` },
         ],
         [
-            { label: "Estado conectividad celular", value: `${infoConnectionDevice?.connection?.online ? "Ok." : "No Ok."}` },
-            { label: "Estado del accesorio expansor", value: `${infoConnectionDevice?.ios_state?.io_exp_state ? "Ok." : "No conectado."}` },
-            { label: "Estado de señal GPS", value: `${infoConnectionDevice?.latest?.loc?.valid ? "Ok." : "No óptimo."}` },
-            { label: "Cuenta con antena externa", value: `` },
+            { label: "Estado conectividad celular", value: `${infoConnectionDevice?.connection?.online ? "Ok" : "No Ok"}` },
+            { label: "Estado del accesorio expansor", value: `${infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado"}` },
+            { label: "Estado de señal GPS", value: `${infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo"}` },
         ],
         [
             { label: "Proceso en ejecución", value: `${currentlyProccess === "" ? stateProcess(infoConnectionDevice.latest.loc.code) : currentlyProccess}` },

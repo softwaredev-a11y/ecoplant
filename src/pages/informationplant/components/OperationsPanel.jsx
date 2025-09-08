@@ -73,20 +73,19 @@ function OperationsPanel({ plant, isOnline }) {
         }
     }, [lastEvent, mvZeroValue]);
     return (
-        <div className="operations-container flex flex-col border border-[#ccc] mb-4 p overflow-y-auto">
+        <div className="operations-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
             <HeaderPanel title={"Párametros de operación"} />
-            <div className="flex flex-col p-3.5">
-                <div className="flex flex-col gap-6">
-                    <div className='border-b border-b-[#ccc]'>
-                        <Operations typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando." : filtrado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar filtración" />
-                        <Operations typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando." : retrolavado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar retrolavado" />
-                        <Operations typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando." : enjuague : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar enjuague" />
-                    </div>
-                    <div className='border-b border-b-[#ccc]'>
-                        <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando." : `${valorAlertaFlujo} gpm.` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
-                        <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando." : `${valorAlarmaInsuficiente} gpm.` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
-                    </div>
+            <div className="flex flex-col p-3.5 gap-6">
+                <div className='border-b border-b-[#ccc]'>
+                    <Operations typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando." : filtrado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar filtración" />
+                    <Operations typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando." : retrolavado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar retrolavado" />
+                    <Operations typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando." : enjuague : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar enjuague" />
                 </div>
+                <div className='border-b border-b-[#ccc]'>
+                    <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando." : `${valorAlertaFlujo} gpm.` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
+                    <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando." : `${valorAlarmaInsuficiente} gpm.` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
+                </div>
+
             </div>
         </div>
     );

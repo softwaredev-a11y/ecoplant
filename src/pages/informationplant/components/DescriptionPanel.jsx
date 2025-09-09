@@ -46,8 +46,8 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
             { label: "Estado de señal GPS", value: `${infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo"}` },
         ],
         [
-            { label: "Proceso en ejecución", value: `${currentlyProccess === "" ? stateProcess(infoConnectionDevice.latest.loc.code) : currentlyProccess}` },
-            { label: "Flujo actual", value: `${infoConnectionDevice?.connection?.online ? currentlyValue === "" ? `${calculateStateFlow(infoConnectionDevice.latest.data.ad.value)} gal/min` : `${currentlyValue} gal/min` : "No se puede mostrar esta información actualmente"}` },
+            { label: "Proceso en ejecución", value: `${infoConnectionDevice?.connection?.online ?  currentlyProccess === "" ? stateProcess(infoConnectionDevice.latest.loc.code) : currentlyProccess : "Información no disponible"}` },
+            { label: "Flujo actual", value: `${infoConnectionDevice?.connection?.online ? currentlyValue === "" ? `${calculateStateFlow(infoConnectionDevice.latest.data.ad.value)} gal/min` : `${currentlyValue} gal/min` : "Información no disponible"}` },
         ],
     ];
 
@@ -58,7 +58,7 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
                 <PlantImage plant={plant} />
             </div>
             <InfoPanel itemGroups={descriptionData} />
-            <div className='flex flex-col items-end p-1.5'>
+            <div className={`flex flex-col items-end p-1.5 ${infoConnectionDevice?.connection?.online ? "" : "hidden"}`}>
                 <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace  ${formatTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
             </div>
         </div>

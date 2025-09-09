@@ -77,13 +77,13 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
             <HeaderPanel title={"Párametros de operación"} />
             <div className="flex flex-col p-1.5 gap-4">
                 <div className='border-b border-b-[#ccc]'>
-                    <Operations typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando." : filtrado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar filtración" />
-                    <Operations typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando." : retrolavado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar retrolavado" />
-                    <Operations typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando." : enjuague : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar enjuague" />
+                    <Operations typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando." : filtrado : "Información no disponible"} buttonOperation="Cambiar filtración" />
+                    <Operations typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando." : retrolavado : "Información no disponible"} buttonOperation="Cambiar retrolavado" />
+                    <Operations typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando." : enjuague : "Información no disponible"} buttonOperation="Cambiar enjuague" />
                 </div>
                 <div className='border-b border-b-[#ccc]'>
-                    <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando." : `${valorAlertaFlujo} gpm` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
-                    <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando." : `${valorAlarmaInsuficiente} gpm` : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar umbral GPM" />
+                    <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando." : `${valorAlertaFlujo} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral GPM" />
+                    <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando." : `${valorAlarmaInsuficiente} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral GPM" />
                 </div>
 
             </div>
@@ -101,10 +101,10 @@ function Operations({ typeOperation, currentlyValue, buttonOperation }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'timeValue') {
-            if (value > 0) {
+            if (value > 0 && value % 1 == 0) {
                 setTimeValue(value);
             } else {
-                setTimeValue(""); // o no cambiarlo
+                setTimeValue("");
             }
         } else if (name === 'timeUnit') {
             setTimeUnit(value);
@@ -116,7 +116,7 @@ function Operations({ typeOperation, currentlyValue, buttonOperation }) {
                 <span className="text-gray-600 font-semibold mr-1.5 break-words text-sm md:text-base lg:text-base">{typeOperation}: </ span>
                 <span className=''></span>
                 <div className='flex w-full justify-end'>
-                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${currentlyValue === "" ? "" : "p-0.5 bg-gray-200 rounded-sm"} text-center w-full  max-w-[300px]`}>{currentlyValue}</span>
+                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${currentlyValue === "" ? "" : "p-0.5 bg-gray-200 rounded-sm"}  w-full  max-w-[300px]`}>{currentlyValue}</span>
                 </div>
             </div>
             <div className="item-operation  grid grid-cols-[70px_95px_1fr] gap-1.5">

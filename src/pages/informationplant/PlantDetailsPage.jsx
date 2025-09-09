@@ -25,7 +25,7 @@ function PlantDetailsPage() {
                 <div className="info-containers gap-4 grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(450px,1fr))]">
                     <DescriptionPanel plant={plant} infoConnectionDevice={infoConnectionDevice} />
                     <OperationsPanel plant={plant} isOnline={infoConnectionDevice?.connection?.online ?? false} isLoadingStatus={loadingConnection} />
-                    <AcummulatedPanel plant={plant} />
+                    <AcummulatedPanel plant={plant} isOnline={infoConnectionDevice?.connection?.online ?? false} />
                 </div>
             </PlantDetailSocketProvider>
         </div>

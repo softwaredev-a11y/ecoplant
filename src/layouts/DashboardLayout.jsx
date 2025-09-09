@@ -193,7 +193,7 @@ function ContentPanel() {
         <div className="flex-1 bg-white flex flex-col  min-h-0 max-h-full border-l border-[#ccc] w-full m-0 p-[0.7rem] md:p-4 md:w-full lg:w-[66%] lg:p-[1.2rem] xl:p-0 xl:min-h-[100%] xl:max-h-[100%]">
             <Outlet />
             <div className="p-0.5 flex flex-row justify-center">
-                <p className="text-gray-600 font-bold">Powered by: Ecoplant</p>
+                <p className="text-gray-600 font-bold">Powered by: ecoplant.com.co</p>
             </div>
         </div>
     )

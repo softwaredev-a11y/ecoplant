@@ -24,21 +24,15 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
     const hasRunRef = useRef(false);
 
     useEffect(() => {
-        hasRunRef.current = false;
-    }, [plant.id]);
+        if (isLoadingStatus || !isConnected || !isOnline) {
 
-    useEffect(() => {
-        if (isLoadingStatus || !isConnected || !isOnline) return;
-
+            hasRunRef.current = false;
+            return;
+        }
         if (hasRunRef.current) return;
         hasRunRef.current = true;
-
-        const runCommands = async () => {
-            const commands = ["QED06", "QED14", "QED34", "QXAGA03", "QXAGA00"];
-            await executeMultipleCommands(plant.id, commands);
-        };
-
-        runCommands();
+        const commands = ["QED06", "QED14", "QED34", "QXAGA03", "QXAGA00"];
+        executeMultipleCommands(plant.id, commands);
     }, [isLoadingStatus, isConnected, isOnline, plant.id, executeMultipleCommands]);
 
 

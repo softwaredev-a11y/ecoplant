@@ -62,7 +62,7 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
     return (
         <div className="data-last-month grid grid-cols-2 items-center border-b border-b-[#ccc] mb-0.5 gap-1.5 p-0.5">
             {dataLastMonth.map((data) => (
-                <DataLastMonth key={data.id} {...data} isOnline={isOnline}/>
+                <DataLastMonth key={data.id} {...data} isOnline={isOnline} />
             ))}
         </div>
     );
@@ -74,7 +74,7 @@ function DataLastMonth({ item, value, onConsult, isOnline }) {
             <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base item-operation items-center gap-1.5">
                 {item}:
             </span>
-            {value || !isOnline? (
+            {value || !isOnline ? (
                 <span className="bg-gray-200 rounded-sm align-middle font-semibold text-gray-600 text-sm md:text-base lg:text-base p-0.5">
                     {isOnline && value ? value : "Información no disponible"}
                 </span>

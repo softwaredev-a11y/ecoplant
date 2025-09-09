@@ -56,8 +56,8 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue }) {
 
 
     return (
-        <div className="items-panel flex flex-col p-3 gap-8">
-            <div className="data-currently-div grid grid-cols-2 items-center border-b border-b-[#ccc] gap-3">
+        <div className="items-panel flex flex-col gap-8">
+            <div className="data-currently-div grid grid-cols-2 items-center border-b border-b-[#ccc] gap-3 p-0.5">
                 {currentlyData.map(data => (
                     <DataCurrently key={data.id} currentlyData={data} />
                 ))}
@@ -72,7 +72,7 @@ function DataCurrently({ currentlyData }) {
             <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base item-operation items-center gap-1.5">
                 {currentlyData.item}:
             </span>
-            <span className="bg-gray-200 rounded-sm align-middle font-semibold text-gray-600 text-sm md:text-base lg:text-base ">
+            <span className="bg-gray-200 rounded-sm align-middle font-semibold text-gray-600 text-sm md:text-base lg:text-base p-0.5">
                 {`${currentlyData.value === "" ? "Consultando." : currentlyData.value}`}
             </span>
         </>

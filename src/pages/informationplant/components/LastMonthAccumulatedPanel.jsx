@@ -60,7 +60,7 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue }) {
     ];
 
     return (
-        <div className="data-last-month grid grid-cols-2 items-center border-b border-b-[#ccc] mb-0.5 gap-1.5 p-3.5">
+        <div className="data-last-month grid grid-cols-2 items-center border-b border-b-[#ccc] mb-0.5 gap-1.5 p-0.5">
             {dataLastMonth.map((data) => (
                 <DataLastMonth key={data.id} {...data} />
             ))}

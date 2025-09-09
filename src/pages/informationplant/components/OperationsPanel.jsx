@@ -75,7 +75,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
     return (
         <div className="operations-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
             <HeaderPanel title={"Párametros de operación"} />
-            <div className="flex flex-col p-3.5 gap-6">
+            <div className="flex flex-col p-1.5 gap-4">
                 <div className='border-b border-b-[#ccc]'>
                     <Operations typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando." : filtrado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar filtración" />
                     <Operations typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando." : retrolavado : "No se puede mostrar esta información actualmente."} buttonOperation="Cambiar retrolavado" />

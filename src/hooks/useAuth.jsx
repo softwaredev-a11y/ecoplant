@@ -16,6 +16,7 @@ export const useAuth = () => {
         try {
             const { data } = await authApi.login(credentials);
             sessionStorage.setItem('token', data.auth);
+            sessionStorage.setItem('auth', true)
             navigate('/dashboard');
         } catch (error) {
             console.error("Fallo al iniciar sesión:", error);
@@ -33,6 +34,7 @@ export const useAuth = () => {
         } finally {
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('listPlants');
+            sessionStorage.removeItem('auth');
             navigate('/');
         }
     };

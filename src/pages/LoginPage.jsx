@@ -62,7 +62,7 @@ function FormLogin() {
             {/* Header del formulario */}
             <div className="form-header flex flex-col gap-1.5 text-left">
                 <span className="font-bold text-gray-600 text-2xl">Iniciar sesión</span>
-                <span className="text-gray-600 text-sm sm:text-md">Bienvenido de vuelta. Ingresa a tu cuenta</span>
+                <span className="text-gray-600 text-sm sm:text-md">Bienvenido de vuelta. Ingrese a su cuenta</span>
             </div>
 
             {/* Formulario */}

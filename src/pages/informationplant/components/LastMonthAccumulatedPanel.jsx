@@ -35,7 +35,7 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
             result = calculateAccumulatedValueBackwash(caudal, count);
         }
 
-        setValue(`${thousandsSeparator(Math.round(result))} gal.`);
+        setValue(`${thousandsSeparator(Math.round(result))} gal`);
     };
 
     const dataLastMonth = [
@@ -76,7 +76,7 @@ function DataLastMonth({ item, value, onConsult, isOnline }) {
             </span>
             {value || !isOnline? (
                 <span className="bg-gray-200 rounded-sm align-middle font-semibold text-gray-600 text-sm md:text-base lg:text-base p-0.5">
-                    { "Información no disponible"}
+                    {isOnline && value ? value : "Información no disponible"}
                 </span>
             ) : (
                 <button onClick={onConsult}

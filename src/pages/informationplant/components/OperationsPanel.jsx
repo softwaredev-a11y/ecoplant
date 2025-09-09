@@ -77,13 +77,13 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
             <HeaderPanel title={"Párametros de operación"} />
             <div className="flex flex-col p-1.5 gap-4">
                 <div className='border-b border-b-[#ccc]'>
-                    <Operations typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando." : filtrado : "Información no disponible"} buttonOperation="Cambiar filtración" />
-                    <Operations typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando." : retrolavado : "Información no disponible"} buttonOperation="Cambiar retrolavado" />
-                    <Operations typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando." : enjuague : "Información no disponible"} buttonOperation="Cambiar enjuague" />
+                    <Operations typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando" : filtrado : "Información no disponible"} buttonOperation="Cambiar filtración" />
+                    <Operations typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando" : retrolavado : "Información no disponible"} buttonOperation="Cambiar retrolavado" />
+                    <Operations typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando" : enjuague : "Información no disponible"} buttonOperation="Cambiar enjuague" />
                 </div>
                 <div className='border-b border-b-[#ccc]'>
-                    <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando." : `${valorAlertaFlujo} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral GPM" />
-                    <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando." : `${valorAlarmaInsuficiente} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral GPM" />
+                    <Operations typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando" : `${valorAlertaFlujo} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral GPM" />
+                    <Operations typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando" : `${valorAlarmaInsuficiente} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral GPM" />
                 </div>
 
             </div>

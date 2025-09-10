@@ -17,6 +17,20 @@ export function getMvZeroText(descripcion) {
 }
 
 export function formatTime(unitTime, time) {
+    let totalSeconds = getTimeInSeconds(unitTime, time);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    const parts = [];
+    if (hours > 0) parts.push(`${hours} ${hours === 1 ? "hora" : "horas"}`);
+    if (minutes > 0) parts.push(`${minutes} ${minutes === 1 ? "minuto" : "minutos"}`);
+    if (seconds > 0 || parts.length === 0) parts.push(`${seconds} ${seconds === 1 ? "segundo" : "segundos"}`);
+    return parts.length > 1
+        ? parts.slice(0, -1).join(" ") + " y " + parts.slice(-1)
+        : parts[0];
+}
+
+export function getTimeInSeconds(unitTime, time) {
     let totalSeconds = 0;
     switch (unitTime.toLowerCase()) {
         case "segundos":
@@ -31,16 +45,7 @@ export function formatTime(unitTime, time) {
         default:
             throw new Error("Unidad no válida. Usa 'segundos', 'minutos' o 'horas'.");
     }
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = Math.floor(totalSeconds % 60);
-    const parts = [];
-    if (hours > 0) parts.push(`${hours} ${hours === 1 ? "hora" : "horas"}`);
-    if (minutes > 0) parts.push(`${minutes} ${minutes === 1 ? "minuto" : "minutos"}`);
-    if (seconds > 0 || parts.length === 0) parts.push(`${seconds} ${seconds === 1 ? "segundo" : "segundos"}`);
-    return parts.length > 1
-        ? parts.slice(0, -1).join(" ") + " y " + parts.slice(-1)
-        : parts[0];
+    return totalSeconds;
 }
 
 export function getSoftwareVersion(configuration) {
@@ -109,6 +114,7 @@ export function stateProcess(statusCode) {
         21: "Contacto bomba desactivado",
         54: "Planta habilitada por horario. Esperando...",
         55: "Planta deshabilitada por horario.",
+        91: "Esperando horario o arranque manual",
         96: "Falla detectada. Modo StandBy",
     };
     if (statesByCode[statusCode]) {
@@ -198,4 +204,53 @@ export function calculateAccumulatedValueRinse(caudalValue, countFiltered) {
 
 export function calculateAccumulatedValueBackwash(caudalValue, countBackwash) {
     return caudalValue * countBackwash * 3;
+}
+
+export function replaceAt(str, index, replacement) {
+    if (index < 0 || index >= str.length) return str; // índice inválido
+    return str.slice(0, index) + replacement + str.slice(index + 1);
+}
+
+export function conversionToVoltage(gpmValue, mvZero) {
+    const result = (parseInt(gpmValue) * 100) + parseInt(mvZero);
+    return result;
+}
+
+export function getSetterMessage(codeOperation, isAlertOperation, value, unitValue, mvZero) {
+    const proccess = { "65": "filtrado", "32": "retrolavado", "12": "enjuague", "03": "alertaflujo", "00": "alarmainsuficiente" };
+    const operation = proccess[codeOperation];
+    if (!operation) {
+        console.error(`Operación no válida para el código: ${codeOperation}`);
+        return "";
+    }
+
+    const message = sessionStorage.getItem(operation);
+    if (!message) {
+        console.error(`No se encontró mensaje en sessionStorage para la operación: ${operation}`);
+        return "";
+    }
+
+    const header = getHeaderMessage(codeOperation);
+    const regex = new RegExp(`${header}(\\d+);`);
+    const match = message.match(regex);
+
+    if (!match || !match[1]) {
+        console.error(`El formato del mensaje para la operación ${operation} es incorrecto. No se pudo encontrar el valor a reemplazar.`);
+        return "";
+    }
+
+    const newMessage = replaceAt(message.replace(/[<>]/g, ""), 0, "S");
+    let formattedValue;
+    if (isAlertOperation) {
+        formattedValue = fillLeftText(conversionToVoltage(value, mvZero), 5);
+    } else {
+        formattedValue = fillLeftText(getTimeInSeconds(unitValue, value), 5);
+    }
+    const formatMessage = newMessage.replace(`${match[1]}`, `${formattedValue}`);
+    return formatMessage.replace(/;SI.*/, "");
+}
+
+export function getHeaderMessage(codeOperation) {
+    const proccess = { "65": "SGC04TC", "32": "SGC07TC", "12": "SGC10TC", "03": "RXAGA03V", "00": "RXAGA00V" };
+    return proccess[codeOperation];
 }

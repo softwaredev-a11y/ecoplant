@@ -18,24 +18,34 @@ function DashboardLayout() {
     const [isOpen, setIsOpen] = useState(false);
     const toggleMenu = () => setIsOpen(!isOpen);
     const { logout, logoutOnBrowserClose } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const token = sessionStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+        }
         const LOGOUT_DURATION = 5 * 60 * 60 * 1000 + 55 * 60 * 1000;
         const logoutTimer = setTimeout(() => {
             logout();
+            navigate("/login");
         }, LOGOUT_DURATION);
+
         const handleBeforeUnload = () => {
             logoutOnBrowserClose();
+            sessionStorage.removeItem("token");
         };
-        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
         return () => {
             clearTimeout(logoutTimer);
-            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener("beforeunload", handleBeforeUnload);
         };
-    }, [logout, logoutOnBrowserClose]);
+    }, [logout, logoutOnBrowserClose, navigate]);
 
     return (
-        <div className="main-container flex flex-col md:flex-col  w-[98%] min-h-[90vh] max-h-[90vh] box-border border bg-white border-[#ccc] p-0 md:p-0">
+        <div className="main-container flex flex-col md:flex-col w-[98%] min-h-[90vh] max-h-[90vh] box-border border bg-white border-[#ccc] p-0 md:p-0">
             <Header toggleMenu={toggleMenu} />
             <MainLayout isOpen={isOpen} toggleMenu={toggleMenu} />
         </div>

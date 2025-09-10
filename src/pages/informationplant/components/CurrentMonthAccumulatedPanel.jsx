@@ -19,9 +19,13 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
 
 
     useEffect(() => {
+        let ignore = false;
+
         const consultRawData = async (mvZeroValue) => {
             if (isOnline) {
                 await new Promise(resolve => setTimeout(resolve, 20000));
+                if (ignore) return;
+
                 const date = new Date();
                 const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
                 const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
@@ -32,28 +36,35 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 const dataRetrolavado = await rawDataConsult(beginDate, currentlyDate, idPlant, 12);
 
-                const adc_average = dataFiltrado.data.events[0].promedio_adc;
-                const caudal = ((adc_average - mvZeroValue) / 100);
+                if (ignore) return;
 
-                const countFiltrado = dataFiltrado.data.events[0].count;
-                const filtracion = calculateAccumulatedValueFiltration(caudal, countFiltrado);
-                setFiltracionActual(`${thousandsSeparator(Math.round(filtracion))} gal`);
+                if (dataFiltrado?.data?.events?.[0]) {
+                    const adc_average = dataFiltrado.data.events[0].promedio_adc;
+                    const caudal = ((adc_average - mvZeroValue) / 100);
 
-                const countEnjuague = dataEnjuague.data.events[0].count;
-                const resEnjuague = calculateAccumulatedValueRinse(caudal, countEnjuague);
-                setEnjuagueActual(`${thousandsSeparator(Math.round(resEnjuague))} gal`);
+                    const countFiltrado = dataFiltrado.data.events[0].count;
+                    const filtracion = calculateAccumulatedValueFiltration(caudal, countFiltrado);
+                    setFiltracionActual(`${thousandsSeparator(Math.round(filtracion))} gal`);
 
-                const countRetrolavado = dataRetrolavado.data.events[0].count;
-                const resRetrolavado = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
-                setRetrolavadoActual(`${thousandsSeparator(Math.round(resRetrolavado))} gal`);
+                    const countEnjuague = dataEnjuague.data.events[0].count;
+                    const resEnjuague = calculateAccumulatedValueRinse(caudal, countEnjuague);
+                    setEnjuagueActual(`${thousandsSeparator(Math.round(resEnjuague))} gal`);
 
-                const total_purga_mes_actual = (resEnjuague + resRetrolavado);
-                const multiply_purga = total_purga_mes_actual * 0.00378;
-                setPurgadoMesActual(`${thousandsSeparator(Math.round(total_purga_mes_actual))} gal (${multiply_purga.toFixed(2)} m³)`);
+                    const countRetrolavado = dataRetrolavado.data.events[0].count;
+                    const resRetrolavado = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
+                    setRetrolavadoActual(`${thousandsSeparator(Math.round(resRetrolavado))} gal`);
+
+                    const total_purga_mes_actual = (resEnjuague + resRetrolavado);
+                    const multiply_purga = total_purga_mes_actual * 0.00378;
+                    setPurgadoMesActual(`${thousandsSeparator(Math.round(total_purga_mes_actual))} gal (${multiply_purga.toFixed(2)} m³)`);
+                }
             }
         };
         consultRawData(mvZeroValue);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        return () => {
+            ignore = true;
+        };
     }, []);
 
 

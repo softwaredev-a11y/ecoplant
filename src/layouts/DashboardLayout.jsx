@@ -2,8 +2,8 @@ import Logo from "../components/Logo";
 import logoImage from '../assets/images/logo.webp';
 import searchIcon from '../assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useState, useEffect } from "react";
 import { getPlantModel } from "../utils/plantUtils";
 import { usePlants } from "../hooks/usePlants";
 import { useAuth } from "../hooks/useAuth";
@@ -17,6 +17,22 @@ import { useAuth } from "../hooks/useAuth";
 function DashboardLayout() {
     const [isOpen, setIsOpen] = useState(false);
     const toggleMenu = () => setIsOpen(!isOpen);
+    const { logout, logoutOnBrowserClose } = useAuth();
+
+    useEffect(() => {
+        const LOGOUT_DURATION = 5 * 60 * 60 * 1000 + 55 * 60 * 1000;
+        const logoutTimer = setTimeout(() => {
+            logout();
+        }, LOGOUT_DURATION);
+        const handleBeforeUnload = () => {
+            logoutOnBrowserClose();
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            clearTimeout(logoutTimer);
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [logout, logoutOnBrowserClose]);
 
     return (
         <div className="main-container flex flex-col md:flex-col  w-[98%] min-h-[90vh] max-h-[90vh] box-border border bg-white border-[#ccc] p-0 md:p-0">

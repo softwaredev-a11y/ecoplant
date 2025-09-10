@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 import authApi from '../api/authApi';
 
 
@@ -39,5 +40,19 @@ export const useAuth = () => {
         }
     };
 
-    return { login, logout };
+    const logoutOnBrowserClose = useCallback(() => {
+        const logoutUrl = 'https://rastreo.totaltracking.co/api/logout';
+        const token = sessionStorage.getItem('token');
+        if (token) {
+            fetch(logoutUrl, {
+                method: 'GET',
+                headers: {
+                    'authenticate': `${token}`
+                },
+                keepalive: true
+            });
+        }
+    }, []);
+
+    return { login, logout, logoutOnBrowserClose };
 };

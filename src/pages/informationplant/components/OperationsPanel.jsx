@@ -14,6 +14,8 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
     const [valorAlarmaInsuficiente, setValorAlarmaInsuficiente] = useState("");
     const [valorAlertaFlujo, setValorAlertaFlujo] = useState("");
 
+    const [commandStatus, setCommandStatus] = useState({});
+
     const mvZeroValue = useMemo(() => {
         if (plant?.info?.description) {
             return getMvZeroText(plant.info.description);
@@ -25,81 +27,148 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
 
     useEffect(() => {
         if (isLoadingStatus || !isConnected || !isOnline) {
-
             hasRunRef.current = false;
             return;
         }
         if (hasRunRef.current) return;
         hasRunRef.current = true;
         const commands = ["QED06", "QED14", "QED34", "QXAGA03", "QXAGA00"];
+        setCommandStatus(Object.fromEntries(commands.map(c => [c, "loading"])));
         executeMultipleCommands(plant.id, commands);
-    }, [isLoadingStatus, isConnected, isOnline, plant.id, executeMultipleCommands]);
+        const firstTimeout = setTimeout(() => {
+            commands.forEach(cmd => {
+                setCommandStatus(prev => {
+                    if (prev[cmd] === "loading") {
+                        executeMultipleCommands(plant.id, [cmd]);
+                    }
+                    return prev;
+                });
+            });
+        }, 20000);
+        const secondTimeout = setTimeout(() => {
+            setCommandStatus(prev =>
+                Object.fromEntries(
+                    commands.map(cmd => [
+                        cmd,
+                        prev[cmd] === "loading" ? "error" : prev[cmd],
+                    ])
+                )
+            );
+        }, 20000);
 
+        return () => {
+            clearTimeout(firstTimeout);
+            clearTimeout(secondTimeout);
+        };
+    }, [isLoadingStatus, isConnected, isOnline, plant.id, executeMultipleCommands]);
 
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;
-        if (!message) {
-            return;
-        }
+        if (!message) return;
+
         const result = processSocketMessage(message, mvZeroValue);
-        if (!result) {
-            return;
-        }
+        if (!result) return;
 
         switch (result.key) {
-            case 'filtrado':
+            case "filtrado":
                 setFiltrado(result.value);
-                sessionStorage.setItem('filtrado', message);
+                setCommandStatus(prev => ({ ...prev, QED06: "success" }));
                 break;
-            case 'retrolavado':
+            case "retrolavado":
                 setRetrolavado(result.value);
-                sessionStorage.setItem('retrolavado', message);
+                setCommandStatus(prev => ({ ...prev, QED14: "success" }));
                 break;
-            case 'enjuague':
+            case "enjuague":
                 setEnjuague(result.value);
-                sessionStorage.setItem('enjuague', message);
+                setCommandStatus(prev => ({ ...prev, QED34: "success" }));
                 break;
-            case 'valorAlertaFlujo':
+            case "valorAlertaFlujo":
                 setValorAlertaFlujo(result.value);
-                sessionStorage.setItem('alertaflujo', message);
+                setCommandStatus(prev => ({ ...prev, QXAGA03: "success" }));
                 break;
-            case 'valorAlarmaInsuficiente':
+            case "valorAlarmaInsuficiente":
                 setValorAlarmaInsuficiente(result.value);
-                sessionStorage.setItem('alarmainsuficiente', message);
+                setCommandStatus(prev => ({ ...prev, QXAGA00: "success" }));
                 break;
             default:
                 break;
         }
     }, [lastEvent, mvZeroValue]);
+    const getDisplayValue = (cmd, value, suffix = "") => {
+        if (!isOnline) return "Información no disponible";
+        if (commandStatus[cmd] === "loading") return "Consultando";
+        if (commandStatus[cmd] === "error") return "Problemas de comunicación. Intente más tarde.";
+        return suffix ? `${value} ${suffix}` : value;
+    };
     return (
         <div className="operations-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
             <HeaderPanel title={"Párametros de operación"} />
             <div className="flex flex-col p-1.5 gap-4">
-                <div className='border-b border-b-[#ccc]'>
-                    <Operations codeOperation="65" typeOperation="Filtración" currentlyValue={isOnline ? filtrado === "" ? "Consultando" : filtrado : "Información no disponible"} buttonOperation="Cambiar filtración" mvZeroValue={mvZeroValue} />
-                    <Operations codeOperation="32" typeOperation="Retrolavado" currentlyValue={isOnline ? retrolavado === "" ? "Consultando" : retrolavado : "Información no disponible"} buttonOperation="Cambiar retrolavado" mvZeroValue={mvZeroValue} />
-                    <Operations codeOperation="12" typeOperation="Enjuague" currentlyValue={isOnline ? enjuague === "" ? "Consultando" : enjuague : "Información no disponible"} buttonOperation="Cambiar enjuague" mvZeroValue={mvZeroValue} />
+                <div className="border-b border-b-[#ccc]">
+                    <Operations
+                        isOnline={isOnline}
+                        codeOperation="65"
+                        typeOperation="Filtración"
+                        currentlyValue={getDisplayValue("QED06", filtrado)}
+                        buttonOperation="Cambiar filtración"
+                        mvZeroValue={mvZeroValue}
+                    />
+                    <Operations
+                        isOnline={isOnline}
+                        codeOperation="32"
+                        typeOperation="Retrolavado"
+                        currentlyValue={getDisplayValue("QED14", retrolavado)}
+                        buttonOperation="Cambiar retrolavado"
+                        mvZeroValue={mvZeroValue}
+                    />
+                    <Operations
+                        isOnline={isOnline}
+                        codeOperation="12"
+                        typeOperation="Enjuague"
+                        currentlyValue={getDisplayValue("QED34", enjuague)}
+                        buttonOperation="Cambiar enjuague"
+                        mvZeroValue={mvZeroValue}
+                    />
                 </div>
-                <div className='border-b border-b-[#ccc]'>
-                    <Operations codeOperation="03" typeOperation="Alerta de flujo disminuyendo" currentlyValue={isOnline ? valorAlertaFlujo === "" ? "Consultando" : `${valorAlertaFlujo} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral (gpm)" mvZeroValue={mvZeroValue} />
-                    <Operations codeOperation="00" typeOperation="Alerta por flujo insuficiente" currentlyValue={isOnline ? valorAlarmaInsuficiente === "" ? "Consultando" : `${valorAlarmaInsuficiente} gpm` : "Información no disponible"} buttonOperation="Cambiar umbral (gpm)" mvZeroValue={mvZeroValue} />
+                <div className="border-b border-b-[#ccc]">
+                    <Operations
+                        isOnline={isOnline}
+                        codeOperation="03"
+                        typeOperation="Alerta de flujo disminuyendo"
+                        currentlyValue={getDisplayValue("QXAGA03", valorAlertaFlujo, "gpm")}
+                        buttonOperation="Cambiar umbral (gpm)"
+                        mvZeroValue={mvZeroValue}
+                    />
+                    <Operations
+                        isOnline={isOnline}
+                        codeOperation="00"
+                        typeOperation="Alerta por flujo insuficiente"
+                        currentlyValue={getDisplayValue("QXAGA00", valorAlarmaInsuficiente, "gpm")}
+                        buttonOperation="Cambiar umbral (gpm)"
+                        mvZeroValue={mvZeroValue}
+                    />
                 </div>
-
             </div>
         </div>
     );
 }
 
 
-function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue }) {
+
+function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline }) {
     const [isOpen, setIsOpen] = useState(false);
     const [timeValue, setTimeValue] = useState("");
     const [timeUnit, setTimeUnit] = useState('none');
-    const [value, setValue] = useState(currentlyValue);
-    const [attempts, setAttempts] = useState(2);
+
+    const [isSending, setIsSending] = useState(false);
+    const [commandFailed, setCommandFailed] = useState(false);
+    const [countdown, setCountdown] = useState(10);
+    const timeoutRef = useRef(null);
+    const initialValueRef = useRef(null);
+    const countdownIntervalRef = useRef(null);
 
     const isAlertOperation = codeOperation === "00" || codeOperation === "03";
-    const isButtonDisabled = !timeValue || (!isAlertOperation && timeUnit === 'none');
+    const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -114,9 +183,66 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }
     };
 
+    const stopCountdown = () => {
+        clearInterval(countdownIntervalRef.current);
+    };
+
+    const startCountdown = () => {
+        stopCountdown();
+        setCountdown(10);
+        countdownIntervalRef.current = setInterval(() => {
+            setCountdown(prev => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+    };
+
+    useEffect(() => {
+        if (isSending && currentlyValue !== initialValueRef.current && !currentlyValue.includes("Consultando")) {
+            clearTimeout(timeoutRef.current);
+            stopCountdown();
+            setIsSending(false);
+            setCommandFailed(false);
+
+            setTimeout(() => {
+                setTimeValue("");
+                setTimeUnit("none");
+            }, 3000);
+        }
+    }, [currentlyValue, isSending]);
+
+    useEffect(() => {
+        return () => {
+            clearTimeout(timeoutRef.current);
+            stopCountdown();
+        };
+    }, []);
+
+    const sendAndQuery = (codeOp) => {
+        const commandMessage = getSetterMessage(codeOp, isAlertOperation, timeValue, timeUnit, mvZeroValue);
+        console.log("SIMULACIÓN: Enviando comando:", commandMessage);
+    };
+
+    const attemptToSend = (attemptsLeft, codeOp) => {
+        if (attemptsLeft === 0) {
+            setIsSending(false);
+            setCommandFailed(true);
+            stopCountdown();
+            return;
+        }
+
+        startCountdown();
+        sendAndQuery(codeOp);
+
+        timeoutRef.current = setTimeout(() => {
+            attemptToSend(attemptsLeft - 1, codeOp);
+        }, 10000);
+    };
+
     function handleClick(codeOperation) {
-        const message = getSetterMessage(codeOperation, isAlertOperation, timeValue, timeUnit, mvZeroValue);
-        console.log(message);
+        setIsOpen(false);
+        setCommandFailed(false);
+        initialValueRef.current = currentlyValue;
+        setIsSending(true);
+        attemptToSend(2, codeOperation);
     };
 
     const formattedNewValue = useMemo(() => {
@@ -136,24 +262,18 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                 <span className="text-gray-600 font-semibold mr-1.5 break-words text-sm md:text-base lg:text-base">{typeOperation}: </ span>
                 <span className=''></span>
                 <div className='flex w-full justify-end'>
-                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${currentlyValue === "" ? "" : "p-0.5 bg-gray-200 rounded-sm"}  w-full  max-w-[300px]`}>{currentlyValue}</span>
+                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${isSending || commandFailed || currentlyValue ? "p-0.5 bg-gray-200 rounded-sm" : ""}  w-full  max-w-[300px] break-words`}>
+                        {isSending
+                            ? `Cargando nuevo valor (${countdown}s)`
+                            : commandFailed
+                                ? "Problemas de comunicación. Intente más tarde"
+                                : currentlyValue}
+                    </span>
                 </div>
             </div>
             <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" : "grid-cols-[70px_95px_1fr]"} gap-1.5`}>
-                <input
-                    min="1"
-                    type="number"
-                    name="timeValue"
-                    value={timeValue}
-                    onChange={handleChange}
-                    className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm"
-                />
-                <select
-                    name="timeUnit"
-                    value={timeUnit}
-                    onChange={handleChange}
-                    className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`}
-                >
+                <input min="1" type="number" name="timeValue" value={timeValue} disabled={isSending} onChange={handleChange} className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm" />
+                <select name="timeUnit" value={timeUnit} onChange={handleChange} disabled={isSending} className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`} >
                     <option value="none"></option>
                     <option value="segundos">Segundos</option>
                     <option value="minutos">Minutos</option>
@@ -161,7 +281,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                 </select>
                 <div className='flex w-full justify-end'>
                     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                        <AlertDialogTrigger disabled={isButtonDisabled} className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide w-full max-w-[300px">{buttonOperation}</AlertDialogTrigger>
+                        <AlertDialogTrigger disabled={isButtonDisabled} className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide w-full max-w-[300px] disabled:cursor-not-allowed">{isSending ? "Enviando..." : buttonOperation}</AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
@@ -176,9 +296,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                         </AlertDialogContent>
                     </AlertDialog>
                 </div>
-
             </div>
-        </ div>
+        </div>
     )
 }
 

@@ -73,22 +73,27 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
             case "filtrado":
                 setFiltrado(result.value);
                 setCommandStatus(prev => ({ ...prev, QED06: "success" }));
+                sessionStorage.setItem("filtrado", message);
                 break;
             case "retrolavado":
                 setRetrolavado(result.value);
                 setCommandStatus(prev => ({ ...prev, QED14: "success" }));
+                sessionStorage.setItem("retrolavado", message);
                 break;
             case "enjuague":
                 setEnjuague(result.value);
                 setCommandStatus(prev => ({ ...prev, QED34: "success" }));
+                sessionStorage.setItem("enjuague", message);
                 break;
             case "valorAlertaFlujo":
                 setValorAlertaFlujo(result.value);
                 setCommandStatus(prev => ({ ...prev, QXAGA03: "success" }));
+                sessionStorage.setItem("alertaflujo", message);
                 break;
             case "valorAlarmaInsuficiente":
                 setValorAlarmaInsuficiente(result.value);
                 setCommandStatus(prev => ({ ...prev, QXAGA00: "success" }));
+                sessionStorage.setItem("alarmainsuficiente", message);
                 break;
             default:
                 break;
@@ -189,7 +194,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
     const startCountdown = () => {
         stopCountdown();
-        setCountdown(10);
+        setCountdown(15);
         countdownIntervalRef.current = setInterval(() => {
             setCountdown(prev => (prev > 0 ? prev - 1 : 0));
         }, 1000);

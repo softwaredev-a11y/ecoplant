@@ -7,6 +7,8 @@ import { useState, useEffect } from "react";
 import { getPlantModel } from "../utils/plantUtils";
 import { usePlants } from "../hooks/usePlants";
 import { useAuth } from "../hooks/useAuth";
+import { useUsers } from "../hooks/useUsers";
+
 
 
 /**
@@ -61,6 +63,7 @@ function DashboardLayout() {
  */
 function Header({ toggleMenu }) {
     const { logout } = useAuth();
+    const { isSuperUser } = useUsers();
     return (
         <div className="header flex justify-between bg-white p-2 items-center">
             {/* Contenedor izquierdo: Hamburguesa + Logo */}
@@ -80,9 +83,9 @@ function Header({ toggleMenu }) {
             <div className="righ-options flex overflow-x-auto 
                       w-full justify-center 
                       lg:w-auto lg:justify-start">
-                <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Historial de accesos</button>
-                <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Diagnóstico</button>
-                <button className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Control</button>
+                <button disabled={!isSuperUser} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Historial de accesos</button>
+                <button disabled={!isSuperUser} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Diagnóstico</button>
+                <button disabled={!isSuperUser} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Control</button>
                 <button onClick={logout} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Cerrar sesión</button>
             </div>
         </div>

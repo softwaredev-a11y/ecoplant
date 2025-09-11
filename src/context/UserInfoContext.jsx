@@ -12,8 +12,9 @@ export const UserProvider = ({ children }) => {
             try {
                 setLoading(true);
                 const response = await usersApi.getUser();
-                setUser(response.data);
-                setIsSuperUser(user.last_name.includes('superuser'));
+                const userData = response.data;
+                setUser(userData);
+                setIsSuperUser(userData.last_name.includes('superuser'));
             } catch (error) {
                 setError(error);
             } finally {

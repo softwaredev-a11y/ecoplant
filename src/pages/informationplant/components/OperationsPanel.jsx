@@ -171,6 +171,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const [isSending, setIsSending] = useState(false);
     const [commandFailed, setCommandFailed] = useState(false);
     const [countdown, setCountdown] = useState(10);
+    const [outOfRangeError, setOutOfRangeError] = useState(false);
+
     const timeoutRef = useRef(null);
     const initialValueRef = useRef(null);
     const countdownIntervalRef = useRef(null);
@@ -225,11 +227,10 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         };
     }, []);
 
-    const sendAndQuery = async (codeOperation) => {
-        const commandMessage = getSetterMessage(codeOperation, isAlertOperation, timeValue, timeUnit, mvZeroValue);
+    const sendAndQuery = async (commandMessage, codeOperation) => {
         try {
-            if (commandMessage) {
-                console.log(`Se está enviando el siguiente comando: ${commandMessage}`)
+            if (commandMessage != "") {
+                console.log(`Se está enviando el siguiente comando: ${commandMessage}`);
                 await executeMultipleCommands(plant.id, [commandMessage]);
             } else {
                 console.error("No existe un mensaje, por lo que no se puede formatear.")
@@ -239,7 +240,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }
     };
 
-    const attemptToSend = (attemptsLeft, codeOp) => {
+    const attemptToSend = (attemptsLeft, codeOp, commandMessage) => {
         if (attemptsLeft === 0) {
             setIsSending(false);
             setCommandFailed(true);
@@ -250,7 +251,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }
 
         startCountdown();
-        sendAndQuery(codeOp);
+        sendAndQuery(commandMessage, codeOp);
 
         timeoutRef.current = setTimeout(() => {
             attemptToSend(attemptsLeft - 1, codeOp);
@@ -259,10 +260,21 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
     function handleClick(codeOperation) {
         setIsOpen(false);
+        const commandMessage = getSetterMessage(codeOperation, isAlertOperation, timeValue, timeUnit, mvZeroValue);
+        if (commandMessage === "") {
+            setOutOfRangeError(true);
+            setTimeout(() => {
+                setOutOfRangeError(false);
+                setTimeValue("");
+                setTimeUnit("none");
+            }, 10000);
+            return;
+        }
+
         setCommandFailed(false);
         initialValueRef.current = currentlyValue;
         setIsSending(true);
-        attemptToSend(2, codeOperation);
+        attemptToSend(2, codeOperation, commandMessage);
     };
 
     const formattedNewValue = useMemo(() => {
@@ -283,11 +295,12 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                 <span className=''></span>
                 <div className='flex w-full justify-end'>
                     <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${isSending || commandFailed || currentlyValue ? "p-0.5 bg-gray-200 rounded-sm" : ""}  w-full  max-w-[300px] break-words`}>
-                        {isSending
-                            ? `Cargando nuevo valor (${countdown}s)`
-                            : commandFailed
-                                ? "Problemas de comunicación. Intente más tarde"
-                                : currentlyValue}
+                        {outOfRangeError
+                            ? "Valor fuera de rango" : isSending
+                                ? `Cargando nuevo valor (${countdown}s)`
+                                : commandFailed
+                                    ? "Problemas de comunicación. Intente más tarde"
+                                    : currentlyValue}
                     </span>
                 </div>
             </div>

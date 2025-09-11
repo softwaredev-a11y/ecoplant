@@ -74,27 +74,27 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
             case "filtrado":
                 setFiltrado(result.value);
                 setCommandStatus(prev => ({ ...prev, QED06: "success" }));
-                sessionStorage.setItem("filtrado", message);
+                if (!message.includes('RER')) sessionStorage.setItem("filtrado", message);
                 break;
             case "retrolavado":
                 setRetrolavado(result.value);
                 setCommandStatus(prev => ({ ...prev, QED14: "success" }));
-                sessionStorage.setItem("retrolavado", message);
+                if (!message.includes('RER')) sessionStorage.setItem("retrolavado", message);
                 break;
             case "enjuague":
                 setEnjuague(result.value);
                 setCommandStatus(prev => ({ ...prev, QED34: "success" }));
-                sessionStorage.setItem("enjuague", message);
+                if (!message.includes('RER')) sessionStorage.setItem("enjuague", message);
                 break;
             case "valorAlertaFlujo":
                 setValorAlertaFlujo(result.value);
                 setCommandStatus(prev => ({ ...prev, QXAGA03: "success" }));
-                sessionStorage.setItem("alertaflujo", message);
+                if (!message.includes('RER')) sessionStorage.setItem("alertaflujo", message);
                 break;
             case "valorAlarmaInsuficiente":
                 setValorAlarmaInsuficiente(result.value);
                 setCommandStatus(prev => ({ ...prev, QXAGA00: "success" }));
-                sessionStorage.setItem("alarmainsuficiente", message);
+                if (!message.includes('RER')) sessionStorage.setItem("alarmainsuficiente", message);
                 break;
             default:
                 break;
@@ -171,7 +171,9 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
     const [isSending, setIsSending] = useState(false);
     const [commandFailed, setCommandFailed] = useState(false);
-    const [countdown, setCountdown] = useState(10);
+    const [countdown, setCountdown] = useState(15);
+    const [displayValue, setDisplayValue] = useState(currentlyValue);
+    const [isShowingServerError, setIsShowingServerError] = useState(false);
     const [outOfRangeError, setOutOfRangeError] = useState(false);
 
     const timeoutRef = useRef(null);
@@ -210,16 +212,39 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     };
 
     useEffect(() => {
-        if (isSending && currentlyValue !== initialValueRef.current && !currentlyValue.includes("Consultando")) {
+        if (!isShowingServerError) {
+            setDisplayValue(currentlyValue);
+        }
+    }, [currentlyValue, isShowingServerError]);
+
+    useEffect(() => {
+        if (!isSending) return;
+        const isErrorValue = currentlyValue.includes("inválido");
+        // Caso 1: El servidor respondió con un mensaje de error conocido
+        if (isErrorValue) {
+            clearTimeout(timeoutRef.current);
+            stopCountdown();
+            setIsSending(false);
+            setIsShowingServerError(true);
+            setDisplayValue(currentlyValue);
+            setCommandFailed(false);
+
+            const errorTimer = setTimeout(() => {
+                setDisplayValue(initialValueRef.current);
+                setIsShowingServerError(false);
+            }, 5000);
+
+            setTimeValue("");
+            setTimeUnit("none");
+
+            return () => clearTimeout(errorTimer);
+        }
+        // Caso 2: El servidor respondió con un nuevo valor exitoso
+        else if (currentlyValue !== initialValueRef.current && !currentlyValue.includes("Consultando")) {
             clearTimeout(timeoutRef.current);
             stopCountdown();
             setIsSending(false);
             setCommandFailed(false);
-
-            setTimeout(() => {
-                setTimeValue("");
-                setTimeUnit("none");
-            }, 3000);
         }
     }, [currentlyValue, isSending]);
 
@@ -297,13 +322,13 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                 <span className="text-gray-600 font-semibold mr-1.5 break-words text-sm md:text-base lg:text-base">{typeOperation}: </ span>
                 <span className=''></span>
                 <div className='flex w-full justify-end'>
-                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${isSending || commandFailed || currentlyValue ? "p-0.5 bg-gray-200 rounded-sm" : ""}  w-full  max-w-[300px] break-words`}>
+                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${isSending || commandFailed || displayValue ? "p-0.5 bg-gray-200 rounded-sm" : ""}  w-full  max-w-[300px] break-words`}>
                         {outOfRangeError
                             ? "Valor fuera de rango" : isSending
                                 ? `Cargando nuevo valor (${countdown}s)`
                                 : commandFailed
                                     ? "Problemas de comunicación. Intente más tarde"
-                                    : currentlyValue}
+                                    : displayValue}
                     </span>
                 </div>
             </div>

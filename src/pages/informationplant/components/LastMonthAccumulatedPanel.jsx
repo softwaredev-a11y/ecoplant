@@ -81,13 +81,23 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
             type: "retrolavado",
         },
     ];
-
     return (
-        <div className={`data-last-month grid grid-cols-2 items-center mb-0.5 gap-1.5 p-0.5 ${isSuperUser ? "border-b border-b-[#ccc]" : "hidden"}`}>
-            {dataLastMonth.map((data) => (
-                <DataLastMonth key={data.id} {...data} isOnline={isOnline} isButtonDisabled={isButtonDisabled} isCurrentlyLoading={loadingType === data.type} isSuperUser={isSuperUser} />
-            ))}
-        </div>
+        <>
+            {isSuperUser && (
+                <div className="data-last-month grid grid-cols-2 items-center mb-0.5 gap-1.5 p-0.5 border-b border-b-[#ccc]">
+                    {dataLastMonth.map((data) => (
+                        <DataLastMonth
+                            key={data.id}
+                            {...data}
+                            isOnline={isOnline}
+                            isButtonDisabled={isButtonDisabled}
+                            isCurrentlyLoading={loadingType === data.type}
+                            isSuperUser={isSuperUser}
+                        />
+                    ))}
+                </div>
+            )}
+        </>
     );
 }
 

@@ -4,38 +4,55 @@ import { buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, cal
 
 export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     const { rawDataConsult } = useRawDataConsult();
+    const [loadingType, setLoadingType] = useState(null);
 
     const [filtracionAnterior, setFiltracionAnterior] = useState("");
     const [enjuagueAnterior, setEnjuagueAnterior] = useState("");
     const [retrolavadoAnterior, setRetrolavadoAnterior] = useState("");
+    const isButtonDisabled = loadingType !== null;
 
     const handleConsult = async (code, setValue, type) => {
-        const date = new Date();
-        const year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
-        const month = date.getMonth() === 0 ? 12 : date.getMonth();
+        setLoadingType(type);
+        try {
+            const date = new Date();
+            const year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
+            const month = date.getMonth() === 0 ? 12 : date.getMonth();
 
-        const beginDate = buildDate(year, month, 1);
-        const lastDay = new Date(year, month, 0).getDate();
-        const endDate = buildDate(year, month, lastDay);
+            const beginDate = buildDate(year, month, 1);
+            const lastDay = new Date(year, month, 0).getDate();
+            const endDate = buildDate(year, month, lastDay);
 
-        const dataFiltrado = await rawDataConsult(beginDate, endDate, idPlant, 65);
-        const data = await rawDataConsult(beginDate, endDate, idPlant, code);
+            const [dataFiltrado, data] = await Promise.all([
+                rawDataConsult(beginDate, endDate, idPlant, 65),
+                rawDataConsult(beginDate, endDate, idPlant, code)
+            ]);
 
-        const adc_average = dataFiltrado.data.events[0].promedio_adc;
-        const caudal = (adc_average - mvZeroValue) / 100;
+            if (!dataFiltrado?.data?.events?.[0] || !data?.data?.events?.[0]) {
+                setValue("No disponible");
+                return;
+            }
 
-        const count = data.data.events[0].count;
-        let result = 0;
+            const adc_average = dataFiltrado.data.events[0].promedio_adc;
+            const caudal = (adc_average - mvZeroValue) / 100;
 
-        if (type === "filtracion") {
-            result = calculateAccumulatedValueFiltration(caudal, count);
-        } else if (type === "enjuague") {
-            result = calculateAccumulatedValueRinse(caudal, count);
-        } else if (type === "retrolavado") {
-            result = calculateAccumulatedValueBackwash(caudal, count);
+            const count = data.data.events[0].count;
+            let result = 0;
+
+            if (type === "filtracion") {
+                result = calculateAccumulatedValueFiltration(caudal, count);
+            } else if (type === "enjuague") {
+                result = calculateAccumulatedValueRinse(caudal, count);
+            } else if (type === "retrolavado") {
+                result = calculateAccumulatedValueBackwash(caudal, count);
+            }
+
+            setValue(`${thousandsSeparator(Math.round(result))} gal`);
+        } catch (error) {
+            console.error("Error al consultar los datos del mes anterior:", error);
+            setValue("Error");
+        } finally {
+            setLoadingType(null);
         }
-
-        setValue(`${thousandsSeparator(Math.round(result))} gal`);
     };
 
     const dataLastMonth = [
@@ -44,31 +61,34 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
             item: "Acumulado Filtración mes anterior",
             value: filtracionAnterior,
             onConsult: () => handleConsult(65, setFiltracionAnterior, "filtracion"),
+            type: "filtracion",
         },
         {
             id: 1,
             item: "Acumulado Enjuague mes anterior",
             value: enjuagueAnterior,
             onConsult: () => handleConsult(32, setEnjuagueAnterior, "enjuague"),
+            type: "enjuague",
         },
         {
             id: 2,
             item: "Acumulado Retrolavado mes anterior",
             value: retrolavadoAnterior,
             onConsult: () => handleConsult(12, setRetrolavadoAnterior, "retrolavado"),
+            type: "retrolavado",
         },
     ];
 
     return (
         <div className="data-last-month grid grid-cols-2 items-center border-b border-b-[#ccc] mb-0.5 gap-1.5 p-0.5">
             {dataLastMonth.map((data) => (
-                <DataLastMonth key={data.id} {...data} isOnline={isOnline} />
+                <DataLastMonth key={data.id} {...data} isOnline={isOnline} isButtonDisabled={isButtonDisabled} isCurrentlyLoading={loadingType === data.type} />
             ))}
         </div>
     );
 }
 
-function DataLastMonth({ item, value, onConsult, isOnline }) {
+function DataLastMonth({ item, value, onConsult, isOnline, isButtonDisabled, isCurrentlyLoading }) {
     return (
         <>
             <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base item-operation items-center gap-1.5">
@@ -80,8 +100,11 @@ function DataLastMonth({ item, value, onConsult, isOnline }) {
                 </span>
             ) : (
                 <button onClick={onConsult}
-                    className={`p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide ${isOnline ? '' : 'hidden'}`}>
-                    Consultar mes anterior
+                    disabled={isButtonDisabled}
+                    className={`p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide ${isOnline ? '' : 'hidden'} disabled:cursor-not-allowed`}>
+                    {
+                        isCurrentlyLoading ? "Consultando" : " Consultar mes anterior"
+                    }
                 </button>
             )}
         </>

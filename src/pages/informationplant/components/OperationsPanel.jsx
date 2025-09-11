@@ -307,32 +307,36 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                     </span>
                 </div>
             </div>
-            <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" : "grid-cols-[70px_95px_1fr]"}  ${isSuperUser ? "" : "hidden"} gap-1.5`}>
-                <input min="1" type="number" name="timeValue" value={timeValue} disabled={isSending} onChange={handleChange} className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm" />
-                <select name="timeUnit" value={timeUnit} onChange={handleChange} disabled={isSending} className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`} >
-                    <option value="none"></option>
-                    <option value="segundos">Segundo(s)</option>
-                    <option value="minutos">Minuto(s)</option>
-                    <option value="horas">Hora(s)</option>
-                </select>
-                <div className='flex w-full justify-end'>
-                    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                        <AlertDialogTrigger disabled={isButtonDisabled} className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide w-full max-w-[300px] disabled:cursor-not-allowed">{isSending ? "Enviando..." : buttonOperation}</AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
-                                <AlertDialogDescription className="text-sm text-gray-600" >
-                                    Se cambiará el parámetro de <span className="text-red-700 font-bold">{typeOperation}</span> al valor de <span className="text-red-700 font-bold">{formattedNewValue}</span>.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleClick(codeOperation)} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </div>
-            </div>
+            <>
+                {isSuperUser && (
+                    <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" : "grid-cols-[70px_95px_1fr]"}  ${isSuperUser ? "" : "hidden"} gap-1.5`}>
+                        <input min="1" type="number" name="timeValue" value={timeValue} disabled={isSending} onChange={handleChange} className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm" />
+                        <select name="timeUnit" value={timeUnit} onChange={handleChange} disabled={isSending} className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`} >
+                            <option value="none"></option>
+                            <option value="segundos">Segundo(s)</option>
+                            <option value="minutos">Minuto(s)</option>
+                            <option value="horas">Hora(s)</option>
+                        </select>
+                        <div className='flex w-full justify-end'>
+                            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+                                <AlertDialogTrigger disabled={isButtonDisabled} className="p-0.5 border-0 bg-[#005596] rounded-sm  text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide w-full max-w-[300px] disabled:cursor-not-allowed">{isSending ? "Enviando..." : buttonOperation}</AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
+                                        <AlertDialogDescription className="text-sm text-gray-600" >
+                                            Se cambiará el parámetro de <span className="text-red-700 font-bold">{typeOperation}</span> al valor de <span className="text-red-700 font-bold">{formattedNewValue}</span>.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleClick(codeOperation)} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    </div>
+                )}
+            </>
         </div>
     )
 }

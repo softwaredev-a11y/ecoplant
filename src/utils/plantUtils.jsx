@@ -317,13 +317,17 @@ export function getSetterMessage(codeOperation, isAlertOperation, value, unitVal
         console.error(`El formato del mensaje para la operación ${operation} es incorrecto. No se pudo encontrar el valor a reemplazar.`);
         return "";
     }
-
     const newMessage = replaceAt(message.replace(/[<>]/g, ""), 0, "S");
     let formattedValue;
+    let convertedValue;
     if (isAlertOperation) {
-        formattedValue = fillLeftText(conversionToVoltage(value, mvZero), 5);
+        convertedValue = conversionToVoltage(value, mvZero);
+        if (convertedValue > 15000) return "";
+        formattedValue = fillLeftText(convertedValue, 5);
     } else {
-        formattedValue = fillLeftText(getTimeInSeconds(unitValue, value), 5);
+        convertedValue = getTimeInSeconds(unitValue, value);
+        if (convertedValue > 99999) return "";
+        formattedValue = fillLeftText(convertedValue, 5);
     }
     const formatMessage = newMessage.replace(`${match[1]}`, `${formattedValue}`);
     const messageWithoutSi = formatMessage.replace(/;SI.*/, "");

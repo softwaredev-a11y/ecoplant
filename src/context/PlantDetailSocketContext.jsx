@@ -22,7 +22,6 @@ export const PlantDetailSocketProvider = ({ children, plantId, isOnline }) => {
             socket.on("connect", () => {
                 if (!isOnline) return; 
                 setIsConnected(true);
-                console.log("Socket conectado");
                 socket.emit("authenticate", credentials);
             });
 

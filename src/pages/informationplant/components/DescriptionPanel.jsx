@@ -1,4 +1,4 @@
-import { getPlantModel, getSoftwareVersion, getFlowCurrentlyValue, getCodeCurrentProccess, stateProcess, formatTime, calculateStateFlow } from '../../../utils/plantUtils';
+import { getPlantModel, getSoftwareVersion, getFlowCurrentlyValue, getCodeCurrentProccess, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
 import { usePlantDetailSocket } from '../../../hooks/usePlants';
 import notAvailableImg from '../../../assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
@@ -41,13 +41,13 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
             { label: "Versión del script", value: `${getSoftwareVersion(plant.configuration)}` },
         ],
         [
-            { label: "Estado conectividad celular", value: `${infoConnectionDevice?.connection?.online ? "Ok" : "No Ok"}` },
+            { label: "Estado conectividad celular", value: `${infoConnectionDevice?.connection?.online ? "Ok" : "No Ok (Fuera de línea)"}` },
             { label: "Estado del accesorio expansor", value: `${infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado"}` },
             { label: "Estado de señal GPS", value: `${infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo"}` },
         ],
         [
             { label: "Proceso en ejecución", value: `${infoConnectionDevice?.connection?.online ? currentlyProccess === "" ? stateProcess(infoConnectionDevice.latest.loc.code) : currentlyProccess : "Información no disponible"}` },
-            { label: "Flujo actual", value: `${infoConnectionDevice?.connection?.online ? infoConnectionDevice.latest.loc.code === 91 ? "Información no disponible" : currentlyValue === "" ? `${calculateStateFlow(infoConnectionDevice.latest.data.ad.value)} gal/min` : `${currentlyValue} gal/min` : "Información no disponible"}` },
+            { label: "Flujo actual", value: `${infoConnectionDevice?.connection?.online ? !showCurrentFlow(infoConnectionDevice.latest.loc.code) ? "---" : currentlyValue === "" ? `${calculateStateFlow(infoConnectionDevice.latest.data.ad.value)} gpm` : `${currentlyValue} gpm` : "Información no disponible"}` },
         ],
     ];
 

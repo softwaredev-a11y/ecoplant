@@ -54,7 +54,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                     ])
                 )
             );
-        }, 20000);
+        }, 30000);
 
         return () => {
             clearTimeout(firstTimeout);
@@ -117,6 +117,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         currentlyValue={getDisplayValue("QED06", filtrado)}
                         buttonOperation="Cambiar filtración"
                         mvZeroValue={mvZeroValue}
+                        plant={plant}
                     />
                     <Operations
                         isOnline={isOnline}
@@ -125,6 +126,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         currentlyValue={getDisplayValue("QED14", retrolavado)}
                         buttonOperation="Cambiar retrolavado"
                         mvZeroValue={mvZeroValue}
+                        plant={plant}
                     />
                     <Operations
                         isOnline={isOnline}
@@ -133,6 +135,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         currentlyValue={getDisplayValue("QED34", enjuague)}
                         buttonOperation="Cambiar enjuague"
                         mvZeroValue={mvZeroValue}
+                        plant={plant}
                     />
                 </div>
                 <div className="border-b border-b-[#ccc]">
@@ -143,6 +146,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         currentlyValue={getDisplayValue("QXAGA03", valorAlertaFlujo, "gpm")}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
+                        plant={plant}
                     />
                     <Operations
                         isOnline={isOnline}
@@ -151,6 +155,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         currentlyValue={getDisplayValue("QXAGA00", valorAlarmaInsuficiente, "gpm")}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
+                        plant={plant}
                     />
                 </div>
             </div>
@@ -158,9 +163,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
     );
 }
 
-
-
-function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline }) {
+function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline, plant }) {
     const [isOpen, setIsOpen] = useState(false);
     const [timeValue, setTimeValue] = useState("");
     const [timeUnit, setTimeUnit] = useState('none');
@@ -174,6 +177,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
     const isAlertOperation = codeOperation === "00" || codeOperation === "03";
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none');
+    const { executeMultipleCommands } = useCommandExecution();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -221,9 +225,18 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         };
     }, []);
 
-    const sendAndQuery = (codeOp) => {
-        const commandMessage = getSetterMessage(codeOp, isAlertOperation, timeValue, timeUnit, mvZeroValue);
-        console.log("SIMULACIÓN: Enviando comando:", commandMessage);
+    const sendAndQuery = async (codeOperation) => {
+        const commandMessage = getSetterMessage(codeOperation, isAlertOperation, timeValue, timeUnit, mvZeroValue);
+        try {
+            if (commandMessage) {
+                console.log(`Se está enviando el siguiente comando: ${commandMessage}`)
+                await executeMultipleCommands(plant.id, [commandMessage]);
+            } else {
+                console.error("No existe un mensaje, por lo que no se puede formatear.")
+            }
+        } catch (error) {
+            console.error(`Ocurrió el siguiente error ${error} en la ejecución del comando ${codeOperation}`);
+        }
     };
 
     const attemptToSend = (attemptsLeft, codeOp) => {
@@ -231,6 +244,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             setIsSending(false);
             setCommandFailed(true);
             stopCountdown();
+            setTimeValue("");
+            setTimeUnit("none");
             return;
         }
 
@@ -239,7 +254,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
         timeoutRef.current = setTimeout(() => {
             attemptToSend(attemptsLeft - 1, codeOp);
-        }, 10000);
+        }, 15000);
     };
 
     function handleClick(codeOperation) {
@@ -280,9 +295,9 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                 <input min="1" type="number" name="timeValue" value={timeValue} disabled={isSending} onChange={handleChange} className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm" />
                 <select name="timeUnit" value={timeUnit} onChange={handleChange} disabled={isSending} className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`} >
                     <option value="none"></option>
-                    <option value="segundos">Segundos</option>
-                    <option value="minutos">Minutos</option>
-                    <option value="horas">Horas</option>
+                    <option value="segundos">Segundo(s)</option>
+                    <option value="minutos">Minuto(s)</option>
+                    <option value="horas">Hora(s)</option>
                 </select>
                 <div className='flex w-full justify-end'>
                     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -305,6 +320,5 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         </div>
     )
 }
-
 
 export default OperationsPanel;

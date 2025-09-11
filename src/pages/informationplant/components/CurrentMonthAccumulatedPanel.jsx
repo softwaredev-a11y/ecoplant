@@ -9,6 +9,7 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
     const [enjuagueActual, setEnjuagueActual] = useState("");
     const [retrolavadoActual, setRetrolavadoActual] = useState("");
     const [purgadoMesActual, setPurgadoMesActual] = useState("");
+    const isAuth = sessionStorage.getItem('auth');
 
     const currentlyData = [
         { id: 0, item: "Acumulado Filtración mes actual", value: filtracionActual },
@@ -21,8 +22,8 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
     useEffect(() => {
         let ignore = false;
 
-        const consultRawData = async (mvZeroValue) => {
-            if (isOnline) {
+        const consultRawData = async (mvZeroValue, isAuth) => {
+            if (isOnline && isAuth) {
                 await new Promise(resolve => setTimeout(resolve, 20000));
                 if (ignore) return;
 
@@ -60,12 +61,12 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
                 }
             }
         };
-        consultRawData(mvZeroValue);
+        consultRawData(mvZeroValue, isAuth);
 
         return () => {
             ignore = true;
         };
-    }, []);
+    }, [idPlant]);
 
 
     return (

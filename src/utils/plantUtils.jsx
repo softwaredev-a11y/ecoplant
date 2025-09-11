@@ -136,6 +136,26 @@ export function stateProcess(statusCode) {
     return `Desconocido: ${statusCode}`;
 }
 
+export function showCurrentFlow(statusCode) {
+    const codFiltracion = [4, 6, 7, 8, 17, 19, 65, 66];
+    if (codFiltracion.includes(statusCode)) {
+        return true;
+    }
+    if (statusCode >= 9 && statusCode <= 15) {
+        return true;
+    }
+    if (statusCode >= 30 && statusCode <= 35) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * 
+ * @param {String} message 
+ * @param {int} mvZeroValue 
+ * @returns 
+ */
 export function processSocketMessage(message, mvZeroValue) {
     if (!message) {
         return null;
@@ -158,7 +178,11 @@ export function processSocketMessage(message, mvZeroValue) {
     }
     return null;
 }
-
+/**
+ * Calcular el valor de flujo actual.
+ * @param {int} currentValue valor que viene en el mensaje del websocket o de la consulta a la API.
+ * @returns valor del flujo actual.
+ */
 export function calculateStateFlow(currentValue) {
     let flowValue = currentValue / 100;
     if (flowValue >= 20) {
@@ -168,7 +192,11 @@ export function calculateStateFlow(currentValue) {
     return stateFlowValue;
 }
 
-
+/**
+ * Obtiene el proceso que se está ejecutando en la planta.
+ * @param {String} message Mensaje que viene del websocket por una query.
+ * @returns Proceso que se está ejecutando actualmente.
+ */
 export function getCodeCurrentProccess(message) {
     if (!message) {
         return null;
@@ -180,6 +208,11 @@ export function getCodeCurrentProccess(message) {
     return null;
 }
 
+/**
+ * Obtiene el valor del flujo actual de acuerdo a la información que manda el socket.
+ * @param {String} message Mensaje que viene del websocket por una query.
+ * @returns valor del flujo actual.
+ */
 export function getFlowCurrentlyValue(message) {
     const match = message.match(/AD=(\d+);/);
     if (!match) return "";
@@ -187,35 +220,81 @@ export function getFlowCurrentlyValue(message) {
     return value;
 }
 
+/**
+ * Separa un número en miles.
+ * @param {int} num 
+ * @returns número formateado con separador de miles.
+ */
 export function thousandsSeparator(num) {
     var num_parts = num.toString().split(".");
     num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return num_parts.join(".");
 }
 
+/**
+ * Calcula el valor de la filtración.
+ * @param {*} caudalValue 
+ * @param {*} countFiltered 
+ * @returns valor de la filtración.
+ */
 export function calculateAccumulatedValueFiltration(caudalValue, countFiltered) {
     return (caudalValue * countFiltered * 2);
 
 }
 
+/**
+ * Calcula el valor del enjuague
+ * @param {float} caudalValue 
+ * @param {float} countFiltered 
+ * @returns valor del enjuague.
+ */
 export function calculateAccumulatedValueRinse(caudalValue, countFiltered) {
     return caudalValue * countFiltered * 2;
 }
 
+/**
+ * Calcula el valor del retrolavado
+ * @param {float} caudalValue  
+ * @param {float} countBackwash 
+ * @returns valor del retrolavado
+ */
 export function calculateAccumulatedValueBackwash(caudalValue, countBackwash) {
     return caudalValue * countBackwash * 3;
 }
 
+/**
+ * Modifica un carácter con índice especifico en un string.
+ * @param {String} str Cadena a modificar
+ * @param {int} index índice del carácter que se va a modificar.
+ * @param {String} replacement Cáracter que se va a poner en la cadena.
+ * @returns cadena de texto con el nuevo caracter.
+ */
 export function replaceAt(str, index, replacement) {
     if (index < 0 || index >= str.length) return str; // índice inválido
     return str.slice(0, index) + replacement + str.slice(index + 1);
 }
 
+/**
+ * Realiza la conversión de gpm a voltage.
+ * @param {String} gpmValue Valor de gpm en alertaflujo y alarmainsuficiente.
+ * @param {String} mvZero valor que hace parte de la información de la planta.
+ * @returns valor converitido a voltage.
+ */
 export function conversionToVoltage(gpmValue, mvZero) {
     const result = (parseInt(gpmValue) * 100) + parseInt(mvZero);
+    //si resultado es mayor a 15000 devolver error (Valor fuera de rango)
     return result;
 }
 
+/**
+ * Obtiene el comando set para cambiar los parametros de operación.
+ * @param {String} codeOperation  código de la operación (65:filtrado, 32:retrolavado, 12:enjuague, 03:alertaflujo, 00:alarmainsuficiente) 
+ * @param {boolean} isAlertOperation determina si la operación es por alerta, o alarma.
+ * @param {int} value valor ingresado por el usuario.
+ * @param {String} unitValue unidades, pueden ser segundos, minutos, horas o gpm.
+ * @param {int} mvZero valor que hace parte de la información de la planta.
+ * @returns El comando para realizar la modificación.
+ */
 export function getSetterMessage(codeOperation, isAlertOperation, value, unitValue, mvZero) {
     const proccess = { "65": "filtrado", "32": "retrolavado", "12": "enjuague", "03": "alertaflujo", "00": "alarmainsuficiente" };
     const operation = proccess[codeOperation];
@@ -247,9 +326,16 @@ export function getSetterMessage(codeOperation, isAlertOperation, value, unitVal
         formattedValue = fillLeftText(getTimeInSeconds(unitValue, value), 5);
     }
     const formatMessage = newMessage.replace(`${match[1]}`, `${formattedValue}`);
-    return formatMessage.replace(/;SI.*/, "");
+    const messageWithoutSi = formatMessage.replace(/;SI.*/, "");
+    const messageWithoutkY = messageWithoutSi.replace(/;KY.*/, "");
+    return messageWithoutkY;
 }
 
+/**
+ * Obtiene la cabecera del comando, de acuerdo al código de la operación.
+ * @param {String} codeOperation código de la operación (65:filtrado, 32:retrolavado, 12:enjuague, 03:alertaflujo, 00:alarmainsuficiente) 
+ * @returns la cabecera del comando.
+ */
 export function getHeaderMessage(codeOperation) {
     const proccess = { "65": "SGC04TC", "32": "SGC07TC", "12": "SGC10TC", "03": "RXAGA03V", "00": "RXAGA00V" };
     return proccess[codeOperation];

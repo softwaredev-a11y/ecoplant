@@ -34,7 +34,6 @@ export const useAuth = () => {
             console.error("Fallo al cerrar sesión en el servidor:", error);
         } finally {
             sessionStorage.removeItem('token');
-            sessionStorage.removeItem('listPlants');
             sessionStorage.removeItem('auth');
             navigate('/');
         }

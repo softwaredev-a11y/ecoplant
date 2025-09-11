@@ -52,14 +52,14 @@ export const useCommandExecution = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [executedCids, setExecutedCids] = useState([]);
   const [error, setError] = useState(null);
-  const executeMultipleCommands = useCallback(async (imei, commands) => {
+  const executeMultipleCommands = useCallback(async (idDevice, commands) => {
     try {
       setIsLoading(true);
       setError(null);
       const cids = [];
 
       for (let i = 0; i < commands.length; i++) {
-        const response = await plants.commandExecution(imei, commands[i]);
+        const response = await plants.commandExecution(idDevice, commands[i]);
         if (response?.data?.cid) cids.push(response.data.cid);
         if (i < commands.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 1000));

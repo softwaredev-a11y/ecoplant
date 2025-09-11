@@ -167,12 +167,28 @@ export function processSocketMessage(message, mvZeroValue) {
         'RXAGA03V': { key: 'valorAlertaFlujo', calculate: (msg) => calculateFlowAlertValue(msg, mvZeroValue) },
         'RXAGA00V': { key: 'valorAlarmaInsuficiente', calculate: (msg) => calculateInsufficientAlarmValue(msg, mvZeroValue) },
     };
-    for (const opKey in operationHandlers) {
-        if (message.includes(opKey)) {
-            const handler = operationHandlers[opKey];
-            const value = handler.calculate(message);
-            if (value !== null) {
-                return { key: handler.key, value };
+    const errorMessages = {
+        'SED06NA0': { key: 'filtrado', value: 'Párametro inválido.' },
+        'SED14NV0': { key: 'filtrado', value: 'Párametro inválido.' },
+        'SED34NV0': { key: 'filtrado', value: 'Párametro inválido.' },
+        'SXAGA03': { key: 'filtrado', value: 'Párametro inválido.' },
+        'SXAGA00': { key: 'filtrado', value: 'Párametro inválido.' },
+
+    }
+    if (!message.includes('RER')) {
+        for (const opKey in operationHandlers) {
+            if (message.includes(opKey)) {
+                const handler = operationHandlers[opKey];
+                const value = handler.calculate(message);
+                if (value !== null) {
+                    return { key: handler.key, value };
+                }
+            }
+        }
+    } else {
+        for (const errorKey in errorMessages) {
+            if (message.includes(errorKey)) {
+                return { key: errorMessages[errorKey].key, value: errorMessages[errorKey].value }
             }
         }
     }

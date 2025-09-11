@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash } from "@/utils/plantUtils";
+import { useUsers } from "@/hooks/useUsers";
 
 export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     const { rawDataConsult } = useRawDataConsult();
@@ -9,7 +10,9 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
     const [filtracionAnterior, setFiltracionAnterior] = useState("");
     const [enjuagueAnterior, setEnjuagueAnterior] = useState("");
     const [retrolavadoAnterior, setRetrolavadoAnterior] = useState("");
-    const isButtonDisabled = loadingType !== null;
+    const { isSuperUser } = useUsers();
+
+    const isButtonDisabled = loadingType !== null || !isSuperUser;
 
     const handleConsult = async (code, setValue, type) => {
         setLoadingType(type);
@@ -80,18 +83,18 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
     ];
 
     return (
-        <div className="data-last-month grid grid-cols-2 items-center border-b border-b-[#ccc] mb-0.5 gap-1.5 p-0.5">
+        <div className={`data-last-month grid grid-cols-2 items-center mb-0.5 gap-1.5 p-0.5 ${isSuperUser ? "border-b border-b-[#ccc]" : "hidden"}`}>
             {dataLastMonth.map((data) => (
-                <DataLastMonth key={data.id} {...data} isOnline={isOnline} isButtonDisabled={isButtonDisabled} isCurrentlyLoading={loadingType === data.type} />
+                <DataLastMonth key={data.id} {...data} isOnline={isOnline} isButtonDisabled={isButtonDisabled} isCurrentlyLoading={loadingType === data.type} isSuperUser={isSuperUser} />
             ))}
         </div>
     );
 }
 
-function DataLastMonth({ item, value, onConsult, isOnline, isButtonDisabled, isCurrentlyLoading }) {
+function DataLastMonth({ item, value, onConsult, isOnline, isButtonDisabled, isCurrentlyLoading, isSuperUser }) {
     return (
         <>
-            <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base item-operation items-center gap-1.5">
+            <span className={`item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base item-operation items-center gap-1.5 ${isSuperUser ? "" : "hidden"}`}>
                 {item}:
             </span>
             {value || !isOnline ? (
@@ -101,7 +104,7 @@ function DataLastMonth({ item, value, onConsult, isOnline, isButtonDisabled, isC
             ) : (
                 <button onClick={onConsult}
                     disabled={isButtonDisabled}
-                    className={`p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide ${isOnline ? '' : 'hidden'} disabled:cursor-not-allowed`}>
+                    className={`p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide ${isOnline ? '' : 'hidden'} ${isSuperUser ? "" : "hidden"} disabled:cursor-not-allowed`}>
                     {
                         isCurrentlyLoading ? "Consultando" : " Consultar mes anterior"
                     }

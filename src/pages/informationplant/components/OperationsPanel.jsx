@@ -3,6 +3,7 @@ import HeaderPanel from './HeaderPanel';
 import { useCommandExecution, usePlantDetailSocket } from '../../../hooks/usePlants';
 import { processSocketMessage, getMvZeroText, formatTime, getSetterMessage } from '../../../utils/plantUtils';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../../components/ui/alert-dialog';
+import { useUsers } from "@/hooks/useUsers";
 
 function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
     const { executeMultipleCommands } = useCommandExecution();
@@ -180,6 +181,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const isAlertOperation = codeOperation === "00" || codeOperation === "03";
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none');
     const { executeMultipleCommands } = useCommandExecution();
+    const { isSuperUser } = useUsers();
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -289,7 +292,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     }, [isOpen, timeValue, timeUnit, isAlertOperation]);
 
     return (
-        <div className="flex flex-col gap-1 p-1 mb-1.5">
+        <div className={`flex flex-col gap-1 p-1 mb-1.5`}>
             <div className='div grid grid-cols-[130px_35px_1fr] gap-1.5 mb-0.5 items-center'>
                 <span className="text-gray-600 font-semibold mr-1.5 break-words text-sm md:text-base lg:text-base">{typeOperation}: </ span>
                 <span className=''></span>
@@ -304,7 +307,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                     </span>
                 </div>
             </div>
-            <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" : "grid-cols-[70px_95px_1fr]"} gap-1.5`}>
+            <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" : "grid-cols-[70px_95px_1fr]"}  ${isSuperUser ? "" : "hidden"} gap-1.5`}>
                 <input min="1" type="number" name="timeValue" value={timeValue} disabled={isSending} onChange={handleChange} className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm" />
                 <select name="timeUnit" value={timeUnit} onChange={handleChange} disabled={isSending} className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`} >
                     <option value="none"></option>

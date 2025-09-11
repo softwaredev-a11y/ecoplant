@@ -11,14 +11,10 @@ export const PlantProvider = ({ children }) => {
     const getPlants = async () => {
       setIsLoading(true);
       try {
-        const cachedPlants = sessionStorage.getItem('listPlants');
-        if (cachedPlants) {
-          setPlants(JSON.parse(cachedPlants))
-        } else {
-          const response = await plantsApi.getPlants();
-          setPlants(response.data.data);
-          sessionStorage.setItem('listPlants', JSON.stringify(response.data.data));
-        }
+        const response = await plantsApi.getPlants();
+        setPlants(response.data.data);
+        sessionStorage.setItem('listPlants', JSON.stringify(response.data.data));
+
       } catch (error) {
         console.error("Error cargando plantas:", error);
       } finally {

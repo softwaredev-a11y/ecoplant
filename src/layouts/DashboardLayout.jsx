@@ -29,7 +29,7 @@ function DashboardLayout() {
         }
 
         const TOKEN_DURATION = 60 * 60 * 1000;
-        const REFRESH_BEFORE = 5 * 60 * 1000; 
+        const REFRESH_BEFORE = 5 * 60 * 1000;
         const interval = setInterval(() => {
             renewToken();
         }, TOKEN_DURATION - REFRESH_BEFORE);
@@ -58,7 +58,7 @@ function DashboardLayout() {
             window.removeEventListener("beforeunload", handleBeforeUnload);
             window.removeEventListener("pagehide", handlePageHide);
         };
-    }, [logout, logoutOnBrowserClose,renewToken, navigate]);
+    }, [logout, logoutOnBrowserClose, renewToken, navigate]);
 
 
     return (

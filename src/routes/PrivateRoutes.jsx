@@ -8,11 +8,11 @@ import { UserProvider } from "../context/UserInfoContext";
 import ProtectedRoute from "./ProtectedRoute";
 
 const ProtectedProvidersLayout = () => (
-  <PlantProvider>
-    <UserProvider>
+  <UserProvider>
+    <PlantProvider>
       <Outlet />
-    </UserProvider>
-  </PlantProvider>
+    </PlantProvider>
+  </UserProvider>
 );
 
 function PrivateRoutes() {

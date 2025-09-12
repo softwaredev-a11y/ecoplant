@@ -246,6 +246,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             setIsSending(false);
             setCommandFailed(false);
         }
+        //Añadir validación
     }, [currentlyValue, isSending]);
 
     useEffect(() => {

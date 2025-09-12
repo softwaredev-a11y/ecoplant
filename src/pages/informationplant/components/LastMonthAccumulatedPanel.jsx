@@ -116,7 +116,7 @@ function DataLastMonth({ item, value, onConsult, isOnline, isButtonDisabled, isC
                     disabled={isButtonDisabled}
                     className={`p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide ${isOnline ? '' : 'hidden'} ${isSuperUser ? "" : "hidden"} disabled:cursor-not-allowed`}>
                     {
-                        isCurrentlyLoading ? "Consultando" : " Consultar mes anterior"
+                        isCurrentlyLoading ? "Consultando" : "Consultar mes anterior"
                     }
                 </button>
             )}

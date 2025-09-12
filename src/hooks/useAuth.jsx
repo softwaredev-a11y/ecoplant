@@ -18,6 +18,8 @@ export const useAuth = () => {
             const { data } = await authApi.login(credentials);
             sessionStorage.setItem('token', data.auth);
             sessionStorage.setItem('auth', true)
+            sessionStorage.setItem('username', credentials.username);
+            sessionStorage.setItem('password', credentials.password);
             navigate('/dashboard');
         } catch (error) {
             console.error("Fallo al iniciar sesión:", error);
@@ -53,5 +55,21 @@ export const useAuth = () => {
         }
     }, []);
 
-    return { login, logout, logoutOnBrowserClose };
+    const renewToken = async () => {
+        try {
+            const username = sessionStorage.getItem('username');
+            const password = sessionStorage.getItem('password');
+
+            if (!username || !password) {
+                throw new Error("No hay credenciales guardadas");
+            }
+            const { data } = await authApi.login({ username, password});
+            sessionStorage.setItem('token', data.auth);
+        } catch (error) {
+            console.error("Error renovando token:", error);
+            logout();
+        }
+    };
+
+    return { login, logout, renewToken, logoutOnBrowserClose };
 };

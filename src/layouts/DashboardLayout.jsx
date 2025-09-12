@@ -19,7 +19,7 @@ import { useUsers } from "../hooks/useUsers";
 function DashboardLayout() {
     const [isOpen, setIsOpen] = useState(false);
     const toggleMenu = () => setIsOpen(!isOpen);
-    const { logout, logoutOnBrowserClose } = useAuth();
+    const { logout, logoutOnBrowserClose, renewToken } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,24 +27,39 @@ function DashboardLayout() {
         if (!token) {
             navigate("/login");
         }
-        const LOGOUT_DURATION = 5 * 60 * 60 * 1000 + 55 * 60 * 1000;
+
+        const TOKEN_DURATION = 60 * 60 * 1000;
+        const REFRESH_BEFORE = 5 * 60 * 1000; 
+        const interval = setInterval(() => {
+            renewToken();
+        }, TOKEN_DURATION - REFRESH_BEFORE);
+
+        const MAX_SESSION = 6 * 60 * 60 * 1000;
         const logoutTimer = setTimeout(() => {
             logout();
             navigate("/login");
-        }, LOGOUT_DURATION);
+        }, MAX_SESSION);
 
         const handleBeforeUnload = () => {
             logoutOnBrowserClose();
             sessionStorage.removeItem("token");
         };
+        const handlePageHide = () => {
+            logoutOnBrowserClose();
+            sessionStorage.removeItem("token");
+        };
 
         window.addEventListener("beforeunload", handleBeforeUnload);
+        window.addEventListener("pagehide", handlePageHide);
 
         return () => {
+            clearInterval(interval);
             clearTimeout(logoutTimer);
             window.removeEventListener("beforeunload", handleBeforeUnload);
+            window.removeEventListener("pagehide", handlePageHide);
         };
-    }, [logout, logoutOnBrowserClose, navigate]);
+    }, [logout, logoutOnBrowserClose,renewToken, navigate]);
+
 
     return (
         <div className="main-container flex flex-col md:flex-col w-[98%] min-h-[90vh] max-h-[90vh] box-border border bg-white border-[#ccc] p-0 md:p-0">

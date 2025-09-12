@@ -169,10 +169,10 @@ export function processSocketMessage(message, mvZeroValue) {
     };
     const errorMessages = {
         'SED06NA0': { key: 'filtrado', value: 'Párametro inválido.' },
-        'SED14NV0': { key: 'filtrado', value: 'Párametro inválido.' },
-        'SED34NV0': { key: 'filtrado', value: 'Párametro inválido.' },
-        'SXAGA03': { key: 'filtrado', value: 'Párametro inválido.' },
-        'SXAGA00': { key: 'filtrado', value: 'Párametro inválido.' },
+        'SED14NV0': { key: 'retrolavado', value: 'Párametro inválido.' },
+        'SED34NV0': { key: 'enjuague', value: 'Párametro inválido.' },
+        'SXAGA03': { key: 'valorAlertaFlujo', value: 'Párametro inválido.' },
+        'SXAGA00': { key: 'valorAlarmaInsuficiente', value: 'Párametro inválido.' },
 
     }
     if (!message.includes('RER')) {

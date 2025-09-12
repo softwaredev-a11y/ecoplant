@@ -80,7 +80,7 @@ function Header({ toggleMenu }) {
     const { logout } = useAuth();
     const { isSuperUser } = useUsers();
     return (
-        <div className="header flex justify-between bg-white p-2 items-center">
+        <div className="header flex justify-between bg-white p-1 items-center">
             {/* Contenedor izquierdo: Hamburguesa + Logo */}
             <div className="left-options flex items-center gap-3">
                 {/* Botón hamburguesa solo visible en móviles/tablets */}
@@ -98,10 +98,10 @@ function Header({ toggleMenu }) {
             <div className="righ-options flex overflow-x-auto 
                       w-full justify-center 
                       lg:w-auto lg:justify-start">
-                <button disabled={!isSuperUser} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Historial de accesos</button>
-                <button disabled={!isSuperUser} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Diagnóstico</button>
-                <button disabled={!isSuperUser} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Control</button>
-                <button onClick={logout} className="py-2 px-4 border-0 bg-white rounded text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Cerrar sesión</button>
+                <button disabled={!isSuperUser} className="py-1.5 px-3 border-0 bg-white rounded text-sm md:text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Historial de accesos</button>
+                <button disabled={!isSuperUser} className="py-1.5 px-3 border-0 bg-white rounded text-sm md:text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Diagnóstico</button>
+                <button disabled={!isSuperUser} className="py-1.5 px-3 border-0 bg-white rounded text-sm md:text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Control</button>
+                <button onClick={logout} className="py-1.5 px-3 border-0 bg-white rounded text-sm md:text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md">Cerrar sesión</button>
             </div>
         </div>
     );
@@ -150,7 +150,7 @@ function PanelLeft({ isOpen, toggleMenu }) {
                 </button>
             </div>
             <InputSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-            <PanelLeftItems searchTerm={searchTerm} />
+            <PanelLeftItems searchTerm={searchTerm} toggleMenu={toggleMenu} isOpen={isOpen} />
             <FilterBar />
         </div>
     );
@@ -180,11 +180,14 @@ function InputSearch({ searchTerm, setSearchTerm }) {
  * Renderiza la lista de items (plantas) en el panel izquierdo.
  * @returns {JSX.Element}
  */
-function PanelLeftItems({ searchTerm }) {
+function PanelLeftItems({ searchTerm, toggleMenu, isOpen }) {
     const { plants } = usePlants();
     const navigate = useNavigate();
     const handleNavigate = (idPlanta) => {
         navigate(`planta/${idPlanta}`);
+        if (isOpen) {
+            toggleMenu();
+        }
     };
     const filteredPlants = plants.filter((plant) =>
         plant.name.toLowerCase().includes(searchTerm.toLowerCase())

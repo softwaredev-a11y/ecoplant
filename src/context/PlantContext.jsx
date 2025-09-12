@@ -17,9 +17,10 @@ export const PlantProvider = ({ children }) => {
       setIsLoading(true);
       try {
         const params = isSuperUser
-          ? { select: "id,name", groups: "123" }
-          : { select: "id,name" };
+          ? { groups: "123" }
+          : {};
         const response = await plantsApi.getPlants(params);
+        console.log(response.data.data);
         setPlants(response.data.data);
       } catch (error) {
         console.error("Error cargando plantas:", error);

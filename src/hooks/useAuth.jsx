@@ -63,7 +63,7 @@ export const useAuth = () => {
             if (!username || !password) {
                 throw new Error("No hay credenciales guardadas");
             }
-            const { data } = await authApi.login({ username, password});
+            const { data } = await authApi.login({ username, password });
             sessionStorage.setItem('token', data.auth);
         } catch (error) {
             console.error("Error renovando token:", error);

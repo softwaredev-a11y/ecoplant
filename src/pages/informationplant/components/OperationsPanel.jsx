@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import HeaderPanel from './HeaderPanel';
 import { useCommandExecution, usePlantDetailSocket } from '../../../hooks/usePlants';
 import { processSocketMessage, getMvZeroText, formatTime, getSetterMessage } from '../../../utils/plantUtils';
+import { COMMANDS, OPERATION_CODES, SOCKET_KEYS } from '../../../utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../../components/ui/alert-dialog';
 import { useUsers } from "@/hooks/useUsers";
 
@@ -33,7 +34,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
         }
         if (hasRunRef.current) return;
         hasRunRef.current = true;
-        const commands = ["QED06", "QED14", "QED34", "QXAGA03", "QXAGA00"];
+        const commands = Object.values(COMMANDS);
         setCommandStatus(Object.fromEntries(commands.map(c => [c, "loading"])));
         executeMultipleCommands(plant.id, commands);
         const firstTimeout = setTimeout(() => {
@@ -71,29 +72,29 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
         if (!result) return;
 
         switch (result.key) {
-            case "filtrado":
+            case SOCKET_KEYS.FILTRATION:
                 setFiltrado(result.value);
-                setCommandStatus(prev => ({ ...prev, QED06: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.FILTRATION]: "success" }));
                 if (!message.includes('RER')) sessionStorage.setItem("filtrado", message);
                 break;
-            case "retrolavado":
+            case SOCKET_KEYS.BACKWASH:
                 setRetrolavado(result.value);
-                setCommandStatus(prev => ({ ...prev, QED14: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.BACKWASH]: "success" }));
                 if (!message.includes('RER')) sessionStorage.setItem("retrolavado", message);
                 break;
-            case "enjuague":
+            case SOCKET_KEYS.RINSE:
                 setEnjuague(result.value);
-                setCommandStatus(prev => ({ ...prev, QED34: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.RINSE]: "success" }));
                 if (!message.includes('RER')) sessionStorage.setItem("enjuague", message);
                 break;
-            case "valorAlertaFlujo":
+            case SOCKET_KEYS.FLOW_ALERT:
                 setValorAlertaFlujo(result.value);
-                setCommandStatus(prev => ({ ...prev, QXAGA03: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.FLOW_ALERT]: "success" }));
                 if (!message.includes('RER')) sessionStorage.setItem("alertaflujo", message);
                 break;
-            case "valorAlarmaInsuficiente":
+            case SOCKET_KEYS.INSUFFICIENT_FLOW_ALARM:
                 setValorAlarmaInsuficiente(result.value);
-                setCommandStatus(prev => ({ ...prev, QXAGA00: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.INSUFFICIENT_FLOW_ALARM]: "success" }));
                 if (!message.includes('RER')) sessionStorage.setItem("alarmainsuficiente", message);
                 break;
             default:
@@ -113,27 +114,27 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                 <div className="border-b border-b-[#ccc]">
                     <Operations
                         isOnline={isOnline}
-                        codeOperation="65"
+                        codeOperation={OPERATION_CODES.FILTRATION}
                         typeOperation="Filtración"
-                        currentlyValue={getDisplayValue("QED06", filtrado)}
+                        currentlyValue={getDisplayValue(COMMANDS.FILTRATION, filtrado)}
                         buttonOperation="Cambiar filtración"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                     />
                     <Operations
                         isOnline={isOnline}
-                        codeOperation="32"
+                        codeOperation={OPERATION_CODES.BACKWASH}
                         typeOperation="Retrolavado"
-                        currentlyValue={getDisplayValue("QED14", retrolavado)}
+                        currentlyValue={getDisplayValue(COMMANDS.BACKWASH, retrolavado)}
                         buttonOperation="Cambiar retrolavado"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                     />
                     <Operations
                         isOnline={isOnline}
-                        codeOperation="12"
+                        codeOperation={OPERATION_CODES.RINSE}
                         typeOperation="Enjuague"
-                        currentlyValue={getDisplayValue("QED34", enjuague)}
+                        currentlyValue={getDisplayValue(COMMANDS.RINSE, enjuague)}
                         buttonOperation="Cambiar enjuague"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
@@ -142,18 +143,18 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                 <div className="border-b border-b-[#ccc]">
                     <Operations
                         isOnline={isOnline}
-                        codeOperation="03"
+                        codeOperation={OPERATION_CODES.FLOW_ALERT}
                         typeOperation="Alerta de flujo disminuyendo"
-                        currentlyValue={getDisplayValue("QXAGA03", valorAlertaFlujo, "gpm")}
+                        currentlyValue={getDisplayValue(COMMANDS.FLOW_ALERT, valorAlertaFlujo, "gpm")}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                     />
                     <Operations
                         isOnline={isOnline}
-                        codeOperation="00"
+                        codeOperation={OPERATION_CODES.INSUFFICIENT_FLOW_ALARM}
                         typeOperation="Alerta por flujo insuficiente"
-                        currentlyValue={getDisplayValue("QXAGA00", valorAlarmaInsuficiente, "gpm")}
+                        currentlyValue={getDisplayValue(COMMANDS.INSUFFICIENT_FLOW_ALARM, valorAlarmaInsuficiente, "gpm")}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
@@ -180,7 +181,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const initialValueRef = useRef(null);
     const countdownIntervalRef = useRef(null);
 
-    const isAlertOperation = codeOperation === "00" || codeOperation === "03";
+    const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none');
     const { executeMultipleCommands } = useCommandExecution();
     const { isSuperUser } = useUsers();

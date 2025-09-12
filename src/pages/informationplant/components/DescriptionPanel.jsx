@@ -1,4 +1,4 @@
-import { getPlantModel, getSoftwareVersion, getFlowCurrentlyValue, getCodeCurrentProccess, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
+import { getPlantModel, getSoftwareVersion, getFlowCurrentValue, getCodeCurrentProcess, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
 import { usePlantDetailSocket } from '../../../hooks/usePlants';
 import notAvailableImg from '../../../assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
@@ -15,7 +15,7 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
         const message = lastEvent?.payload?.event?.message;
         if (!message) return;
         if (message.includes("REV")) {
-            const processCode = getCodeCurrentProccess(message);
+            const processCode = getCodeCurrentProcess(message);
             if (processCode !== null) {
                 setCurrentlyProccess(stateProcess(processCode));
             }
@@ -23,7 +23,7 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
             setBegin(eventTime);
         }
         if (message.includes("BL=")) {
-            setCurrentlyValue(getFlowCurrentlyValue(message));
+            setCurrentlyValue(getFlowCurrentValue(message));
         }
     }, [lastEvent]);
 

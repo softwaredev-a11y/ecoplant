@@ -37,6 +37,10 @@ export const useAuth = () => {
         } finally {
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('auth');
+            sessionStorage.removeItem('username');
+            sessionStorage.removeItem('password');
+            sessionStorage.removeItem('listPlants');
+
             navigate('/');
         }
     };

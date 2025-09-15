@@ -4,7 +4,17 @@ import { buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, cal
 import { useUsers } from "@/hooks/useUsers";
 import { OPERATION_CODES } from '../../../utils/constants';
 
+/**
+ * Componente que muestra los valores acumulados de operación para el mes anterior.
+ * Permite a los superusuarios consultar bajo demanda los datos de filtración, retrolavado y enjuague.
+ * @param {object} props - Las propiedades del componente.
+ * @param {string|number} props.idPlant - ID de la planta a consultar.
+ * @param {string|null} props.mvZeroValue - Valor 'mv_zero' de la planta, usado para cálculos de caudal.
+ * @param {boolean} props.isOnline - Indica si la planta está conectada.
+ * @returns {JSX.Element | null} El panel con los datos acumulados del mes anterior, o `null` si el usuario no es superusuario.
+ */
 export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnline }) {
+    //Hook personalizado para obtener los acumulados
     const { rawDataConsult } = useRawDataConsult();
     const [loadingType, setLoadingType] = useState(null);
 
@@ -15,6 +25,12 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
 
     const isButtonDisabled = loadingType !== null || !isSuperUser;
 
+    /**
+     * Consulta y calcula el valor acumulado para una operación específica del mes anterior.
+     * @param {number} code - El código de operación a consultar (filtración, enjuague, etc.).
+     * @param {function(string): void} setValue - La función para actualizar el estado del valor calculado.
+     * @param {string} type - El tipo de operación (ej. "filtracion", "enjuague") para gestionar el estado de carga.
+     */
     const handleConsult = async (code, setValue, type) => {
         setLoadingType(type);
         try {
@@ -102,6 +118,19 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
     );
 }
 
+/**
+ * Renderiza una fila para un dato acumulado del mes anterior.
+ * Muestra el valor si ya fue consultado, o un botón para iniciar la consulta.
+ * @param {object} props - Las propiedades del componente.
+ * @param {string} props.item - La etiqueta del dato a mostrar (ej. "Acumulado Filtración mes anterior").
+ * @param {string} props.value - El valor del dato, si ya ha sido calculado.
+ * @param {function(): void} props.onConsult - Función a ejecutar cuando se hace clic en el botón de consulta.
+ * @param {boolean} props.isOnline - Indica si la planta está conectada.
+ * @param {boolean} props.isButtonDisabled - Indica si el botón de consulta debe estar deshabilitado.
+ * @param {boolean} props.isCurrentlyLoading - Indica si este dato específico se está cargando actualmente.
+ * @param {boolean} props.isSuperUser - Indica si el usuario actual tiene permisos de superusuario. Esto determina si puede realizar o no la consulta.
+ * @returns {JSX.Element} Un fragmento JSX que representa una fila de datos del mes anterior.
+ */
 function DataLastMonth({ item, value, onConsult, isOnline, isButtonDisabled, isCurrentlyLoading, isSuperUser }) {
     return (
         <>

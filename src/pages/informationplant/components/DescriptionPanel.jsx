@@ -4,6 +4,15 @@ import notAvailableImg from '../../../assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
 import { useEffect, useState } from 'react';
 
+/**
+ * Panel que muestra la información descriptiva de la planta.
+ * Incluye la imagen, detalles del modelo, estado de conexión y el proceso actual en ejecución.
+ * Se actualiza en tiempo real a través de eventos de WebSocket.
+ * @param {object} props - Propiedades del componente.
+ * @param {object} props.plant - Objeto con la información de la planta.
+ * @param {object} props.infoConnectionDevice - Objeto con el estado de conexión del dispositivo.
+ * @returns {JSX.Element} El panel de descripción de la planta.
+ */
 function DescriptionPanel({ plant, infoConnectionDevice }) {
     const [currentlyValue, setCurrentlyValue] = useState("");
     const [currentlyProccess, setCurrentlyProccess] = useState("");
@@ -65,6 +74,12 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
     );
 }
 
+/**
+ * Renderiza grupos de pares etiqueta-valor en el panel de descripción.
+ * @param {object} props - Propiedades del componente.
+ * @param {Array<Array<{label: string, value: string|number}>>} props.itemGroups - Grupos de items a mostrar.
+ * @returns {JSX.Element|null} El componente que muestra la información o null si no hay datos.
+ */
 function InfoPanel({ itemGroups }) {
     if (!itemGroups || itemGroups.length === 0) return null;
     return (
@@ -85,6 +100,12 @@ function InfoPanel({ itemGroups }) {
     );
 }
 
+/**
+ * Muestra la imagen de la planta con un fallback en caso de error.
+ * @param {object} props - Propiedades del componente.
+ * @param {object} props.plant - Objeto de la planta que contiene el ID para la URL de la imagen.
+ * @returns {JSX.Element} El componente de la imagen.
+ */
 function PlantImage({ plant }) {
     const handleImageError = (e) => {
         e.target.onerror = null;

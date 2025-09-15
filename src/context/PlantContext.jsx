@@ -16,12 +16,18 @@ export const PlantProvider = ({ children }) => {
     const getPlants = async () => {
       setIsLoading(true);
       try {
-        const params = isSuperUser
-          ? { groups: "123" }
-          : {};
-        const response = await plantsApi.getPlants(params);
-        console.log(response.data.data);
-        setPlants(response.data.data);
+        const listPlants = sessionStorage.getItem('listPlants');
+        if (listPlants) {
+          setPlants(JSON.parse(listPlants))
+        } else {
+          const params = isSuperUser
+            ? { groups: "123" }
+            : {};
+          const response = await plantsApi.getPlants(params);
+          const plantsData = response.data.data;
+          setPlants(plantsData);
+          sessionStorage.setItem('listPlants', JSON.stringify(plantsData));
+        }
       } catch (error) {
         console.error("Error cargando plantas:", error);
       } finally {

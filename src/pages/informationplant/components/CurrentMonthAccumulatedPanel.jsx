@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash } from "@/utils/plantUtils";
-
+import { OPERATION_CODES } from '../../../utils/constants';
 /**
  * Componente que muestra los valores acumulados de operación para el mes actual.
  * Obtiene y calcula los datos de filtración, retrolavado, enjuague y purgado.
@@ -42,11 +42,11 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
                 const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
                 const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
 
-                const dataFiltrado = await rawDataConsult(beginDate, currentlyDate, idPlant, 65);
+                const dataFiltrado = await rawDataConsult(beginDate, currentlyDate, idPlant, OPERATION_CODES.FILTRATION);
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                const dataEnjuague = await rawDataConsult(beginDate, currentlyDate, idPlant, 32);
+                const dataEnjuague = await rawDataConsult(beginDate, currentlyDate, idPlant, OPERATION_CODES.BACKWASH);
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                const dataRetrolavado = await rawDataConsult(beginDate, currentlyDate, idPlant, 12);
+                const dataRetrolavado = await rawDataConsult(beginDate, currentlyDate, idPlant, OPERATION_CODES.RINSE);
 
                 if (ignore) return;
 

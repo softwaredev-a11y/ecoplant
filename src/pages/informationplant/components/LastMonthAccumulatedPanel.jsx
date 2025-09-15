@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash } from "@/utils/plantUtils";
 import { useUsers } from "@/hooks/useUsers";
+import { OPERATION_CODES } from '../../../utils/constants';
 
 export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     const { rawDataConsult } = useRawDataConsult();
@@ -26,7 +27,7 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
             const endDate = buildDate(year, month, lastDay);
 
             const [dataFiltrado, data] = await Promise.all([
-                rawDataConsult(beginDate, endDate, idPlant, 65),
+                rawDataConsult(beginDate, endDate, idPlant, OPERATION_CODES.FILTRATION),
                 rawDataConsult(beginDate, endDate, idPlant, code)
             ]);
 
@@ -63,21 +64,21 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
             id: 0,
             item: "Acumulado Filtración mes anterior",
             value: filtracionAnterior,
-            onConsult: () => handleConsult(65, setFiltracionAnterior, "filtracion"),
+            onConsult: () => handleConsult(OPERATION_CODES.FILTRATION, setFiltracionAnterior, "filtracion"),
             type: "filtracion",
         },
         {
             id: 1,
             item: "Acumulado Enjuague mes anterior",
             value: enjuagueAnterior,
-            onConsult: () => handleConsult(32, setEnjuagueAnterior, "enjuague"),
+            onConsult: () => handleConsult(OPERATION_CODES.BACKWASH, setEnjuagueAnterior, "enjuague"),
             type: "enjuague",
         },
         {
             id: 2,
             item: "Acumulado Retrolavado mes anterior",
             value: retrolavadoAnterior,
-            onConsult: () => handleConsult(12, setRetrolavadoAnterior, "retrolavado"),
+            onConsult: () => handleConsult(OPERATION_CODES.RINSE, setRetrolavadoAnterior, "retrolavado"),
             type: "retrolavado",
         },
     ];

@@ -6,6 +6,17 @@ export const COMMANDS = {
     INSUFFICIENT_FLOW_ALARM: "QXAGA00",
 };
 
+export const SYRUS_FOUR_COMMANDS = {
+    //Obtiene el valor de retrolavado, filtración y enjuague de los dispositivos Syrus 4.
+    GET_ECOPLANT_PARAMS: "SXAEC::apx-redis-cli hgetall ecoplant_params",
+    //Obtiene las aplicaciones instaladas en el dispositivo. Se utiliza para obtener la versión (app_name y version, descripción y modelo).
+    GET_ECOPLANT_VERSION: "SXAEC::syrus-apps-manager list-instances",
+    //Obtiene el estado de la conexión del gps.
+    GET_ECOPLANT_GPS_STATUS: "SXAEC::apx-gps status",
+    //Obtiene el estado del celular.
+    GET_STATUS_MOBILE: "SXAEC::apx-mobile state"
+}
+
 export const OPERATION_CODES = {
     FILTRATION: "65",
     BACKWASH: "32",

@@ -13,7 +13,8 @@ import { useUsers } from "../hooks/useUsers";
 
 /**
  * Componente principal del layout del Dashboard.
- * Gestiona el estado del panel lateral móvil y renderiza el Header y el MainLayout.
+ * Gestiona el estado del panel lateral (para vistas móviles), y la sesión del usuario
+ * (validación de token, renovación automática y cierre de sesión).
  * @returns {JSX.Element} El layout completo del dashboard.
  */
 function DashboardLayout() {
@@ -72,8 +73,9 @@ function DashboardLayout() {
 
 /**
  * Renderiza la cabecera del dashboard.
- * Incluye el logo, el botón de menú para móviles y los botones de acción.
- * @param {{ toggleMenu: () => void }} props - Props del componente.
+ * Incluye el logo, el botón de menú para móviles y los botones de acción (accesos, control, resumén y cierre de sesión).
+ * @param {object} props - Propiedades del componente.
+ * @param {() => void} props.toggleMenu - Función para alternar la visibilidad del menú lateral en vistas móviles.
  * @returns {JSX.Element}
  */
 function Header({ toggleMenu }) {
@@ -111,7 +113,9 @@ function Header({ toggleMenu }) {
 /**
  * Componente que organiza el área principal del layout.
  * Contiene el panel izquierdo (menú) y el panel de contenido principal.
- * @param {{ isOpen: boolean, toggleMenu: () => void }} props - Props del componente.
+ * @param {object} props - Propiedades del componente.
+ * @param {boolean} props.isOpen - Estado que indica si el panel lateral está abierto.
+ * @param {() => void} props.toggleMenu - Función para alternar la visibilidad del panel lateral.
  * @returns {JSX.Element}
  */
 function MainLayout({ isOpen, toggleMenu }) {
@@ -126,7 +130,9 @@ function MainLayout({ isOpen, toggleMenu }) {
 /**
  * Panel lateral izquierdo que contiene la navegación y filtros.
  * Es estático en pantallas grandes y un menú deslizable en móviles/tablets.
- * @param {{ isOpen: boolean, toggleMenu: () => void }} props - Props del componente.
+ * @param {object} props - Propiedades del componente.
+ * @param {boolean} props.isOpen - Estado que indica si el panel está abierto en vistas móviles.
+ * @param {() => void} props.toggleMenu - Función para cerrar el panel en vistas móviles.
  * @returns {JSX.Element}
  */
 function PanelLeft({ isOpen, toggleMenu }) {
@@ -159,6 +165,10 @@ function PanelLeft({ isOpen, toggleMenu }) {
 
 /**
  * Componente de búsqueda para el panel izquierdo.
+ * @param {object} props - Propiedades del componente.
+ * @param {string} props.searchTerm - El término de búsqueda actual.
+ * @param {(value: string) => void} props.setSearchTerm - Función para actualizar el término de búsqueda.
+ * @param {number} props.numberPlants - El número de plantas que se están mostrando.
  * @returns {JSX.Element}
  */
 function InputSearch({ searchTerm, setSearchTerm, numberPlants }) {
@@ -179,6 +189,11 @@ function InputSearch({ searchTerm, setSearchTerm, numberPlants }) {
 
 /**
  * Renderiza la lista de items (plantas) en el panel izquierdo.
+ * @param {object} props - Propiedades del componente.
+ * @param {string} props.searchTerm - Término de búsqueda para filtrar las plantas.
+ * @param {() => void} props.toggleMenu - Función para cerrar el menú al navegar (en móvil).
+ * @param {boolean} props.isOpen - Estado que indica si el panel está abierto.
+ * @param {(count: number) => void} props.setNumberPlants - Función para actualizar el contador de plantas mostradas.
  * @returns {JSX.Element}
  */
 function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {

@@ -3,7 +3,7 @@ import logoImage from '../assets/images/logo.webp';
 import searchIcon from '../assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getPlantModel } from "../utils/plantUtils";
 import { usePlants } from "../hooks/usePlants";
 import { useAuth } from "../hooks/useAuth";
@@ -131,6 +131,7 @@ function MainLayout({ isOpen, toggleMenu }) {
  */
 function PanelLeft({ isOpen, toggleMenu }) {
     const [searchTerm, setSearchTerm] = useState('');
+    const [numberPlants, setNumberPlants] = useState(0);
     return (
         <div
             className={`panel-left-container bg-white flex flex-col min-h-0 transition-transform duration-300 ease-in-out
@@ -149,8 +150,8 @@ function PanelLeft({ isOpen, toggleMenu }) {
                     ✕
                 </button>
             </div>
-            <InputSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-            <PanelLeftItems searchTerm={searchTerm} toggleMenu={toggleMenu} isOpen={isOpen} />
+            <InputSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} numberPlants={numberPlants} />
+            <PanelLeftItems searchTerm={searchTerm} toggleMenu={toggleMenu} isOpen={isOpen} setNumberPlants={setNumberPlants} />
             <FilterBar />
         </div>
     );
@@ -160,7 +161,7 @@ function PanelLeft({ isOpen, toggleMenu }) {
  * Componente de búsqueda para el panel izquierdo.
  * @returns {JSX.Element}
  */
-function InputSearch({ searchTerm, setSearchTerm }) {
+function InputSearch({ searchTerm, setSearchTerm, numberPlants }) {
     return (
         <div className="search-container flex justify-between items-center p-2">
             <img src={searchIcon} alt="Ícono de búsqueda" className="max-w-[30px]" />
@@ -168,7 +169,7 @@ function InputSearch({ searchTerm, setSearchTerm }) {
                 name="searchTerm"
                 id="searchTerm"
                 value={searchTerm}
-                placeholder="Buscar Ecoplanta"
+                placeholder={numberPlants === 0 ? `Buscar Ecoplanta` : numberPlants === 1 ? `Buscar ${numberPlants} Ecoplanta` : `Buscar ${numberPlants} Ecoplantas`}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-[90%] h-10 border-0 p-[0.2rem] border-b border-gray-300 mb-[0.3rem] font-normal text-gray-600 focus:outline-none focus:border-b focus:border-gray-300"
             />
@@ -180,7 +181,7 @@ function InputSearch({ searchTerm, setSearchTerm }) {
  * Renderiza la lista de items (plantas) en el panel izquierdo.
  * @returns {JSX.Element}
  */
-function PanelLeftItems({ searchTerm, toggleMenu, isOpen }) {
+function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
     const { plants } = usePlants();
     const navigate = useNavigate();
     const handleNavigate = (idPlanta) => {
@@ -189,9 +190,18 @@ function PanelLeftItems({ searchTerm, toggleMenu, isOpen }) {
             toggleMenu();
         }
     };
-    const filteredPlants = plants.filter((plant) =>
-        plant.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredPlants = useMemo(() => {
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        return plants.filter((plant) =>
+            String(plant.name ?? '').toLowerCase().includes(lowerCaseSearchTerm) ||
+            String(plant.device ?? '').toLowerCase().includes(lowerCaseSearchTerm) ||
+            String(plant.info?.description ?? '').toLowerCase().includes(lowerCaseSearchTerm)
+        );
+    }, [plants, searchTerm]);
+
+    useEffect(() => {
+        setNumberPlants(filteredPlants.length);
+    }, [filteredPlants.length, setNumberPlants]);
 
     return (
         <div className="menu-items flex-1 flex flex-col p-2 gap-1 overflow-auto min-h-0 max-h-[85%]">

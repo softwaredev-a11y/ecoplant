@@ -2,7 +2,17 @@ import { useEffect, useState } from "react";
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash } from "@/utils/plantUtils";
 
+/**
+ * Componente que muestra los valores acumulados de operación para el mes actual.
+ * Obtiene y calcula los datos de filtración, retrolavado, enjuague y purgado.
+ * @param {object} props - Las propiedades del componente.
+ * @param {string} props.idPlant - ID de la planta a consultar.
+ * @param {string} props.mvZeroValue - Valor 'mv_zero' de la planta, usado para cálculos de caudal.
+ * @param {boolean} props.isOnline - Indica si la planta está conectada.
+ * @returns {JSX.Element} El panel con los datos acumulados del mes actual.
+ */
 export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isOnline }) {
+    //Hook personalizado para obtener los acumulados
     const { rawDataConsult } = useRawDataConsult();
 
     const [filtracionActual, setFiltracionActual] = useState("");
@@ -11,6 +21,7 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
     const [purgadoMesActual, setPurgadoMesActual] = useState("");
     const isAuth = sessionStorage.getItem('auth');
 
+    //Lista de acumulados.
     const currentlyData = [
         { id: 0, item: "Acumulado Filtración mes actual", value: filtracionActual },
         { id: 1, item: "Acumulado Retrolavado mes actual", value: enjuagueActual },
@@ -79,7 +90,14 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
         </div>
     )
 }
-
+/**
+ * Renderiza una fila con la etiqueta y el valor de un dato acumulado.
+ * Muestra "Consultando" mientras se carga el valor o "Información no disponible" si la planta está offline.
+ * @param {object} props - Las propiedades del componente.
+ * @param {{id: number, item: string, value: string}} props.currentlyData - Objeto que contiene el dato a mostrar.
+ * @param {boolean} props.isOnline - Indica si la planta está conectada.
+ * @returns {JSX.Element} Un fragmento JSX que representa una fila de datos.
+ */
 function DataCurrently({ currentlyData, isOnline }) {
     return (
         <>

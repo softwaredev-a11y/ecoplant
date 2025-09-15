@@ -19,7 +19,12 @@ export const UserProvider = ({ children }) => {
                 setLoading(true);
                 const response = await usersApi.getUser();
                 const userData = response.data;
+                //Se obtiene la información del usuario consultado.
                 setUser(userData);
+                //Para diferenciar un usuario normal de un superuser, se debe fijar en el apellido.
+                //La diferencia entre ambos está en las funcionalidades a las que pueden acceder.
+                //Si es normal, solamente puede visualizar información en tiempo real, mientras que si
+                //es superuser, puede realizar cambios en parámetros de operación y consultar datos acumulados.
                 setIsSuperUser(userData.last_name.includes('superuser'));
             } catch (error) {
                 setError(error);

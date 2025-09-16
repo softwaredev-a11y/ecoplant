@@ -12,11 +12,10 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState();
     const [isSuperUser, setIsSuperUser] = useState();
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const getInfoUser = async () => {
             try {
-                setLoading(true);
                 const response = await usersApi.getUser();
                 const userData = response.data;
                 //Se obtiene la información del usuario consultado.

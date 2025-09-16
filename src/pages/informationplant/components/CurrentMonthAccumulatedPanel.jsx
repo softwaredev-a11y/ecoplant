@@ -42,27 +42,28 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
                 const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
                 const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
 
-                const dataFiltrado = await rawDataConsult(beginDate, currentlyDate, idPlant, OPERATION_CODES.FILTRATION);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                const dataEnjuague = await rawDataConsult(beginDate, currentlyDate, idPlant, OPERATION_CODES.BACKWASH);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                const dataRetrolavado = await rawDataConsult(beginDate, currentlyDate, idPlant, OPERATION_CODES.RINSE);
+                const allCodes = [
+                    OPERATION_CODES.FILTRATION,
+                    OPERATION_CODES.BACKWASH,
+                    OPERATION_CODES.RINSE
+                ];
+                const rawDataResult = await rawDataConsult(beginDate, currentlyDate, idPlant, allCodes);
 
                 if (ignore) return;
 
-                if (dataFiltrado?.data?.events?.[0]) {
-                    const adc_average = dataFiltrado.data.events[0].promedio_adc;
-                    const caudal = ((adc_average - mvZeroValue) / 100);
+                if (rawDataResult?.data?.events) {
+                    const adc_average = parseFloat(rawDataResult.data.events[2].promedio_adc);
+                    const caudal = ((adc_average - parseFloat(mvZeroValue)) / 100);
 
-                    const countFiltrado = dataFiltrado.data.events[0].count;
+                    const countFiltrado = rawDataResult.data.events[2].count;
                     const filtracion = calculateAccumulatedValueFiltration(caudal, countFiltrado);
                     setFiltracionActual(`${thousandsSeparator(Math.round(filtracion))} gal`);
 
-                    const countEnjuague = dataEnjuague.data.events[0].count;
+                    const countEnjuague = rawDataResult.data.events[1].count;
                     const resEnjuague = calculateAccumulatedValueRinse(caudal, countEnjuague);
                     setEnjuagueActual(`${thousandsSeparator(Math.round(resEnjuague))} gal`);
 
-                    const countRetrolavado = dataRetrolavado.data.events[0].count;
+                    const countRetrolavado = rawDataResult.data.events[0].count;
                     const resRetrolavado = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
                     setRetrolavadoActual(`${thousandsSeparator(Math.round(resRetrolavado))} gal`);
 

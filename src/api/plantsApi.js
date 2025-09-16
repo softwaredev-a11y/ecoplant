@@ -48,13 +48,13 @@ const plantsApi = {
      * @returns {Promise} Una promesa que resuelve con los datos crudos de los eventos.
      */
     getRawData: (startDate, endDate, idPlant, command) => axiosInstance.get(`/rawdata?from=${startDate}T00%3A00%3A00&to=${endDate}T23%3A59%3A59&vehicles=${idPlant}&fields=code,promedio_adc:@ad,ad,count:1&tz=America/Bogota&resample=event_time&freq=1M&group_by=vid&how=promedio_adc:mean,count:sum&codes=${command}`),
-   
-   /**
-    * Envía la solicitud POST para la ejecución del comando a un dispostivo.
-    * @param {int} idDevice - ID del dispositivo. 
-    * @param {String} command - Comando que se quiere ejecutar en la consola. 
-    * @returns 
-    */
+
+    /**
+     * Envía la solicitud POST para la ejecución del comando a un dispostivo.
+     * @param {int} idDevice - ID del dispositivo. 
+     * @param {String} command - Comando que se quiere ejecutar en la consola. 
+     * @returns 
+     */
     commandExecution: (idDevice, command) => axiosInstance.post(`/vehicles/${idDevice}/remote/console`, { cmd: command, includeImei: true }),
 };
 

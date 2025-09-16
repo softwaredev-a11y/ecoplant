@@ -14,7 +14,7 @@ export const SYRUS_FOUR_COMMANDS = {
     //Obtiene el estado de la conexión del gps.
     GET_ECOPLANT_GPS_STATUS: "SXAEC::apx-gps status",
     //Obtiene el estado del celular.
-    GET_STATUS_MOBILE: "SXAEC::apx-mobile state"
+    GET_STATUS_MOBILE: "SXAEC::apx-mdm status"
 }
 
 export const OPERATION_CODES = {

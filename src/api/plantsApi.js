@@ -44,7 +44,7 @@ const plantsApi = {
      * @param {string} startDate - Fecha de inicio para la consulta. Formato: `YYYY-MM-DD`.
      * @param {string} endDate - Fecha final para la consulta. Formato: `YYYY-MM-DD`.
      * @param {number} idPlant - ID de la Ecoplanta.
-     * @param {number} command - Código del proceso a consultar. Ej: `65` (filtración), `32` (retrolavado), `12` (enjuague).
+     * @param {[]} codes - Códigos de los procesos a consultar. Ej: `65` (filtración), `32` (retrolavado), `12` (enjuague).
      * @returns {Promise} Una promesa que resuelve con los datos crudos de los eventos.
      */
     getRawData: (startDate, endDate, idPlant, codes) => axiosInstance.get(`/rawdata?from=${startDate}T00:00:00&to=${endDate}T23:59:59&vehicles=${idPlant}&fields=code,promedio_adc:@ad,count:1&tz=America/Bogota&resample=event_time&freq=1M&group_by=vid,code&how=promedio_adc:mean,count:sum&codes=${codes}`),

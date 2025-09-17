@@ -108,71 +108,69 @@ export function fillLeftText(num, padlen, padchar = '0') {
 }
 
 /**
+ * Extrae un valor numérico de un mensaje basado en un código.
+ * @private
+ * @param {string} message El mensaje a parsear.
+ * @param {string} code El código que precede al valor.
+ * @param {function} parser La función para parsear el valor (parseInt o parseFloat).
+ * @returns {number|null} El valor parseado o null si no se encuentra.
+ */
+function _extractValueByCode(message, code, parser) {
+    if (!message) return null;
+    const match = message.match(new RegExp(`${code}(\\d+);`));
+    if (!match) return null;
+    return parser(match[1], 10);
+}
+
+/**
  * Calcula el valor de la filtración a partir del mensaje que viene de la consula a la api o socket.
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
- * @returns {int} Valor de la filtración.
+ * @returns {number|null} Valor de la filtración.
  */
 export function calculateFiltrationValue(message) {
-    if (!message) return null;
-    const match = message.match(/SGC04TC(\d+);/);
-    if (!match) return null;
-    const rawValue = parseInt(match[1], 10);
-    return rawValue;
+    return _extractValueByCode(message, 'SGC04TC', parseInt);
 }
 
 /**
  * Calcula el valor del retrolavado a partir del mensaje que viene de la consula a la api o socket.
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
- * @returns {int} Valor del retrolavado.
+ * @returns {number|null} Valor del retrolavado.
  */
 export function calculateBackwashValue(message) {
-    if (!message) return null;
-    const match = message.match(/SGC07TC(\d+);/);
-    if (!match) return null;
-    const rawValue = parseFloat(match[1], 10);
-    return rawValue;
+    return _extractValueByCode(message, 'SGC07TC', parseFloat);
 }
 
 /**
  * Calcula el valor del enjuague a partir del mensaje que viene de la consula a la api o socket.
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
- * @returns {int} Valor del enjuague.
+ * @returns {number|null} Valor del enjuague.
  */
 export function calculateRinseValue(message) {
-    if (!message) return null;
-    const match = message.match(/SGC10TC(\d+);/);
-    if (!match) return null;
-    const rawValue = parseFloat(match[1], 10);
-    return rawValue;
+    return _extractValueByCode(message, 'SGC10TC', parseFloat);
 }
 
 /**
  * Calcula el valor del valor de alerta de flujo insuficiente a partir del mensaje que viene de la consula a la api o socket.
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
- * @returns {int} Valor de la alerta de flujo insuficiente.
+ * @param {string | null} mvZeroValue Valor del caudal cero (mv_zero).
+ * @returns {number|null} Valor de la alerta de flujo insuficiente en GPM, o null si no se puede calcular.
  */
 export function calculateFlowAlertValue(message, mvZeroValue) {
-    if (!message) return null;
-    const match = message.match(/RXAGA03V(\d+);/);
-    if (!match) return null;
-    const rawValue = parseInt(match[1], 10);
-    const rawValueToGpm = conversionToGpm(rawValue, mvZeroValue);
-    return rawValueToGpm;
+    const rawValue = _extractValueByCode(message, 'RXAGA03V', parseInt);
+    if (rawValue === null || mvZeroValue === null) return null;
+    return conversionToGpm(rawValue, mvZeroValue);
 }
 
 /**
 * Calcula el valor del valor de alarma insuficiente a partir del mensaje que viene de la consula a la api o socket.
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
- * @param {int} mvZeroValue Valor del caudal.
- * @returns {int} Valor de la alerta de alarma insuficiente.
+ * @param {string | null} mvZeroValue Valor del caudal cero (mv_zero).
+ * @returns {number|null} Valor de la alarma de flujo insuficiente en GPM, o null si no se puede calcular.
  */
 export function calculateInsufficientAlarmValue(message, mvZeroValue) {
-    if (!message) return null;
-    const match = message.match(/RXAGA00V(\d+);/);
-    if (!match) return null;
-    const rawValue = parseInt(match[1], 10);
-    const rawValueToGpm = conversionToGpm(rawValue, mvZeroValue);
-    return rawValueToGpm;
+    const rawValue = _extractValueByCode(message, 'RXAGA00V', parseInt);
+    if (rawValue === null || mvZeroValue === null) return null;
+    return conversionToGpm(rawValue, mvZeroValue);
 }
 
 /**

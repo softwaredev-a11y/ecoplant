@@ -76,7 +76,7 @@ export function getTimeInSeconds(unitTime, time) {
 }
 
 /**
- * Obtiene la versión de software a partir de la configuración del dispositivo.
+ * Obtiene la versión de software a partir de la configuración del dispositivo. Solamente funciona para dispositivos anteriores a syrus4.
  * @param {String} configuration Configuración del dispositivo.
  * @returns {String} Versión del software.
  */

@@ -388,62 +388,52 @@ export function conversionToVoltage(gpmValue, mvZero) {
     return result;
 }
 
+const OPERATION_CONFIG = {
+    "65": { name: "filtrado", header: "SGC04TC", isAlert: false, maxValue: 99999 },
+    "32": { name: "retrolavado", header: "SGC07TC", isAlert: false, maxValue: 99999 },
+    "12": { name: "enjuague", header: "SGC10TC", isAlert: false, maxValue: 99999 },
+    "03": { name: "alertaflujo", header: "RXAGA03V", isAlert: true, maxValue: 15000 },
+    "00": { name: "alarmainsuficiente", header: "RXAGA00V", isAlert: true, maxValue: 15000 },
+};
+
 /**
  * Obtiene el comando set para cambiar los parametros de operación.
  * Construye el string del comando a enviar al dispositivo para actualizar un parámetro.
  * @param {string} codeOperation  código de la operación (65:filtrado, 32:retrolavado, 12:enjuague, 03:alertaflujo, 00:alarmainsuficiente).
- * @param {boolean} isAlertOperation determina si la operación es por alerta, o alarma.
  * @param {int} value valor ingresado por el usuario.
  * @param {string} unitValue unidades, pueden ser segundos, minutos, horas o gpm.
  * @param {int} mvZero valor que hace parte de la información de la planta.
  * @returns {string} El comando formateado para enviar al dispositivo, o una cadena vacía si hay un error.
  */
-export function getSetterMessage(codeOperation, isAlertOperation, value, unitValue, mvZero) {
-    const proccess = { "65": "filtrado", "32": "retrolavado", "12": "enjuague", "03": "alertaflujo", "00": "alarmainsuficiente" };
-    const operation = proccess[codeOperation];
-    if (!operation) {
-        console.error(`Operación no válida para el código: ${codeOperation}`);
-        return "";
+export function getSetterMessage(codeOperation, value, unitValue, mvZero) {
+    const config = OPERATION_CONFIG[codeOperation];
+    if (!config) {
+        throw new Error(`Operación no válida para el código: ${codeOperation}`);
     }
 
-    const message = sessionStorage.getItem(operation);
-    if (!message) {
-        console.error(`No se encontró mensaje en sessionStorage para la operación: ${operation}`);
-        return "";
+    const messageTemplate = sessionStorage.getItem(config.name);
+    if (!messageTemplate) {
+        throw new Error(`No se encontró mensaje en sessionStorage para la operación: ${config.name}`);
     }
 
-    const header = getHeaderMessage(codeOperation);
-    const regex = new RegExp(`${header}(\\d+);`);
-    const match = message.match(regex);
-
+    const regex = new RegExp(`${config.header}(\\d+);`);
+    const match = messageTemplate.match(regex);
     if (!match || !match[1]) {
-        console.error(`El formato del mensaje para la operación ${operation} es incorrecto. No se pudo encontrar el valor a reemplazar.`);
-        return "";
+        throw new Error(`El formato del mensaje para la operación ${config.name} es incorrecto.`);
     }
-    const newMessage = replaceAt(message.replace(/[<>]/g, ""), 0, "S");
-    let formattedValue;
+
     let convertedValue;
-    if (isAlertOperation) {
+    if (config.isAlert) {
         convertedValue = conversionToVoltage(value, mvZero);
-        if (convertedValue > 15000) return "";
-        formattedValue = fillLeftText(convertedValue, 5);
     } else {
         convertedValue = getTimeInSeconds(unitValue, value);
-        if (convertedValue > 99999) return "";
-        formattedValue = fillLeftText(convertedValue, 5);
     }
-    const formatMessage = newMessage.replace(`${match[1]}`, `${formattedValue}`);
-    const messageWithoutSi = formatMessage.replace(/;SI.*/, "");
-    const messageWithoutkY = messageWithoutSi.replace(/;KY.*/, "");
-    return messageWithoutkY;
-}
 
-/**
- * Obtiene la cabecera del comando, de acuerdo al código de la operación.
- * @param {String} codeOperation código de la operación (65:filtrado, 32:retrolavado, 12:enjuague, 03:alertaflujo, 00:alarmainsuficiente) 
- * @returns {String} la cabecera del comando.
- */
-export function getHeaderMessage(codeOperation) {
-    const proccess = { "65": "SGC04TC", "32": "SGC07TC", "12": "SGC10TC", "03": "RXAGA03V", "00": "RXAGA00V" };
-    return proccess[codeOperation];
+    if (convertedValue > config.maxValue) return "";
+
+    const formattedValue = fillLeftText(convertedValue, 5);
+    const baseMessage = replaceAt(messageTemplate.replace(/[<>]/g, ""), 0, "S");
+    const messageWithValue = baseMessage.replace(match[1], formattedValue);
+
+    return messageWithValue.replace(/;(SI|KY).*/, "");
 }

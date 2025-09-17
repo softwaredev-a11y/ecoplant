@@ -1,8 +1,8 @@
-import { getPlantModel, getSoftwareVersion, getFlowCurrentValue, getCodeCurrentProcess, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
-import { usePlantDetailSocket } from '../../../hooks/usePlants';
+import { getPlantModel, getSoftwareVersion, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
 import notAvailableImg from '../../../assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
-import { useEffect, useState } from 'react';
+import { usePlantRealTimeData } from '../../../hooks/usePlantRealTimeData';
+
 
 /**
  * Panel que muestra la información descriptiva de la planta.
@@ -14,35 +14,22 @@ import { useEffect, useState } from 'react';
  * @returns {JSX.Element} El panel de descripción de la planta.
  */
 function DescriptionPanel({ plant, infoConnectionDevice }) {
-    const [currentlyValue, setCurrentlyValue] = useState("");
-    const [currentlyProccess, setCurrentlyProccess] = useState("");
-    const [begin, setBegin] = useState(null);
-    const [elapsed, setElapsed] = useState(0);
-    const { lastEvent } = usePlantDetailSocket();
-
-    useEffect(() => {
-        const message = lastEvent?.payload?.event?.message;
-        if (!message) return;
-        if (message.includes("REV")) {
-            const processCode = getCodeCurrentProcess(message);
-            if (processCode !== null) {
-                setCurrentlyProccess(stateProcess(processCode));
-            }
-            const eventTime = lastEvent?.payload?.event?.timestamp || Date.now();
-            setBegin(eventTime);
-        }
-        if (message.includes("BL=")) {
-            setCurrentlyValue(getFlowCurrentValue(message));
-        }
-    }, [lastEvent]);
-
-    useEffect(() => {
-        if (!begin) return;
-        const interval = setInterval(() => {
-            setElapsed(Math.floor((Date.now() - begin) / 1000));
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [begin]);
+    const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
+    //Verifica si el dispositivo está online
+    const isOnline = infoConnectionDevice?.connection?.online;
+    //Obtiene el último proceso que se ejecutó
+    const runningProcessCode = infoConnectionDevice.latest.loc.code;
+    //Genera el texto para el procesos en ejecución
+    const processDisplayText = isOnline ? currentlyProccess || stateProcess(runningProcessCode) : "Información no disponible";
+    //Estado señal GPS
+    const gpsSignalStatus = infoConnectionDevice?.latest?.loc?.valid;
+    // Determina el texto para "Flujo actual"
+    const getFlowDisplayText = () => {
+        if (!isOnline) return "Información no disponible";
+        if (!showCurrentFlow(runningProcessCode)) return "---";
+        const flowValue = currentlyValue !== "" ? currentlyValue : calculateStateFlow(infoConnectionDevice.latest.data.ad.value);
+        return `${flowValue} gpm`;
+    };
 
     const descriptionData = [
         [
@@ -50,13 +37,13 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
             { label: "Versión del script", value: `${getSoftwareVersion(plant.configuration)}` },
         ],
         [
-            { label: "Estado conectividad celular", value: `${infoConnectionDevice?.connection?.online ? "Ok" : "No Ok (Fuera de línea)"}` },
+            { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}` },
             { label: "Estado del accesorio expansor", value: `${infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado"}` },
-            { label: "Estado de señal GPS", value: `${infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo"}` },
+            { label: "Estado de señal GPS", value: `${gpsSignalStatus ? "Ok" : "No óptimo"}` },
         ],
         [
-            { label: "Proceso en ejecución", value: `${infoConnectionDevice?.connection?.online ? currentlyProccess === "" ? stateProcess(infoConnectionDevice.latest.loc.code) : currentlyProccess : "Información no disponible"}` },
-            { label: "Flujo actual", value: `${infoConnectionDevice?.connection?.online ? !showCurrentFlow(infoConnectionDevice.latest.loc.code) ? "---" : currentlyValue === "" ? `${calculateStateFlow(infoConnectionDevice.latest.data.ad.value)} gpm` : `${currentlyValue} gpm` : "Información no disponible"}` },
+            { label: "Proceso en ejecución", value: processDisplayText },
+            { label: "Flujo actual", value: getFlowDisplayText() },
         ],
     ];
 
@@ -67,8 +54,8 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
                 <PlantImage plant={plant} />
             </div>
             <InfoPanel itemGroups={descriptionData} />
-            <div className={`flex flex-col items-end p-1.5 ${infoConnectionDevice?.connection?.online ? "" : "hidden"}`}>
-                <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace  ${formatTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
+            <div className={`flex flex-col items-end p-1.5 ${isOnline ? "" : "hidden"}`}>
+                <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace ${formatTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useCommandExecution, usePlantDetailSocket } from '../../../hooks/usePlants';
-import { processSocketMessage, getMvZeroText } from '../../../utils/plantUtils';
-import { COMMANDS, OPERATION_CODES, SOCKET_KEYS } from '../../../utils/constants';
+import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
+import { processSocketMessage, getMvZeroText } from '@/utils/plantUtils';
+import { COMMANDS, SOCKET_KEYS } from '@/utils/constants';
 
 export function useOperationParameters(plant, isOnline, isLoadingStatus) {
     const { executeMultipleCommands } = useCommandExecution();

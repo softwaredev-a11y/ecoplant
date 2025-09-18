@@ -3,7 +3,7 @@ import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/plantUtils';
 import { COMMANDS, SOCKET_KEYS } from '@/utils/constants';
 
-export function useOperationParameters(plant, isOnline, isLoadingStatus) {
+export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4) {
     const { executeMultipleCommands } = useCommandExecution();
     const { lastEvent, isConnected } = usePlantDetailSocket();
 
@@ -25,7 +25,7 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus) {
     const hasRunRef = useRef(false);
 
     useEffect(() => {
-        if (isLoadingStatus || !isConnected || !isOnline) {
+        if (isLoadingStatus || !isConnected || !isOnline || isSyrus4) {
             hasRunRef.current = false;
             return;
         }
@@ -59,7 +59,7 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus) {
             clearTimeout(firstTimeout);
             clearTimeout(secondTimeout);
         };
-    }, [isLoadingStatus, isConnected, isOnline, plant.id, executeMultipleCommands]);
+    }, [isLoadingStatus, isConnected, isOnline, plant.id, isSyrus4, executeMultipleCommands]);
 
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;

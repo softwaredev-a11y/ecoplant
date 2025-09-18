@@ -22,7 +22,12 @@ const authApi = {
      * @param {object} data - Los datos para el inicio de sesión, generalmente { email, password }.
      * @returns {Promise} Una promesa que resuelve con la respuesta de la API.
      */
-    cloudLogin: (data) => apiCloudInstance.post("/auth/login", data)
+    cloudLogin: (data) => apiCloudInstance.post("/auth/login", data),
+    /**
+     * Realiza petición POST para cerrar la sesión
+     *  @returns {Promise} Una promesa que resuelve con la respuesta de la API.
+     */
+    cloudLogout: () => apiCloudInstance.post("/auth/logout")
 };
 
 export default authApi;

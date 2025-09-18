@@ -26,11 +26,15 @@ export const useAuth = () => {
         try {
             //Envía la información del usuario (email, passowrd)
             const { data } = await authApi.login(credentials);
+            const credentialsCloud = { email: "", password: "" };
+            const cloudData = await authApi.cloudLogin(credentialsCloud);
             //Si es exitoso, almacena la siguiente información en variables de session.
             sessionStorage.setItem('token', data.auth);
             sessionStorage.setItem('auth', true)
             sessionStorage.setItem('username', credentials.username);
             sessionStorage.setItem('password', credentials.password);
+            sessionStorage.setItem("cloudToken", cloudData?.data?.token);
+            console.log("El token del cloud es", cloudData)
             //Redirige al dashboard.
             navigate('/dashboard');
         } catch (error) {
@@ -48,11 +52,13 @@ export const useAuth = () => {
     const logout = async () => {
         try {
             await authApi.logout();
+            await authApi.cloudLogout();
         } catch (error) {
             console.error("Fallo al cerrar sesión en el servidor:", error);
         } finally {
             //Elimina información almacenada en variables de session.
             sessionStorage.removeItem('token');
+            sessionStorage.removeItem('cloudToken');
             sessionStorage.removeItem('auth');
             sessionStorage.removeItem('username');
             sessionStorage.removeItem('password');

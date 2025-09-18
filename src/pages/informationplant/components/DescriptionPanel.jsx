@@ -1,4 +1,5 @@
 import { getPlantModel, getSoftwareVersion, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
+import { formatEcoplantVersion } from '../../../utils/syrus4Utils'
 import notAvailableImg from '../../../assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
 import { usePlantRealTimeData } from '../../../hooks/usePlantRealTimeData';
@@ -13,16 +14,18 @@ import { usePlantRealTimeData } from '../../../hooks/usePlantRealTimeData';
  * @param {object} props.infoConnectionDevice - Objeto con el estado de conexión del dispositivo.
  * @returns {JSX.Element} El panel de descripción de la planta.
  */
-function DescriptionPanel({ plant, infoConnectionDevice }) {
+function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
-    //Verifica si el dispositivo está online
+    // Obtiene la versión del script de forma segura
+    const scriptVersion = isSyrus4 ? (isLoadingSyrus4 || !syrus4Data?.apps) ? "Consultando" : formatEcoplantVersion(syrus4Data.apps) : getSoftwareVersion(plant.configuration);
+    // Estado señal GPS de forma segura
+    const gpsSignalStatus = isSyrus4 ? (isLoadingSyrus4 || syrus4Data?.gps === undefined) ? "Consultando" : syrus4Data.gps : infoConnectionDevice?.latest?.loc?.valid;
+    //Determina si el dispositivo está online
     const isOnline = infoConnectionDevice?.connection?.online;
     //Obtiene el último proceso que se ejecutó
     const runningProcessCode = infoConnectionDevice.latest.loc.code;
     //Genera el texto para el procesos en ejecución
     const processDisplayText = isOnline ? currentlyProccess || stateProcess(runningProcessCode) : "Información no disponible";
-    //Estado señal GPS
-    const gpsSignalStatus = infoConnectionDevice?.latest?.loc?.valid;
     // Determina el texto para "Flujo actual"
     const getFlowDisplayText = () => {
         if (!isOnline) return "Información no disponible";
@@ -33,8 +36,8 @@ function DescriptionPanel({ plant, infoConnectionDevice }) {
 
     const descriptionData = [
         [
-            { label: "Descripción", value: `EcoPlant ${getPlantModel(plant.info.description)}` },
-            { label: "Versión del script", value: `${getSoftwareVersion(plant.configuration)}` },
+            { label: "Descripción", value: `${getPlantModel(plant.info.description)}` },
+            { label: "Versión del script", value: scriptVersion },
         ],
         [
             { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}` },

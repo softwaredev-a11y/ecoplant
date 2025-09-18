@@ -34,7 +34,7 @@ export const UserProvider = ({ children }) => {
         getInfoUser();
     }, [])
     return (
-        <UserContext.Provider value={{ isSuperUser, loading, error }}>
+        <UserContext.Provider value={{ user, isSuperUser, loading, error }}>
             {children}
         </UserContext.Provider>
     );

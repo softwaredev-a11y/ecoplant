@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import { apiPegasusInstance } from "./axiosInstance";
 
 /**
  * Objeto que agrupa las llamadas a la API relacionadas a las Ecoplantas.
@@ -22,21 +22,21 @@ const plantsApi = {
      * @param {object} params - Los datos que determinan que grupo de plantas le corresponden al usuario.
      * @returns {Promise} - Una promesa con la respuesta de la API.
      */
-    getPlants: (params) => axiosInstance.get('/vehicles?set=100&page=1', { params }),
+    getPlants: (params) => apiPegasusInstance.get('/vehicles?set=100&page=1', { params }),
 
     /**
      * Obtiene la foto de la Ecoplanta seleccionada.
      * @param {int} idPlant - ID de la planta seleccionada.
      * @returns {object} - Foto de la Ecoplanta.
      */
-    getPlantsPictures: (idPlant) => axiosInstance.get(`/images/vehicles/${idPlant}/photo`),
+    getPlantsPictures: (idPlant) => apiPegasusInstance.get(`/images/vehicles/${idPlant}/photo`),
 
     /**
      * Obtiene la información relacionada al estado de conexión del dispositivo.
      * @param {long} imei - Imei de la planta. Se encuentra en {plant.device} del listado de plantas. 
      * @returns {Promise} - Una promesa con la respuesta de una API.
      */
-    getConectionStatus: (imei) => axiosInstance.get(`/devices/${imei}`),
+    getConectionStatus: (imei) => apiPegasusInstance.get(`/devices/${imei}`),
 
     /**
      * Obtiene el valor de eventos en un período de tiempo, relacionados a procesos como filtración, retrolavado y enjuague.
@@ -47,14 +47,14 @@ const plantsApi = {
      * @param {[]} codes - Códigos de los procesos a consultar. Ej: `65` (filtración), `32` (retrolavado), `12` (enjuague).
      * @returns {Promise} Una promesa que resuelve con los datos crudos de los eventos.
      */
-    getRawData: (startDate, endDate, idPlant, codes) => axiosInstance.get(`/rawdata?from=${startDate}T00:00:00&to=${endDate}T23:59:59&vehicles=${idPlant}&fields=code,promedio_adc:@ad,count:1&tz=America/Bogota&resample=event_time&freq=1M&group_by=vid,code&how=promedio_adc:mean,count:sum&codes=${codes}`),
+    getRawData: (startDate, endDate, idPlant, codes) => apiPegasusInstance.get(`/rawdata?from=${startDate}T00:00:00&to=${endDate}T23:59:59&vehicles=${idPlant}&fields=code,promedio_adc:@ad,count:1&tz=America/Bogota&resample=event_time&freq=1M&group_by=vid,code&how=promedio_adc:mean,count:sum&codes=${codes}`),
     /**
      * Envía la solicitud POST para la ejecución del comando a un dispostivo.
      * @param {int} idDevice - ID del dispositivo. 
      * @param {String} command - Comando que se quiere ejecutar en la consola. 
      * @returns 
      */
-    commandExecution: (idDevice, command) => axiosInstance.post(`/vehicles/${idDevice}/remote/console`, { cmd: command, includeImei: true }),
+    commandExecution: (idDevice, command) => apiPegasusInstance.post(`/vehicles/${idDevice}/remote/console`, { cmd: command, includeImei: true }),
 };
 
 export default plantsApi;

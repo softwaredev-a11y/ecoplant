@@ -25,7 +25,7 @@ function PlantDetailsPage() {
     const { infoConnectionDevice, loading: loadingConnection, error: errorConnection } = useConnectionStatus(plant?.device);
 
     // Llama al hook personalizado para la lógica de Syrus 4.
-    const { isSyrus4, syrus4Data, isLoading: isLoadingSyrus4, error: errorSyrus4, fetchData: fetchSyrus4Data } = useSyrus4Data(infoConnectionDevice, plant);
+    const { isSyrus4, syrus4Data, isLoading: isLoadingSyrus4, fetchData: fetchSyrus4Data } = useSyrus4Data(infoConnectionDevice, plant);
 
     // Efecto para ejecutar la obtención de datos de Syrus 4 cuando la información necesaria esté disponible.
     useEffect(() => {
@@ -40,7 +40,7 @@ function PlantDetailsPage() {
     if (loadingPlants || loadingConnection) return <StatusMessage message={"Cargando información de la planta, espere por favor."} />;
 
     // Muestra un error si la planta no se encuentra O si hubo un error al obtener la conexión.
-    if (!plant || errorConnection || errorSyrus4) return <StatusMessage message={"Ocurrió un error. Recargue la página e intente nuevamente."} />;
+    if (!plant || errorConnection) return <StatusMessage message={"Ocurrió un error. Recargue la página e intente nuevamente."} />;
     if (!infoConnectionDevice) return <StatusMessage message={"Cargando información de la planta, espere por favor."} />;
 
     // Define el estado de conexión en una variable para mayor claridad y reutilización.

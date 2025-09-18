@@ -2,14 +2,19 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import HeaderPanel from './HeaderPanel';
 import { useCommandExecution } from '../../../hooks/usePlants';
 import { formatTime, getSetterMessage } from '../../../utils/plantUtils';
+import { getEcoplantParams } from '../../../utils/syrus4Utils';
 import { COMMANDS, OPERATION_CODES } from '../../../utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../../components/ui/alert-dialog';
 import { useUsers } from "@/hooks/useUsers";
 import { useOperationParameters } from '../../../hooks/useOperationParameters';
 
-function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
-    const { parameters, commandStatus, mvZeroValue } = useOperationParameters(plant, isOnline, isLoadingStatus);
-
+function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
+    const { parameters, commandStatus, mvZeroValue } = useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4);
+    const dataSyrusFours = isLoadingSyrus4
+        ? "Cargando"
+        : syrus4Data?.params
+            ? getEcoplantParams(syrus4Data.params)
+            : "Sin datos";
     const getDisplayValue = (cmd, value, suffix = "") => {
         if (!isOnline) return "Información no disponible";
         if (commandStatus[cmd] === "loading") return "Consultando";
@@ -26,7 +31,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.FILTRATION}
                         typeOperation="Filtración"
-                        currentlyValue={getDisplayValue(COMMANDS.FILTRATION, parameters.filtrado)}
+                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : dataSyrusFours.filtracion : getDisplayValue(COMMANDS.FILTRATION, parameters.filtrado)}
                         buttonOperation="Cambiar filtración"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
@@ -35,7 +40,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.BACKWASH}
                         typeOperation="Retrolavado"
-                        currentlyValue={getDisplayValue(COMMANDS.BACKWASH, parameters.retrolavado)}
+                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : dataSyrusFours.retrolavado : getDisplayValue(COMMANDS.BACKWASH, parameters.retrolavado)}
                         buttonOperation="Cambiar retrolavado"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
@@ -44,7 +49,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus }) {
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.RINSE}
                         typeOperation="Enjuague"
-                        currentlyValue={getDisplayValue(COMMANDS.RINSE, parameters.enjuague)}
+                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : dataSyrusFours.enjuague : getDisplayValue(COMMANDS.RINSE, parameters.enjuague)}
                         buttonOperation="Cambiar enjuague"
                         mvZeroValue={mvZeroValue}
                         plant={plant}

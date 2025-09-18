@@ -32,7 +32,7 @@ function PlantDetailsPage() {
     return (
         <div className="info-container flex flex-col p-4 overflow-y-auto">
             <h3 className="text-neutral-600 font-bold mb-2 text-2xl">{plant.name}</h3>
-            <PlantDetailSocketProvider plantId={infoConnectionDevice?.connection?.online ? plant.id : null} isOnline={infoConnectionDevice?.connection?.online ?? false}>
+            <PlantDetailSocketProvider plantId={isOnline ? plant.id : null} isOnline={isOnline}>
                 <div className="info-containers gap-4 grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(450px,1fr))]">
                     <DescriptionPanel plant={plant} infoConnectionDevice={infoConnectionDevice} />
                     <OperationsPanel plant={plant} isOnline={isOnline} isLoadingStatus={loadingConnection} />

@@ -1,9 +1,11 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState, useRef } from "react";
 import { SYRUS_FOUR_COMMANDS } from '@/utils/constants';
+import plantsApi from '../services/plants.service';
+
 
 export function useSyrus4Data(infoConnectionDevice, plant) {
-    const [syrus4Data, setSyrus4Data] = useState();
-    const [isLoading, setIsLoading] = useState();
+    const [syrus4Data, setSyrus4Data] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const hasExecutedSyrusLogic = useRef(false);
 
@@ -62,17 +64,12 @@ export function useSyrus4Data(infoConnectionDevice, plant) {
                     }
                 }
             }
-
         } catch (error) {
             console.error("Error al obtener datos de Syrus 4:", error);
             setError(error);
         } finally {
             setIsLoading(false);
-
         }
-
-    }, [isSyrus4, infoConnectionDevice])
-
+    }, [isSyrus4, plant.device])
     return { isSyrus4, syrus4Data, isLoading, error, fetchData };
-
 }

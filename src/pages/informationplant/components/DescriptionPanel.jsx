@@ -16,10 +16,19 @@ import { usePlantRealTimeData } from '../../../hooks/usePlantRealTimeData';
  */
 function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
-    // Obtiene la versión del script de forma segura
+
+    const getGpsSignalStatus = () => {
+        if (isSyrus4) {
+            if (isLoadingSyrus4 || syrus4Data?.gps === undefined) {
+                return "Consultando";
+            }
+            return syrus4Data.gps ? "Ok" : "No óptimo";
+        }
+        return infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo";
+    };
+
     const scriptVersion = isSyrus4 ? (isLoadingSyrus4 || !syrus4Data?.apps) ? "Consultando" : formatEcoplantVersion(syrus4Data.apps) : getSoftwareVersion(plant.configuration);
-    // Estado señal GPS de forma segura
-    const gpsSignalStatus = isSyrus4 ? (isLoadingSyrus4 || syrus4Data?.gps === undefined) ? "Consultando" : syrus4Data.gps : infoConnectionDevice?.latest?.loc?.valid;
+    const gpsSignalStatus = getGpsSignalStatus();
     //Determina si el dispositivo está online
     const isOnline = infoConnectionDevice?.connection?.online;
     //Obtiene el último proceso que se ejecutó
@@ -42,7 +51,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
         [
             { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}` },
             { label: "Estado del accesorio expansor", value: `${infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado"}` },
-            { label: "Estado de señal GPS", value: `${gpsSignalStatus ? "Ok" : "No óptimo"}` },
+            { label: "Estado de señal GPS", value: gpsSignalStatus },
         ],
         [
             { label: "Proceso en ejecución", value: processDisplayText },

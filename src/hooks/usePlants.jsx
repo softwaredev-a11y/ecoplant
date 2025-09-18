@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useCallback } from "react";
-import { PlantContext } from "../context/PlantContext";
-import { PlantDetailSocketContext } from "../context/PlantDetailSocketContext";
-import plants from '../api/plantsApi'
+import { PlantContext } from "@/context/PlantContext";
+import { PlantDetailSocketContext } from "@/context/PlantDetailSocketContext";
+import plants from '@/services/plants.service'
 
 /**
  * Hook personalizado para acceder a la información de las plantas desde `PlantContext`.

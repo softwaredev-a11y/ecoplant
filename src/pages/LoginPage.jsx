@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import Logo from "../components/Logo";
 import Error from "../components/ErrorMessage";
 import logoImage from '../assets/images/logo.webp';

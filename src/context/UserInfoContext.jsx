@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import usersApi from "../api/usersApi";
+import usersApi from "@/services/users.service";
 
 export const UserContext = createContext();
 /**

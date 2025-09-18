@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-import plantsApi from "../api/plantsApi";
-import { useUsers } from "../hooks/useUsers";
+import plantsApi from "@/services/plants.service";
+import { useUsers } from "@/hooks/useUsers";
 
 /**
  * Contexto de React para almacenar y proporcionar el listado de Ecoplantas asociadas al usuario.

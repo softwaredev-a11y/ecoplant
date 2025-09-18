@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
-import authApi from '../api/authApi';
+import authApi from '../services/auth.service';
 
 
 /**

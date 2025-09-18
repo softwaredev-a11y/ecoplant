@@ -18,9 +18,6 @@ export function titleCase(str) {
 }
 
 export function formatEcoplantVersion(listInstances) {
-    if (!listInstances) {
-        return 'Consultando...';
-    }
     const ecoplantInstance = listInstances.find(instance =>
         instance && typeof instance.app_name === 'string' && instance.app_name.includes('ecoplant')
     );

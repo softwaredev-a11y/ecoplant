@@ -3,6 +3,13 @@ import { SYRUS_FOUR_COMMANDS } from '@/utils/constants';
 import plantsApi from '../services/plants.service';
 
 
+/**
+ * Hook para gestionar la obtención de datos específicos de un dispositivo Syrus 4.
+ *
+ * @param {object} plant - El objeto de la planta seleccionada, que debe contener la propiedad `device`.
+ * @param {boolean} isSyrus4 - Indica si el dispositivo es un Syrus 4.
+ * @returns {object} Un objeto con los datos del Syrus 4, estados de carga/error y la función para iniciar el proceso.
+ */
 export function useSyrus4Data(plant, isSyrus4) {
     const [syrus4Data, setSyrus4Data] = useState({});
     const [isLoading, setIsLoading] = useState(false);

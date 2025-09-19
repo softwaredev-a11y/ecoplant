@@ -3,6 +3,17 @@ import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/plantUtils';
 import { COMMANDS, SOCKET_KEYS } from '@/utils/constants';
 
+/**
+ * Hook para gestionar los parámetros de operación de dispositivos inferiores a Syrus 4.
+ *
+ * Envía comandos de tipo query (QED) al conectar, gestiona las respuestas que llegan
+ * vía WebSocket y maneja un sistema de reintentos para asegurar la obtención de los datos.
+ * @param {object} plant - La planta seleccionada.
+ * @param {boolean} isOnline - Indica si el dispositivo está online.
+ * @param {boolean} isLoadingStatus - Indica si la información de conexión aún se está cargando.
+ * @param {boolean} isSyrus4 - Indica si la planta es un Syrus 4 (en cuyo caso, el hook no se ejecuta).
+ * @returns {object} Un objeto con los parámetros, el estado de los comandos y el valor mvZero.
+ */
 export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4) {
     const { executeMultipleCommands } = useCommandExecution();
     const { lastEvent, isConnected } = usePlantDetailSocket();

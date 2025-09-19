@@ -14,7 +14,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
         ? "Cargando"
         : syrus4Data?.params
             ? getEcoplantParams(syrus4Data.params)
-            : "Sin datos";
+            : "Información no disponible";
     const getDisplayValue = (cmd, value, suffix = "") => {
         if (!isOnline) return "Información no disponible";
         if (commandStatus[cmd] === "loading") return "Consultando";

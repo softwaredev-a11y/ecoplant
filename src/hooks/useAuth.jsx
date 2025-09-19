@@ -34,7 +34,6 @@ export const useAuth = () => {
             sessionStorage.setItem('username', credentials.username);
             sessionStorage.setItem('password', credentials.password);
             sessionStorage.setItem("cloudToken", cloudData?.data?.token);
-            console.log("El token del cloud es", cloudData)
             //Redirige al dashboard.
             navigate('/dashboard');
         } catch (error) {

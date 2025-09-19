@@ -58,15 +58,17 @@ const plantsApi = {
     /**
     * Envía la solicitud POST para la ejecución del comando a un dispositivo syrus 4.
     * @param {String} command - Comando que se va a ejecutar en el dispositivo.
-    * @param {[list]} imeis - Lista de dispositivos a los cuales se les va a ejecutar el comando.
+    * @param {Array<string>} imeis - Lista de dispositivos a los cuales se les va a ejecutar el comando.
+    * @param {AbortSignal} signal - Señal para abortar la petición.
     * @returns {Promise} - Una promesa con los datos de resultado de la ejecución del comando
     */
-    commandExecutionSyrusFour: (command, imeis) => apiCloudInstance.post(`/api/commands/send/`, { command, imeis }),
+    commandExecutionSyrusFour: (command, imeis, signal) => apiCloudInstance.post(`/api/commands/send/`, { command, imeis }, { signal }),
     /**
      * @param {String} idResponseCommand - ID del resultado de la ejecución del comando enviado al dispositivo Syrus 4.
+     * @param {AbortSignal} signal - Señal para abortar la petición.
      * @returns {Promise} Una promesa con los datos del resultado de la ejecución del comando
      */
-    getResultCommandExecutionSyrusFour: (idResponseCommand) => apiCloudInstance.get(`/api/commands/${idResponseCommand}`)
+    getResultCommandExecutionSyrusFour: (idResponseCommand, signal) => apiCloudInstance.get(`/api/commands/${idResponseCommand}`, { signal })
 };
 
 export default plantsApi;

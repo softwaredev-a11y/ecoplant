@@ -1,7 +1,7 @@
-import { useCallback, useState, useRef } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { SYRUS_FOUR_COMMANDS } from '@/utils/constants';
 import plantsApi from '../services/plants.service';
-
+import axios from "axios";
 
 /**
  * Hook para gestionar la obtención de datos específicos de un dispositivo Syrus 4.
@@ -14,17 +14,31 @@ export function useSyrus4Data(plant, isSyrus4) {
     const [syrus4Data, setSyrus4Data] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
-    const hasExecutedSyrusLogic = useRef(false);
+    const abortControllerRef = useRef(null);
 
+    useEffect(() => {
+        return () => {
+            abortControllerRef.current?.abort();
+        };
+    }, [plant, isSyrus4]);
 
     const fetchData = useCallback(async () => {
+        // Cancela cualquier petición anterior que esté en curso
+        abortControllerRef.current?.abort();
+
         if (!isSyrus4) {
             setSyrus4Data(null);
             return;
         }
+
+        // Crea un nuevo AbortController para la petición actual
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const { signal } = controller;
+
         setIsLoading(true);
         setError(null);
-        hasExecutedSyrusLogic.current = true;
+        setSyrus4Data({});
 
         try {
             const commandsToRun = [
@@ -34,27 +48,31 @@ export function useSyrus4Data(plant, isSyrus4) {
             ];
 
             const commandPromises = commandsToRun.map(async (cmd) => {
-                const sendResponse = await plantsApi.commandExecutionSyrusFour(cmd.command, [plant.device]);
+                const sendResponse = await plantsApi.commandExecutionSyrusFour(cmd.command, [plant.device], signal);
                 const commandId = sendResponse?.data?.[0]?._id;
                 if (!commandId) {
                     console.error(`No se recibió ID para el comando: ${cmd.command}`);
                     return { ...cmd, result: null };
                 }
-                console.log(`Comando '${cmd.name}' enviado con ID: ${commandId}`);
                 return { ...cmd, commandId };
             });
 
             const sentCommands = await Promise.all(commandPromises);
 
             console.log("Esperando 15 segundos para que los dispositivos procesen...");
-            await new Promise(resolve => setTimeout(resolve, 15000));
+            await new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(resolve, 15000);
+                signal.addEventListener('abort', () => {
+                    clearTimeout(timeoutId);
+                    reject(new DOMException('Aborted', 'AbortError'));
+                });
+            });
 
             for (const cmd of sentCommands) {
+                if (signal.aborted) return;
                 if (!cmd.commandId) continue;
 
-                console.log(`Consultando resultado para el comando '${cmd.name}' (ID: ${cmd.commandId})`);
-                const resultResponse = await plantsApi.getResultCommandExecutionSyrusFour(cmd.commandId);
-                console.log(`Respuesta para '${cmd.name}':`, resultResponse.data);
+                const resultResponse = await plantsApi.getResultCommandExecutionSyrusFour(cmd.commandId, signal);
 
                 if (resultResponse.data?.response) {
                     if (cmd.name === 'gps') {
@@ -67,11 +85,17 @@ export function useSyrus4Data(plant, isSyrus4) {
                     }
                 }
             }
-        } catch (error) {
-            console.error("Error al obtener datos de Syrus 4:", error);
-            setError(error);
+        } catch (err) {
+            if (axios.isCancel(err) || err.name === 'AbortError') {
+                console.log("Petición a Syrus 4 cancelada.");
+            } else if (!signal.aborted) {
+                console.error("Error al obtener datos de Syrus 4:", err);
+                setError(err);
+            }
         } finally {
-            setIsLoading(false);
+            if (!signal.aborted) {
+                setIsLoading(false);
+            }
         }
     }, [isSyrus4, plant])
     return { isSyrus4, syrus4Data, isLoading, error, fetchData };

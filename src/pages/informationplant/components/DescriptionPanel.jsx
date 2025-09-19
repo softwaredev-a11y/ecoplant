@@ -19,8 +19,10 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
 
     const getGpsSignalStatus = () => {
         if (isSyrus4) {
-            if (isLoadingSyrus4 || syrus4Data?.gps === undefined) {
+            if (isLoadingSyrus4) {
                 return "Consultando";
+            } if (syrus4Data?.gps === undefined) {
+                return "Información no disponible"
             }
             return syrus4Data.gps ? "Ok" : "No óptimo";
         }

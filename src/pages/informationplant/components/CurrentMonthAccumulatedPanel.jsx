@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { useRawDataConsult } from '@/hooks/usePlants';
-import { buildDate, thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash } from "@/utils/plantUtils";
-import { OPERATION_CODES } from '../../../utils/constants';
+import { useEffect } from "react";
+import { buildDate } from "@/utils/plantUtils";
+import { useAccumulatedData } from "@/hooks/useAccumulatedData"; // Importar el nuevo hook
 /**
  * Componente que muestra los valores acumulados de operación para el mes actual.
  * Obtiene y calcula los datos de filtración, retrolavado, enjuague y purgado.
@@ -13,79 +12,36 @@ import { OPERATION_CODES } from '../../../utils/constants';
  */
 export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     //Hook personalizado para obtener los acumulados
-    const { rawDataConsult } = useRawDataConsult();
-
-    const [filtracionActual, setFiltracionActual] = useState("");
-    const [enjuagueActual, setEnjuagueActual] = useState("");
-    const [retrolavadoActual, setRetrolavadoActual] = useState("");
-    const [purgadoMesActual, setPurgadoMesActual] = useState("");
+    const { data, isLoading, fetchAndCalculateData } = useAccumulatedData();
     const isAuth = sessionStorage.getItem('auth');
-
-    //Lista de acumulados.
-    const currentlyData = [
-        { id: 0, item: "Acumulado Filtración mes actual", value: filtracionActual },
-        { id: 1, item: "Acumulado Retrolavado mes actual", value: enjuagueActual },
-        { id: 2, item: "Acumulado Enjuague mes actual", value: retrolavadoActual },
-        { id: 3, item: "Acumulado Purgado mes actual", value: purgadoMesActual }
-    ]
-
-
     useEffect(() => {
-        let ignore = false;
-
-        const consultRawData = async (mvZeroValue, isAuth) => {
-            if (isOnline && isAuth) {
+        // Se mantiene la condición para ejecutar la consulta
+        if (isOnline && isAuth && idPlant) {
+            const consult = async () => {
                 await new Promise(resolve => setTimeout(resolve, 20000));
-                if (ignore) return;
-
                 const date = new Date();
                 const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
                 const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
 
-                const allCodes = [
-                    OPERATION_CODES.FILTRATION,
-                    OPERATION_CODES.BACKWASH,
-                    OPERATION_CODES.RINSE
-                ];
-                const rawDataResult = await rawDataConsult(beginDate, currentlyDate, idPlant, allCodes);
+                // Llamamos a la función del hook con las fechas correspondientes
+                fetchAndCalculateData(idPlant, mvZeroValue, beginDate, currentlyDate);
+            };
+            consult();
+        }
+    }, [idPlant, mvZeroValue, isOnline, isAuth, fetchAndCalculateData]);
 
-                if (ignore) return;
-
-                if (rawDataResult?.data?.events) {
-                    const adc_average = parseFloat(rawDataResult.data.events[2].promedio_adc);
-                    const caudal = ((adc_average - parseFloat(mvZeroValue)) / 100);
-
-                    const countFiltrado = rawDataResult.data.events[2].count;
-                    const filtracion = calculateAccumulatedValueFiltration(caudal, countFiltrado);
-                    setFiltracionActual(`${thousandsSeparator(Math.round(filtracion))} gal`);
-
-                    const countEnjuague = rawDataResult.data.events[1].count;
-                    const resEnjuague = calculateAccumulatedValueRinse(caudal, countEnjuague);
-                    setEnjuagueActual(`${thousandsSeparator(Math.round(resEnjuague))} gal`);
-
-                    const countRetrolavado = rawDataResult.data.events[0].count;
-                    const resRetrolavado = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
-                    setRetrolavadoActual(`${thousandsSeparator(Math.round(resRetrolavado))} gal`);
-
-                    const total_purga_mes_actual = (resEnjuague + resRetrolavado);
-                    const multiply_purga = total_purga_mes_actual * 0.00378;
-                    setPurgadoMesActual(`${thousandsSeparator(Math.round(total_purga_mes_actual))} gal (${multiply_purga.toFixed(2)} m³)`);
-                }
-            }
-        };
-        consultRawData(mvZeroValue, isAuth);
-
-        return () => {
-            ignore = true;
-        };
-    }, [idPlant]);
-
+    const currentlyData = [
+        { id: 0, item: "Acumulado Filtración mes actual", value: data?.filtration },
+        { id: 1, item: "Acumulado Retrolavado mes actual", value: data?.backwash },
+        { id: 2, "item": "Acumulado Enjuague mes actual", value: data?.rinse },
+        { id: 3, item: "Acumulado Purgado mes actual", value: data?.purge }
+    ];
 
     return (
         <div className="items-panel flex flex-col gap-8">
             <div className="data-currently-div grid grid-cols-2 items-center border-b border-b-[#ccc] gap-3 p-0.5">
                 {currentlyData.map(data => (
-                    <DataCurrently key={data.id} currentlyData={data} isOnline={isOnline} />
+                    <DataCurrently key={data.id} currentlyData={data} isOnline={isOnline} isLoading={isLoading} />
                 ))}
             </div>
         </div>
@@ -99,14 +55,21 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
  * @returns {JSX.Element} Un fragmento JSX que representa una fila de datos.
  */
-function DataCurrently({ currentlyData, isOnline }) {
+function DataCurrently({ currentlyData, isOnline, isLoading }) {    
+    const displayValue = () => {
+        if (!isOnline) return "Información no disponible";
+        if (isLoading) return "Consultando";
+        // El hook ya se encarga de los casos "No disponible" o "Error"
+        return currentlyData.value || "Consultando";
+    };
+
     return (
         <>
             <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base item-operation items-center gap-1.5">
                 {currentlyData.item}:
             </span>
             <span className="bg-gray-200 rounded-sm align-middle font-semibold text-gray-600 text-sm md:text-base lg:text-base p-0.5">
-                {`${isOnline ? currentlyData.value === "" ? "Consultando" : currentlyData.value : "Información no disponible"}`}
+                {displayValue()}
             </span>
         </>
     )

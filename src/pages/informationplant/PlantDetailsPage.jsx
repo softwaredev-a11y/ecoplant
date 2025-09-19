@@ -7,7 +7,7 @@ import { PlantDetailSocketProvider } from '../../context/PlantDetailSocketContex
 import { useParams } from 'react-router-dom';
 import { searchPlant } from '../../utils/plantUtils';
 import StatusMessage from '../../components/StatusMessage';
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 /**
  * Página que muestra los detalles de una planta específica.
  * Obtiene la información de la planta, su estado de conexión y renderiza los paneles
@@ -31,12 +31,10 @@ function PlantDetailsPage() {
     // Llama al hook personalizado para la lógica de Syrus 4.
     const { syrus4Data, isLoading: isLoadingSyrus4, fetchData: fetchSyrus4Data } = useSyrus4Data(plant, isSyrus4);
 
-    const lastExecutedDevice = useRef(isSyrus4);
     useEffect(() => {
         const isOnline = infoConnectionDevice?.connection?.online ?? false;
         if (plant?.device === infoConnectionDevice?.imei && !loadingConnection) {
             if (plant && isOnline && isSyrus4) {
-                lastExecutedDevice.current = false;
                 fetchSyrus4Data();
             }
         }

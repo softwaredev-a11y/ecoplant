@@ -7,7 +7,7 @@ import { PlantDetailSocketProvider } from '../../context/PlantDetailSocketContex
 import { useParams } from 'react-router-dom';
 import { searchPlant } from '../../utils/plantUtils';
 import StatusMessage from '../../components/StatusMessage';
-import { useEffect } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 /**
  * Página que muestra los detalles de una planta específica.
  * Obtiene la información de la planta, su estado de conexión y renderiza los paneles
@@ -23,17 +23,24 @@ function PlantDetailsPage() {
 
     // Obtiene el estado de conexión del dispositivo asociado a la planta.
     const { infoConnectionDevice, loading: loadingConnection, error: errorConnection } = useConnectionStatus(plant?.device);
-
+    //Determina si es syrus 4
+    const isSyrus4 = useMemo(
+        () => infoConnectionDevice?.version?.vkey_model?.toLowerCase().includes('syrus 4') || infoConnectionDevice?.version?.vkey_model?.toLowerCase().includes('s4') || infoConnectionDevice?.version?.vkey_model?.toLowerCase().includes('4g'),
+        [infoConnectionDevice]
+    );
     // Llama al hook personalizado para la lógica de Syrus 4.
-    const { isSyrus4, syrus4Data, isLoading: isLoadingSyrus4, fetchData: fetchSyrus4Data } = useSyrus4Data(infoConnectionDevice, plant);
+    const { syrus4Data, isLoading: isLoadingSyrus4, fetchData: fetchSyrus4Data } = useSyrus4Data(plant, isSyrus4);
 
-    // Efecto para ejecutar la obtención de datos de Syrus 4 cuando la información necesaria esté disponible.
+    const lastExecutedDevice = useRef(isSyrus4);
     useEffect(() => {
-        const isOnline = infoConnectionDevice?.connection?.online;
-        if (isSyrus4 && plant && isOnline) {
-            fetchSyrus4Data();
+        const isOnline = infoConnectionDevice?.connection?.online ?? false;
+        if (plant?.device === infoConnectionDevice?.imei && !loadingConnection) {
+            if (plant && isOnline && isSyrus4) {
+                lastExecutedDevice.current = false;
+                fetchSyrus4Data();
+            }
         }
-    }, [plant, infoConnectionDevice, isSyrus4, fetchSyrus4Data]); // Se re-ejecuta si la planta, la conexión o el tipo de dispositivo cambian.
+    }, [plant, infoConnectionDevice, isSyrus4, loadingConnection, fetchSyrus4Data]);
 
     // Muestra un estado de carga mientras se obtiene la info de la planta O la info de conexión.
     // Se añade isLoadingSyrus4 para esperar los datos específicos del dispositivo.

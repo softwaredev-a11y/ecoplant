@@ -42,10 +42,15 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
             const lastDay = new Date(year, month, 0).getDate();
             const endDate = buildDate(year, month, lastDay);
 
-            const [dataFiltrado, data] = await Promise.all([
-                rawDataConsult(beginDate, endDate, idPlant, OPERATION_CODES.FILTRATION),
-                rawDataConsult(beginDate, endDate, idPlant, code)
-            ]);
+            // Se realizan las consultas de forma secuencial para evitar que el AbortController
+            // del hook `useRawDataConsult` cancele la primera petición.
+            // Este hook está diseñado para manejar una sola petición a la vez.
+            const dataFiltrado = await rawDataConsult(beginDate, endDate, idPlant, OPERATION_CODES.FILTRATION);
+
+            // Si la operación es la misma, reutilizamos el resultado para no hacer una llamada idéntica.
+            const data = code === OPERATION_CODES.FILTRATION
+                ? dataFiltrado
+                : await rawDataConsult(beginDate, endDate, idPlant, code);
 
             if (!dataFiltrado?.data?.events?.[0] || !data?.data?.events?.[0]) {
                 setValue("No disponible");

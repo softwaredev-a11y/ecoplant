@@ -34,9 +34,10 @@ const plantsApi = {
     /**
      * Obtiene la información relacionada al estado de conexión del dispositivo.
      * @param {long} imei - Imei de la planta. Se encuentra en {plant.device} del listado de plantas. 
+     * @param {AbortSignal} signal - Señal para abortar la petición.
      * @returns {Promise} - Una promesa con la respuesta de una API.
      */
-    getConectionStatus: (imei) => apiPegasusInstance.get(`/devices/${imei}`),
+    getConectionStatus: (imei, signal) => apiPegasusInstance.get(`/devices/${imei}`, { signal }),
 
     /**
      * Obtiene el valor de eventos en un período de tiempo, relacionados a procesos como filtración, retrolavado y enjuague.
@@ -44,10 +45,11 @@ const plantsApi = {
      * @param {string} startDate - Fecha de inicio para la consulta. Formato: `YYYY-MM-DD`.
      * @param {string} endDate - Fecha final para la consulta. Formato: `YYYY-MM-DD`.
      * @param {number} idPlant - ID de la Ecoplanta.
+     * @param {AbortSignal} signal - Señal para abortar la petición.
      * @param {[]} codes - Códigos de los procesos a consultar. Ej: `65` (filtración), `32` (retrolavado), `12` (enjuague).
      * @returns {Promise} Una promesa que resuelve con los datos crudos de los eventos.
      */
-    getRawData: (startDate, endDate, idPlant, codes) => apiPegasusInstance.get(`/rawdata?from=${startDate}T00:00:00&to=${endDate}T23:59:59&vehicles=${idPlant}&fields=code,promedio_adc:@ad,count:1&tz=America/Bogota&resample=event_time&freq=1M&group_by=vid,code&how=promedio_adc:mean,count:sum&codes=${codes}`),
+    getRawData: (startDate, endDate, idPlant, codes, signal) => apiPegasusInstance.get(`/rawdata?from=${startDate}T00:00:00&to=${endDate}T23:59:59&vehicles=${idPlant}&fields=code,promedio_adc:@ad,count:1&tz=America/Bogota&resample=event_time&freq=1M&group_by=vid,code&how=promedio_adc:mean,count:sum&codes=${codes}`, { signal }),
     /**
      * Envía la solicitud POST para la ejecución del comando a un dispostivo.
      * @param {int} idDevice - ID del dispositivo. 

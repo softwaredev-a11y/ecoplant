@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { PlantContext } from "@/context/PlantContext";
 import { PlantDetailSocketContext } from "@/context/PlantDetailSocketContext";
 import plants from '@/services/plants.service'
+import axios from "axios";
 
 /**
  * Hook personalizado para acceder a la información de las plantas desde `PlantContext`.
@@ -41,25 +42,39 @@ export const useConnectionStatus = (imei) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     if (!imei) {
       setLoading(false);
+      setInfoConnectionDevice(null);
       return;
     }
     const fetchStatus = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await plants.getConectionStatus(imei);
-        setInfoConnectionDevice(response.data);
+        const response = await plants.getConectionStatus(imei, signal);
+        if (!signal.aborted) {
+          setInfoConnectionDevice(response.data);
+        }
       } catch (err) {
-        setError("Error al obtener el estado de conexión...");
-        setInfoConnectionDevice(null);
-        console.error(err);
+        if (!axios.isCancel(err) && err.name !== 'AbortError') {
+          setError("Error al obtener el estado de conexión...");
+          setInfoConnectionDevice(null);
+          console.error(err);
+        }
       } finally {
-        setLoading(false);
+        if (!signal.aborted) {
+          setLoading(false);
+        }
       }
     };
     fetchStatus();
+
+    return () => {
+      controller.abort();
+    };
   }, [imei]);
   return { infoConnectionDevice, loading, error };
 };
@@ -116,20 +131,37 @@ export const useRawDataConsult = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rawData, setRawData] = useState([]);
   const [error, setError] = useState(null);
+  const abortControllerRef = useRef();
+
+  useEffect(() => {
+    // Cancela la petición si el componente que usa el hook se desmonta
+    return () => abortControllerRef.current?.abort();
+  }, []);
 
   const rawDataConsult = useCallback(async (startDate, endDate, idPlant, command) => {
+    // Cancela cualquier consulta anterior que aún esté en curso
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       setIsLoading(true);
       setError(null);
-      const response = await plants.getRawData(startDate, endDate, idPlant, command);
-      setRawData(response);
+      const response = await plants.getRawData(startDate, endDate, idPlant, command, controller.signal);
+      if (!controller.signal.aborted) {
+        setRawData(response);
+      }
       return response;
-    } catch (error) {
-      setError('Error al consultar el RawData.');
-      console.error(error);
+    } catch (err) {
+      if (!axios.isCancel(err) && err.name !== 'AbortError') {
+        setError('Error al consultar el RawData.');
+        console.error(err);
+      }
       return [];
     } finally {
-      setIsLoading(false);
+      if (!controller.signal.aborted) {
+        setIsLoading(false);
+      }
     }
   }, []);
 

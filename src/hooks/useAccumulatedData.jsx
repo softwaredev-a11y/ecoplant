@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useRawDataConsult } from '@/hooks/usePlants';
-import {thousandsSeparator,calculateAccumulatedValueFiltration,calculateAccumulatedValueRinse,calculateAccumulatedValueBackwash} from "@/utils/plantUtils";
+import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash } from "@/utils/plantUtils";
 import { OPERATION_CODES } from '@/utils/constants';
 
 export const useAccumulatedData = () => {
@@ -63,7 +63,7 @@ export const useAccumulatedData = () => {
                 filtration: `${thousandsSeparator(Math.round(filtrationValue))} gal`,
                 rinse: `${thousandsSeparator(Math.round(rinseValue))} gal`,
                 backwash: `${thousandsSeparator(Math.round(backwashValue))} gal`,
-                purge: `${thousandsSeparator(Math.round(totalPurge))} gal (${multiplyPurge.toFixed(2)} m³)`
+                purge: `${thousandsSeparator(Math.round(totalPurge))} gal (${multiplyPurge.toFixed(2)} m³/min)`
             });
 
         } catch (err) {

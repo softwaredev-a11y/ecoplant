@@ -28,7 +28,7 @@ function LoginPage() {
  */
 function FormLogin() {
     const [error, setError] = useState(null);
-    const [dataForm, setDataForm] = useState({ username: '', password: ''});
+    const [dataForm, setDataForm] = useState({ username: '', password: '' });
     const { login } = useAuth();
 
     /**
@@ -52,7 +52,7 @@ function FormLogin() {
         } catch (err) {
             if (err.response?.status === 401) {
                 setError('Email y/o contraseña incorrectos.');
-            } 
+            }
         }
     }
     return (

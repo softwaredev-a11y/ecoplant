@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { getMvZeroText } from "../../../utils/plantUtils";
 import HeaderPanel from "../components/HeaderPanel";
 import CurrentMonthAcummulatedPanel from "../components/CurrentMonthAccumulatedPanel";
-import LasthMontAccumulatedPanel from "../components/LastMonthAccumulatedPanel";
+import LastMonthAccumulatedPanel from "../components/LastMonthAccumulatedPanel";
 /**
  * Componente que renderiza los valores acumulados en el mes actual y anterior de la planta.
  * @param {object} props - Las propiedades del componente.
@@ -18,7 +18,7 @@ function AcummulatedPanel({ plant, isOnline }) {
             <HeaderPanel title={"Acumulados del mes actual y mes anterior"} />
             <div className="items-panel flex flex-col p-1.5 gap-4">
                 <CurrentMonthAcummulatedPanel idPlant={plant.id} mvZeroValue={mvZeroValue} isOnline={isOnline} />
-                <LasthMontAccumulatedPanel idPlant={plant.id} mvZeroValue={mvZeroValue} isOnline={isOnline} />
+                <LastMonthAccumulatedPanel idPlant={plant.id} mvZeroValue={mvZeroValue} isOnline={isOnline} />
             </div>
         </div>
     )

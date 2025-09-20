@@ -92,27 +92,51 @@ export const useCommandExecution = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [executedCids, setExecutedCids] = useState([]);
   const [error, setError] = useState(null);
+  const abortControllerRef = useRef();
+
+  useEffect(() => {
+    // Cancela la petición si el componente que usa el hook se desmonta
+    return () => abortControllerRef.current?.abort();
+  }, []);
+
   const executeMultipleCommands = useCallback(async (idDevice, commands) => {
+    // Cancela cualquier ejecución de comandos anterior
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const { signal } = controller;
+
     try {
       setIsLoading(true);
       setError(null);
       const cids = [];
 
       for (let i = 0; i < commands.length; i++) {
-        const response = await plants.commandExecution(idDevice, commands[i]);
+        if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+
+        const response = await plants.commandExecution(idDevice, commands[i], signal);
         if (response?.data?.cid) cids.push(response.data.cid);
+
         if (i < commands.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(resolve, 1000);
+            signal.addEventListener('abort', () => {
+              clearTimeout(timeoutId);
+              reject(new DOMException('Aborted', 'AbortError'));
+            });
+          });
         }
       }
-      setExecutedCids(cids);
+      if (!signal.aborted) setExecutedCids(cids);
       return cids;
     } catch (err) {
-      setError("Error al ejecutar los comandos.");
-      console.error(err);
+      if (!axios.isCancel(err) && err.name !== 'AbortError') {
+        setError("Error al ejecutar los comandos.");
+        console.error(err);
+      }
       return [];
     } finally {
-      setIsLoading(false);
+      if (!signal.aborted) setIsLoading(false);
     }
   }, []);
   return { isLoading, executedCids, error, executeMultipleCommands };

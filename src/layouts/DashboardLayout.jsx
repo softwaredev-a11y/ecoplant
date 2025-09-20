@@ -63,7 +63,7 @@ function DashboardLayout() {
 
 
     return (
-        <div className="main-container flex flex-col md:flex-col w-[98%] min-h-[90vh] max-h-[90vh] box-border border bg-white border-[#ccc] p-0 md:p-0">
+        <div className="main-container flex flex-col md:flex-col w-[98%] min-h-[90dvh] max-h-[90dvh] box-border border bg-white border-[#ccc] p-0 md:p-0">
             <Header toggleMenu={toggleMenu} />
             <MainLayout isOpen={isOpen} toggleMenu={toggleMenu} />
         </div>
@@ -93,7 +93,7 @@ function Header({ toggleMenu }) {
                 </button>
 
                 {/* Logo solo visible en pantallas grandes */}
-                <Logo url={logoImage} className="w-[200px] h-auto mr-2.5 hidden lg:block" />
+                <Logo url={logoImage} className="w-[200px] h-auto ml-2 hidden lg:block" />
             </div>
 
             {/* Contenedor de botones */}
@@ -151,7 +151,7 @@ function PanelLeft({ isOpen, toggleMenu }) {
         >
             {/* Botón de cierre, solo visible en móvil/tablet */}
             <div className="flex justify-between lg:hidden mb-4">
-                <Logo url={logoImage} className="w-[200px] h-auto" />
+                <Logo url={logoImage} className="w-[200px] h-auto ml-2" />
                 <button onClick={toggleMenu} className="text-[#004275] hover:text-black text-2xl font-bold">
                     ✕
                 </button>

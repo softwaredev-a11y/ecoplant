@@ -11,14 +11,14 @@ import { useOperationParameters } from '../../../hooks/useOperationParameters';
 function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { parameters, commandStatus, mvZeroValue } = useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4);
     const dataSyrusFours = isLoadingSyrus4
-        ? "Cargando"
+        ? "Consultando"
         : syrus4Data?.params
             ? getEcoplantParams(syrus4Data.params)
-            : "Información no disponible";
+            : "Problemas de comunicación. Intente más tarde";
     const getDisplayValue = (cmd, value, suffix = "") => {
         if (!isOnline) return "Información no disponible";
         if (commandStatus[cmd] === "loading") return "Consultando";
-        if (commandStatus[cmd] === "error") return "Problemas de comunicación. Intente más tarde.";
+        if (commandStatus[cmd] === "error") return "Problemas de comunicación. Intente más tarde";
         return suffix ? `${value} ${suffix}` : value;
     };
 

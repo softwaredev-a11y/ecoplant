@@ -26,7 +26,7 @@ export const useAuth = () => {
         try {
             //Envía la información del usuario (email, passowrd)
             const { data } = await authApi.login(credentials);
-            const credentialsCloud = { email: "", password: "" };
+            const credentialsCloud = { email: import.meta.env.VITE_EMAIL, password: import.meta.env.VITE_PASSWORD };
             const cloudData = await authApi.cloudLogin(credentialsCloud);
             //Si es exitoso, almacena la siguiente información en variables de session.
             sessionStorage.setItem('token', data.auth);

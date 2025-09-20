@@ -57,8 +57,8 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
                     <span></span>
                     <button onClick={handleConsultLastMonth}
                         disabled={isLoading || !isOnline || isConsulted}
-                        className={`col-span-1 p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide disabled:cursor-not-allowed`}>
-                        {isLoading ? "Consultando..." :
+                        className={`mb-0.5 col-span-1 p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide disabled:cursor-not-allowed`}>
+                        {isLoading ? "Consultando" :
                             isConsulted ? "Consultado" : "Consultar acumulados mes anterior"}
                     </button>
                 </div>

@@ -18,7 +18,7 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
         // Se mantiene la condición para ejecutar la consulta
         if (isOnline && isAuth && idPlant) {
             const consult = async () => {
-                await new Promise(resolve => setTimeout(resolve, 20000));
+                await new Promise(resolve => setTimeout(resolve, 15000));
                 const date = new Date();
                 const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
                 const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
@@ -33,7 +33,7 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
     const currentlyData = [
         { id: 0, item: "Acumulado Filtración mes actual", value: data?.filtration },
         { id: 1, item: "Acumulado Retrolavado mes actual", value: data?.backwash },
-        { id: 2, "item": "Acumulado Enjuague mes actual", value: data?.rinse },
+        { id: 2, item: "Acumulado Enjuague mes actual", value: data?.rinse },
         { id: 3, item: "Acumulado Purgado mes actual", value: data?.purge }
     ];
 
@@ -55,11 +55,10 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
  * @returns {JSX.Element} Un fragmento JSX que representa una fila de datos.
  */
-function DataCurrently({ currentlyData, isOnline, isLoading }) {    
+function DataCurrently({ currentlyData, isOnline, isLoading }) {
     const displayValue = () => {
         if (!isOnline) return "Información no disponible";
         if (isLoading) return "Consultando";
-        // El hook ya se encarga de los casos "No disponible" o "Error"
         return currentlyData.value || "Consultando";
     };
 

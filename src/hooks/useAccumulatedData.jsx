@@ -69,7 +69,7 @@ export const useAccumulatedData = () => {
         } catch (err) {
             console.error("Error al calcular datos acumulados:", err);
             setError("Error al calcular los datos.");
-            setData({ filtration: "Información no disponible", rinse: "Información no disponible", backwash: "Información no disponible", purge: "Información no disponible" });
+            setData({ filtration: "Problemas de comunicación. Intente más tarde.", rinse: "Problemas de comunicación. Intente más tarde.", backwash: "Problemas de comunicación. Intente más tarde.", purge: "Problemas de comunicación. Intente más tarde." });
         } finally {
             setIsLoading(false);
         }

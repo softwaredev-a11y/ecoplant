@@ -47,7 +47,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
 
     const descriptionData = [
         [
-            { label: "Descripción", value: `${getPlantModel(plant.info.description)}` },
+            { label: "Descripción", value: `EcoPlant ${getPlantModel(plant.info.description)}` },
             { label: "Versión del script", value: scriptVersion },
         ],
         [

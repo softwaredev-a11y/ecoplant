@@ -437,3 +437,7 @@ export function getSetterMessage(codeOperation, value, unitValue, mvZero) {
 
     return messageWithValue.replace(/;(SI|KY).*/, "");
 }
+
+export function gpmToCubicMetersPerMinute(gpmValue) {
+    return gpmValue * 0.00378;
+}

@@ -62,8 +62,8 @@ export const useAccumulatedData = () => {
             setData({
                 filtration: `${thousandsSeparator(Math.round(filtrationValue))} gal`,
                 rinse: `${thousandsSeparator(Math.round(rinseValue))} gal`,
-                backwash: `${thousandsSeparator(Math.round(backwashValue))} `,
-                purge: `${thousandsSeparator(Math.round(totalPurge))} gal-${multiplyPurge.toFixed(2)} m³/min`
+                backwash: `${thousandsSeparator(Math.round(backwashValue))} gal`,
+                purge: `${thousandsSeparator(Math.round(totalPurge))} gal (${multiplyPurge.toFixed(2)} m³/min)`
             });
 
         } catch (err) {

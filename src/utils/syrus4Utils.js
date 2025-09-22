@@ -1,4 +1,4 @@
-import { formatTime } from "./plantUtils";
+import { conversionToGpm, formatTime } from "./plantUtils";
 
 /**
  * Busca la instancia de la aplicación 'ecoplant' en una lista y devuelve una cadena
@@ -36,15 +36,19 @@ export function formatEcoplantVersion(listInstances) {
  * @param {string} response - El string de respuesta del comando.
  * @returns {{filtracion: string, retrolavado: string, enjuague: string}}
  */
-export function getEcoplantParams(response) {
+export function getEcoplantParams(response, mvZeroValue) {
     const filtrationValue = getValueParam('FILTRATION_TIME', response);
     const invWashingValue = getValueParam('INV_WASHING_TIME', response);
     const rinseValue = getValueParam('RINSE_TIME', response);
+    const adcWarningValue = getValueParam('ADC_WARNING_THRESHOLD', response);
+    const adcAlarmValue = getValueParam('ADC_ALARM_THRESHOLD', response);
 
     return {
-        filtracion: filtrationValue ? formatTime('segundos', parseInt(filtrationValue, 10)) : '',
-        retrolavado: invWashingValue ? formatTime('segundos', parseInt(invWashingValue, 10)) : '',
-        enjuague: rinseValue ? formatTime('segundos', parseInt(rinseValue, 10)) : ''
+        filtracion: filtrationValue ? formatTime('segundos', parseInt(filtrationValue, 10)) : 'Problemas de comunicación. Intente más tarde.',
+        retrolavado: invWashingValue ? formatTime('segundos', parseInt(invWashingValue, 10)) : 'Problemas de comunicación. Intente más tarde.',
+        enjuague: rinseValue ? formatTime('segundos', parseInt(rinseValue, 10)) : 'Problemas de comunicación. Intente más tarde.',
+        alerta: adcWarningValue ? conversionToGpm(adcWarningValue, mvZeroValue) : 'Problemas de comunicación. Intente más tarde.',
+        alarma: adcAlarmValue ? conversionToGpm(adcAlarmValue, mvZeroValue) : 'Problemas de comunicación. Intente más tarde.',
     };
 }
 

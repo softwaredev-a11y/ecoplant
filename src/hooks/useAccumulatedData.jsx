@@ -25,10 +25,10 @@ export const useAccumulatedData = () => {
 
             if (!result?.data?.events || result.data.events.length === 0) {
                 const noData = {
-                    filtration: "Información no disponible",
-                    rinse: "Información no disponible",
-                    backwash: "Información no disponible",
-                    purge: "Información no disponible",
+                    filtration: "Problemas de comunicación. Intente más tarde.",
+                    rinse: "Problemas de comunicación. Intente más tarde.",
+                    backwash: "Problemas de comunicación. Intente más tarde.",
+                    purge: "Problemas de comunicación. Intente más tarde.",
                 };
                 setData(noData);
                 return;

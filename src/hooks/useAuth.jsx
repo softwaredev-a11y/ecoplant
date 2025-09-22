@@ -26,12 +26,15 @@ export const useAuth = () => {
         try {
             //Envía la información del usuario (email, passowrd)
             const { data } = await authApi.login(credentials);
-            const credentialsCloud = { email: import.meta.env.VITE_EMAIL, password: import.meta.env.VITE_PASSWORD };
-            const cloudData = await authApi.cloudLogin(credentialsCloud);
+            const responseCloud = await fetch('/api/cloud_login.php', { method: 'POST' });
+            if (!responseCloud.ok) {
+                throw new Error(`El proxy de Cloud falló con estado: ${responseCloud.status}`);
+            }
+            const cloudData = await responseCloud.json();
             //Si es exitoso, almacena la siguiente información en variables de session.
             sessionStorage.setItem('token', data.auth);
             sessionStorage.setItem('auth', true)
-            sessionStorage.setItem("cloudToken", cloudData?.data?.token);
+            sessionStorage.setItem("cloudToken", cloudData?.token);
             //Redirige al dashboard.
             navigate('/dashboard');
         } catch (error) {

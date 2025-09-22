@@ -13,7 +13,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
     const dataSyrusFours = isLoadingSyrus4
         ? "Consultando"
         : syrus4Data?.params
-            ? getEcoplantParams(syrus4Data.params)
+            ? getEcoplantParams(syrus4Data.params, mvZeroValue)
             : "Problemas de comunicación. Intente más tarde";
     const getDisplayValue = (cmd, value, suffix = "") => {
         if (!isOnline) return "Información no disponible";
@@ -60,7 +60,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.FLOW_ALERT}
                         typeOperation="Alerta de flujo disminuyendo"
-                        currentlyValue={getDisplayValue(COMMANDS.FLOW_ALERT, parameters.valorAlertaFlujo, "gpm")}
+                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : `${dataSyrusFours.alerta} gpm` : getDisplayValue(COMMANDS.FLOW_ALERT, parameters.valorAlertaFlujo, "gpm")}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
@@ -68,8 +68,8 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                     <Operations
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.INSUFFICIENT_FLOW_ALARM}
-                        typeOperation="Alerta por flujo insuficiente"
-                        currentlyValue={getDisplayValue(COMMANDS.INSUFFICIENT_FLOW_ALARM, parameters.valorAlarmaInsuficiente, "gpm")}
+                        typeOperation="Alarmado por flujo insuficiente"
+                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : `${dataSyrusFours.alarma} gpm` : getDisplayValue(COMMANDS.INSUFFICIENT_FLOW_ALARM, parameters.valorAlarmaInsuficiente, "gpm")}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
                         plant={plant}

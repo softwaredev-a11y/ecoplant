@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
-import plantsApi from "@/services/plants.service";
 import { useUsers } from "@/hooks/useUsers";
+import { ECOPLANT_GROUPS } from "@/utils/constants";
+import plantsApi from "@/services/plants.service";
 
 /**
  * Contexto de React para almacenar y proporcionar el listado de Ecoplantas asociadas al usuario.
@@ -43,7 +44,7 @@ export const PlantProvider = ({ children }) => {
         } else {
           // Si no está en caché, realiza la llamada a la API.
           const params = isSuperUser
-            ? { groups: "123" } // Parámetros para superusuario.
+            ? { groups: [ECOPLANT_GROUPS.SUPER_USERS_GROUP, ECOPLANT_GROUPS.DEVELOP_GROUP]} // Parámetros para superusuario. Quitar en producción.
             : {}; // Sin parámetros para usuario normal.
           const response = await plantsApi.getPlants(params);
           const plantsData = response.data.data;

@@ -36,3 +36,9 @@ export const RAW_DATA_CODES = {
     RINSE: 32,
     BACKWASH: 12,
 };
+
+
+export const ECOPLANT_GROUPS = {
+    SUPER_USERS_GROUP: "123",
+    DEVELOP_GROUP: "22004"
+}

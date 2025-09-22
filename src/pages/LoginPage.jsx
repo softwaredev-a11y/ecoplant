@@ -28,7 +28,7 @@ function LoginPage() {
  */
 function FormLogin() {
     const [error, setError] = useState(null);
-    const [dataForm, setDataForm] = useState({ username: '', password: '' });
+    const [dataForm, setDataForm] = useState({ username: '', password: '', scheme: "finite", limit: 21600 });
     const { login } = useAuth();
 
     /**

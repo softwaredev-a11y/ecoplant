@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import authApi from '../services/auth.service';
 
 
@@ -12,6 +12,8 @@ import authApi from '../services/auth.service';
 */
 export const useAuth = () => {
     const navigate = useNavigate();
+    const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+
     /**
      * Realiza el proceso de inicio de sesión.
      * Envía las credenciales a la API y, si tiene éxito, almacena la información
@@ -25,6 +27,7 @@ export const useAuth = () => {
     const login = async (credentials) => {
         try {
             //Envía la información del usuario (email, passowrd)
+            setIsLoadingLogin(true);
             const { data } = await authApi.login(credentials);
             const responseCloud = await fetch('/api/cloud_login.php', { method: 'POST' });
             if (!responseCloud.ok) {
@@ -40,6 +43,8 @@ export const useAuth = () => {
         } catch (error) {
             console.error("Fallo al iniciar sesión:", error);
             throw error;
+        } finally {
+            setIsLoadingLogin(false);
         }
     };
     /**
@@ -81,5 +86,5 @@ export const useAuth = () => {
             });
         }
     }, []);
-    return { login, logout, logoutOnBrowserClose };
+    return { isLoadingLogin, login, logout, logoutOnBrowserClose };
 };

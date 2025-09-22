@@ -29,7 +29,7 @@ function LoginPage() {
 function FormLogin() {
     const [error, setError] = useState(null);
     const [dataForm, setDataForm] = useState({ username: '', password: '', scheme: "finite", limit: 21600 });
-    const { login } = useAuth();
+    const { isLoadingLogin, login } = useAuth();
 
     /**
      * Maneja los cambios en los campos del formulario y actualiza el estado.
@@ -91,10 +91,10 @@ function FormLogin() {
                 </label>
                 {/* Muestra el componente de error si existe un mensaje en el estado 'error' */}
                 {error && <Error errorMessage={error} />}
-                <button
+                <button disabled={isLoadingLogin}
                     type="submit"
-                    className="w-full p-3 bg-green-600 text-white rounded-md font-semibold text-sm hover:bg-green-800 transition-colors duration-200 cursor-pointer">
-                    Ingresar
+                    className="disabled:cursor-not-allowed w-full p-3 bg-green-600 text-white rounded-md font-semibold text-sm hover:bg-green-800 transition-colors duration-200 cursor-pointer">
+                    {isLoadingLogin ? "Iniciando sesión" : "Ingresar"}
                 </button>
             </form>
         </div>

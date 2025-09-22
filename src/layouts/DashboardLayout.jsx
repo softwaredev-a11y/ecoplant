@@ -3,11 +3,12 @@ import logoImage from '../assets/images/logo.webp';
 import searchIcon from '../assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { getPlantModel } from "../utils/plantUtils";
 import { usePlants } from "../hooks/usePlants";
 import { useAuth } from "../hooks/useAuth";
 import { useUsers } from "../hooks/useUsers";
+import { useLogout } from "../hooks/useLogout";
 
 /**
  * Componente principal del layout del Dashboard.
@@ -18,37 +19,9 @@ import { useUsers } from "../hooks/useUsers";
 function DashboardLayout() {
     const [isOpen, setIsOpen] = useState(false);
     const toggleMenu = () => setIsOpen(!isOpen);
-    const { logout, logoutOnBrowserClose } = useAuth();
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = sessionStorage.getItem("token");
-        if (!token) {
-            navigate("/login");
-        }
-
-        const MAX_SESSION = 6 * 60 * 60 * 1000;
-        const logoutTimer = setTimeout(() => {
-            logout();
-            navigate("/login");
-        }, MAX_SESSION);
-
-        const handleBeforeUnload = () => {
-            logoutOnBrowserClose();
-            sessionStorage.removeItem("token");
-        };
-        const handlePageHide = () => {
-            logoutOnBrowserClose();
-            sessionStorage.removeItem("token");
-        };
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        window.addEventListener("pagehide", handlePageHide);
-        return () => {
-            clearTimeout(logoutTimer);
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-            window.removeEventListener("pagehide", handlePageHide);
-        };
-    }, [logout, logoutOnBrowserClose, navigate]);
+    // Hook para gestionar el cierre de sesión automático y al cerrar el navegador.
+    useLogout();
 
     return (
         <div className="main-container flex flex-col md:flex-col w-[98%] min-h-[90dvh] max-h-[90dvh] box-border border bg-white border-[#ccc] p-0 md:p-0">

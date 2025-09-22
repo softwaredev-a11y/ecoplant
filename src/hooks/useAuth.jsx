@@ -31,8 +31,6 @@ export const useAuth = () => {
             //Si es exitoso, almacena la siguiente información en variables de session.
             sessionStorage.setItem('token', data.auth);
             sessionStorage.setItem('auth', true)
-            sessionStorage.setItem('username', credentials.username);
-            sessionStorage.setItem('password', credentials.password);
             sessionStorage.setItem("cloudToken", cloudData?.data?.token);
             //Redirige al dashboard.
             navigate('/dashboard');
@@ -59,8 +57,6 @@ export const useAuth = () => {
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('cloudToken');
             sessionStorage.removeItem('auth');
-            sessionStorage.removeItem('username');
-            sessionStorage.removeItem('password');
             sessionStorage.removeItem('listPlants');
             //Redirige a la página de inicio/login
             navigate('/');
@@ -70,7 +66,7 @@ export const useAuth = () => {
      * Elimina el token cuando se cierra la ventana del navegador.
      */
     const logoutOnBrowserClose = useCallback(() => {
-        const logoutUrl = 'https://rastreo.totaltracking.co/api/logout';
+        const logoutUrl = `${import.meta.ENV.VITE_API_URL}/logout`;
         const token = sessionStorage.getItem('token');
         if (token) {
             fetch(logoutUrl, {
@@ -82,24 +78,5 @@ export const useAuth = () => {
             });
         }
     }, []);
-    /**
-     * Renueva la información del token.
-     */
-    const renewToken = async () => {
-        try {
-            const username = sessionStorage.getItem('username');
-            const password = sessionStorage.getItem('password');
-
-            if (!username || !password) {
-                throw new Error("No hay credenciales guardadas");
-            }
-            const { data } = await authApi.login({ username, password });
-            sessionStorage.setItem('token', data.auth);
-        } catch (error) {
-            console.error("Error renovando token:", error);
-            logout();
-        }
-    };
-
-    return { login, logout, renewToken, logoutOnBrowserClose };
+    return { login, logout, logoutOnBrowserClose };
 };

@@ -9,8 +9,6 @@ import { usePlants } from "../hooks/usePlants";
 import { useAuth } from "../hooks/useAuth";
 import { useUsers } from "../hooks/useUsers";
 
-
-
 /**
  * Componente principal del layout del Dashboard.
  * Gestiona el estado del panel lateral (para vistas móviles), y la sesión del usuario
@@ -20,7 +18,7 @@ import { useUsers } from "../hooks/useUsers";
 function DashboardLayout() {
     const [isOpen, setIsOpen] = useState(false);
     const toggleMenu = () => setIsOpen(!isOpen);
-    const { logout, logoutOnBrowserClose, renewToken } = useAuth();
+    const { logout, logoutOnBrowserClose } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,12 +26,6 @@ function DashboardLayout() {
         if (!token) {
             navigate("/login");
         }
-
-        const TOKEN_DURATION = 60 * 60 * 1000;
-        const REFRESH_BEFORE = 5 * 60 * 1000;
-        const interval = setInterval(() => {
-            renewToken();
-        }, TOKEN_DURATION - REFRESH_BEFORE);
 
         const MAX_SESSION = 6 * 60 * 60 * 1000;
         const logoutTimer = setTimeout(() => {
@@ -49,18 +41,14 @@ function DashboardLayout() {
             logoutOnBrowserClose();
             sessionStorage.removeItem("token");
         };
-
         window.addEventListener("beforeunload", handleBeforeUnload);
         window.addEventListener("pagehide", handlePageHide);
-
         return () => {
-            clearInterval(interval);
             clearTimeout(logoutTimer);
             window.removeEventListener("beforeunload", handleBeforeUnload);
             window.removeEventListener("pagehide", handlePageHide);
         };
-    }, [logout, logoutOnBrowserClose, renewToken, navigate]);
-
+    }, [logout, logoutOnBrowserClose, navigate]);
 
     return (
         <div className="main-container flex flex-col md:flex-col w-[98%] min-h-[90dvh] max-h-[90dvh] box-border border bg-white border-[#ccc] p-0 md:p-0">

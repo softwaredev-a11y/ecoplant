@@ -205,7 +205,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
     function handleClick(codeOperation) {
         setIsOpen(false);
-        const commandMessage = getSetterMessage(codeOperation, isAlertOperation, timeValue, timeUnit, mvZeroValue);
+        const commandMessage = getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);
         if (commandMessage === "") {
             setOutOfRangeError(true);
             setTimeout(() => {

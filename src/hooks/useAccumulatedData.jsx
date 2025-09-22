@@ -49,23 +49,20 @@ export const useAccumulatedData = () => {
             // Calcular valores
             const countFiltrado = filtrationEvent.count || 0;
             const filtrationValue = calculateAccumulatedValueFiltration(caudal, countFiltrado);
-            const filtrationCubicMetersPerMinute = gpmToCubicMetersPerMinute(filtrationValue);
 
             const countEnjuague = rinseEvent?.count || 0;
             const rinseValue = calculateAccumulatedValueRinse(caudal, countEnjuague);
-            const rinseCubicMetersPerMinute = gpmToCubicMetersPerMinute(rinseValue);
 
             const countRetrolavado = backwashEvent?.count || 0;
             const backwashValue = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
-            const backwashCubicMetersPerMinute = gpmToCubicMetersPerMinute(backwashValue);
 
             const totalPurge = rinseValue + backwashValue;
             const multiplyPurge = gpmToCubicMetersPerMinute(totalPurge);
 
             setData({
-                filtration: `${thousandsSeparator(Math.round(filtrationValue))}gal-${filtrationCubicMetersPerMinute.toFixed(2)} m³/min`,
-                rinse: `${thousandsSeparator(Math.round(rinseValue))} gal-${rinseCubicMetersPerMinute.toFixed(2)} m³/min`,
-                backwash: `${thousandsSeparator(Math.round(backwashValue))} gal-${backwashCubicMetersPerMinute.toFixed(2)} m³/min`,
+                filtration: `${thousandsSeparator(Math.round(filtrationValue))} gal`,
+                rinse: `${thousandsSeparator(Math.round(rinseValue))} gal`,
+                backwash: `${thousandsSeparator(Math.round(backwashValue))} `,
                 purge: `${thousandsSeparator(Math.round(totalPurge))} gal-${multiplyPurge.toFixed(2)} m³/min`
             });
 

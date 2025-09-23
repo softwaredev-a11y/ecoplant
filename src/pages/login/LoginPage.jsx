@@ -28,6 +28,7 @@ function LoginPage() {
  */
 function FormLogin() {
     const [error, setError] = useState(null);
+    //Los datos utilizados son los requeridos para el obtener 
     const [dataForm, setDataForm] = useState({ username: '', password: '', scheme: "finite", limit: 21600 });
     const { isLoadingLogin, login } = useAuth();
 

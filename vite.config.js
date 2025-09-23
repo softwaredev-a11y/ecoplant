@@ -12,4 +12,12 @@ export default defineConfig(({ command }) => ({
             "@": path.resolve(__dirname, "./src"),
         },
     },
+    server: {
+        proxy: {
+            '/api': {
+                target: 'http://localhost', // La URL base de tu servidor XAMPP
+                changeOrigin: true, // Necesario para que el servidor de destino reciba la petición correctamente
+            }
+        }
+    }
 }))

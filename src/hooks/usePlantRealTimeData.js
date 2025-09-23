@@ -1,4 +1,5 @@
 import { getFlowCurrentValue, getCodeCurrentProcess, stateProcess } from '@/utils/plantUtils';
+import {HEADER_MESSAGES_SOCKET} from '@/utils/constants'
 import { useState, useEffect } from 'react';
 import { usePlantDetailSocket } from './usePlants';
 
@@ -20,7 +21,7 @@ export function usePlantRealTimeData() {
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;
         if (!message) return;
-        if (message.includes("REV")) {
+        if (message.includes(HEADER_MESSAGES_SOCKET.GET_CURRENT_PROCCESS)) {
             const processCode = getCodeCurrentProcess(message);
             if (processCode !== null) {
                 setCurrentlyProccess(stateProcess(processCode));
@@ -28,7 +29,7 @@ export function usePlantRealTimeData() {
             const eventTime = lastEvent?.payload?.event?.timestamp || Date.now();
             setBegin(eventTime);
         }
-        if (message.includes("BL=")) {
+        if (message.includes(HEADER_MESSAGES_SOCKET.GET_CURRENT_FLOW)) {
             setCurrentlyValue(getFlowCurrentValue(message));
         }
     }, [lastEvent]);

@@ -26,7 +26,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
             if (isLoadingSyrus4) {
                 return "Consultando";
             } if (syrus4Data?.gps === undefined) {
-                return "Información no disponible"
+                return "Error de comunicación. Intente más tarde."
             }
             return syrus4Data.gps ? "Ok" : "No óptimo";
         }

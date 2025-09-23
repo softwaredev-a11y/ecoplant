@@ -7,12 +7,19 @@ export const COMMANDS = {
 };
 
 export const SYRUS_FOUR_COMMANDS = {
-    //Obtiene el valor de retrolavado, filtración y enjuague de los dispositivos Syrus 4.
+    //Obtiene el valor de retrolavado, filtración, enjuague alerta y alarmado de los dispositivos Syrus 4.
     GET_ECOPLANT_PARAMS: "apx-redis-cli hgetall ecoplant_params",
     //Obtiene las aplicaciones instaladas en el dispositivo. Se utiliza para obtener la versión (app_name y version, descripción y modelo).
     GET_ECOPLANT_VERSION: "syrus-apps-manager list-instances",
     //Obtiene el estado de la conexión del gps.
     GET_ECOPLANT_GPS_STATUS: "apx-gps status",
+    //Permite cambiar el valor de operación de las Ecoplantas.
+    SET_ECOPLANT_PARAM: "apx-redis-cli publish user"
+}
+
+export const HEADER_MESSAGES_SOCKET = {
+    GET_CURRENT_PROCCESS: "REV",
+    GET_CURRENT_FLOW: "BL="
 }
 
 export const OPERATION_CODES = {
@@ -37,8 +44,15 @@ export const RAW_DATA_CODES = {
     BACKWASH: 12,
 };
 
-
 export const ECOPLANT_GROUPS = {
     SUPER_USERS_GROUP: "123",
     DEVELOP_GROUP: "22004"
+}
+
+export const MAX_VALUE_OPERATIONS = {
+    FILTRATION: 99999,
+    BACKWASH: 99999,
+    RINSE: 99999,
+    FLOW_ALERT: 15000,
+    INSUFFICIENT_FLOW_ALARM: 15000
 }

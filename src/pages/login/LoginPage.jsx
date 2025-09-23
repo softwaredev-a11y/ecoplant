@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import Logo from "../components/Logo";
-import Error from "../components/ErrorMessage";
-import logoImage from '../assets/images/logo.webp';
+import Logo from "@/components/Logo";
+import Error from "@/components/ErrorMessage";
+import logoImage from '@/assets/images/logo.webp';
 
 /**
  * Componente de la página de inicio de sesión.

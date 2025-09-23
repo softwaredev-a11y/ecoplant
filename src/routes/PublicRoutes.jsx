@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import LoginPage from "../pages/LoginPage";
-import NotFoundPage from "../pages/NotFoundPage";
+import LoginPage from "@/pages/login/LoginPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 /**
  * Define y gestiona las rutas públicas de la aplicación.

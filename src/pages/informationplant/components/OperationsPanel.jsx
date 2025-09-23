@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import HeaderPanel from './HeaderPanel';
-import { useCommandExecution } from '../../../hooks/usePlants';
-import { formatTime, getSetterMessage } from '../../../utils/plantUtils';
-import { getEcoplantParams } from '../../../utils/syrus4Utils';
-import { COMMANDS, OPERATION_CODES } from '../../../utils/constants';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../../components/ui/alert-dialog';
+import HeaderPanel from '@/HeaderPanel';
+import { useCommandExecution } from '@/hooks/usePlants';
+import { formatTime, getSetterMessage } from '@/utils/plantUtils';
+import { getEcoplantParams } from '@/utils/syrus4Utils';
+import { COMMANDS, OPERATION_CODES } from '@/utils/constants';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useUsers } from "@/hooks/useUsers";
-import { useOperationParameters } from '../../../hooks/useOperationParameters';
+import { useOperationParameters } from '@/hooks/useOperationParameters';
 
 function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { parameters, commandStatus, mvZeroValue } = useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4);

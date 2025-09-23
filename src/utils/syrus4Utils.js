@@ -1,4 +1,5 @@
-import { conversionToGpm, formatTime } from "./plantUtils";
+import { conversionToGpm, formatTime, conversionToVoltage, getTimeInSeconds } from "./plantUtils";
+import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS } from './constants'
 
 /**
  * Busca la instancia de la aplicación 'ecoplant' en una lista y devuelve una cadena
@@ -44,11 +45,11 @@ export function getEcoplantParams(response, mvZeroValue) {
     const adcAlarmValue = getValueParam('ADC_ALARM_THRESHOLD', response);
 
     return {
-        filtracion: filtrationValue ? formatTime('segundos', parseInt(filtrationValue, 10)) : 'Problemas de comunicación. Intente más tarde.',
-        retrolavado: invWashingValue ? formatTime('segundos', parseInt(invWashingValue, 10)) : 'Problemas de comunicación. Intente más tarde.',
-        enjuague: rinseValue ? formatTime('segundos', parseInt(rinseValue, 10)) : 'Problemas de comunicación. Intente más tarde.',
-        alerta: adcWarningValue ? conversionToGpm(adcWarningValue, mvZeroValue) : 'Problemas de comunicación. Intente más tarde.',
-        alarma: adcAlarmValue ? conversionToGpm(adcAlarmValue, mvZeroValue) : 'Problemas de comunicación. Intente más tarde.',
+        filtracion: filtrationValue ? formatTime('segundos', parseInt(filtrationValue, 10)) : '',
+        retrolavado: invWashingValue ? formatTime('segundos', parseInt(invWashingValue, 10)) : '',
+        enjuague: rinseValue ? formatTime('segundos', parseInt(rinseValue, 10)) : '',
+        alerta: adcWarningValue ? conversionToGpm(adcWarningValue, mvZeroValue) : '',
+        alarma: adcAlarmValue ? conversionToGpm(adcAlarmValue, mvZeroValue) : '',
     };
 }
 
@@ -57,4 +58,25 @@ export function getValueParam(key, responseString) {
     const regex = new RegExp(`${key}\\s+([\\d.]+)`);
     const match = responseString.match(regex);
     return match ? match[1] : null;
+}
+
+const OPERATION_CONFIG = {
+    [OPERATION_CODES.FILTRATION]: { operation: "fil_time", isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.FILTRATION] },
+    [OPERATION_CODES.BACKWASH]: { operation: "invw_time", isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.BACKWASH] },
+    [OPERATION_CODES.RINSE]: { operation: "rinse_time", isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.RINSE] },
+    [OPERATION_CODES.FLOW_ALERT]: { operation: "adc_fil_warning_thr", isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.FLOW_ALERT] },
+    [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { operation: "adc_fil_alarm_thr", isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM] },
+};
+export function getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) {
+    const config = OPERATION_CONFIG[codeOperation];
+    const typeOperation = config.operation;
+    let convertedValue;
+    if (config.isAlert) {
+        convertedValue = conversionToVoltage(timeValue, mvZeroValue);
+    } else {
+        convertedValue = getTimeInSeconds(timeUnit, timeValue);
+    }
+    if (convertedValue > config.maxValue) return "";
+    const command = `${SYRUS_FOUR_COMMANDS.SET_ECOPLANT_PARAM} "{"${typeOperation}":${convertedValue}}"`;
+    return command;
 }

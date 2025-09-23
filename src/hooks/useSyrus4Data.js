@@ -1,6 +1,6 @@
 import { useCallback, useState, useRef, useEffect } from "react";
 import { SYRUS_FOUR_COMMANDS } from '@/utils/constants';
-import plantsApi from '../services/plants.service';
+import plantsApi from '@/services/plants.service';
 import axios from "axios";
 
 /**

@@ -6,7 +6,7 @@ import { OPERATION_CODES } from '@/utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useUsers } from "@/hooks/useUsers";
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
-import { getSetterCommandSyrus4 } from '../../../utils/syrus4Utils';
+import { getSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import plantsApi from '@/services/plants.service';
 
 function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {

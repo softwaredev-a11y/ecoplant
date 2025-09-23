@@ -1,8 +1,8 @@
 import { getPlantModel, getSoftwareVersion, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
-import { formatEcoplantVersion } from '../../../utils/syrus4Utils'
-import notAvailableImg from '../../../assets/images/image-not-available.webp'
+import { formatEcoplantVersion } from '@/utils/syrus4Utils'
+import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
-import { usePlantRealTimeData } from '../../../hooks/usePlantRealTimeData';
+import { usePlantRealTimeData } from '@/hooks/usePlantRealTimeData';
 
 
 /**

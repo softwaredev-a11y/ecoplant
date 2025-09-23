@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { UserContext } from "../context/UserInfoContext";
+import { UserContext } from "@/context/UserInfoContext";
 
 /**
  * Hook personalizado para acceder a la información del usuario desde `UserContext`.

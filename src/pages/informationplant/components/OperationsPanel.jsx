@@ -1,25 +1,22 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import HeaderPanel from '@/HeaderPanel';
+import HeaderPanel from './HeaderPanel';
 import { useCommandExecution } from '@/hooks/usePlants';
 import { formatTime, getSetterMessage } from '@/utils/plantUtils';
-import { getEcoplantParams } from '@/utils/syrus4Utils';
-import { COMMANDS, OPERATION_CODES } from '@/utils/constants';
+import { OPERATION_CODES } from '@/utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useUsers } from "@/hooks/useUsers";
-import { useOperationParameters } from '@/hooks/useOperationParameters';
+import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
+import { getSetterCommandSyrus4 } from '../../../utils/syrus4Utils';
+import plantsApi from '@/services/plants.service';
 
 function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
-    const { parameters, commandStatus, mvZeroValue } = useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4);
-    const dataSyrusFours = isLoadingSyrus4
-        ? "Consultando"
-        : syrus4Data?.params
-            ? getEcoplantParams(syrus4Data.params, mvZeroValue)
-            : "Problemas de comunicación. Intente más tarde";
-    const getDisplayValue = (cmd, value, suffix = "") => {
-        if (!isOnline) return "Información no disponible";
-        if (commandStatus[cmd] === "loading") return "Consultando";
-        if (commandStatus[cmd] === "error") return "Problemas de comunicación. Intente más tarde";
-        return suffix ? `${value} ${suffix}` : value;
+    const { parameters, mvZeroValue } = useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4);
+    // 2. Una única función para obtener el valor a mostrar
+    const getDisplayValue = (param) => {
+        if (param.status === 'unavailable') return "Información no disponible";
+        if (param.status === 'loading') return "Consultando";
+        if (param.status === 'error') return "Problemas de comunicación. Intente más tarde.";
+        return param.value;
     };
 
     return (
@@ -31,28 +28,31 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.FILTRATION}
                         typeOperation="Filtración"
-                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : dataSyrusFours.filtracion : getDisplayValue(COMMANDS.FILTRATION, parameters.filtrado)}
+                        currentlyValue={getDisplayValue(parameters.filtracion)}
                         buttonOperation="Cambiar filtración"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
+                        isSyrus4={isSyrus4}
                     />
                     <Operations
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.BACKWASH}
                         typeOperation="Retrolavado"
-                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : dataSyrusFours.retrolavado : getDisplayValue(COMMANDS.BACKWASH, parameters.retrolavado)}
+                        currentlyValue={getDisplayValue(parameters.retrolavado)}
                         buttonOperation="Cambiar retrolavado"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
+                        isSyrus4={isSyrus4}
                     />
                     <Operations
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.RINSE}
                         typeOperation="Enjuague"
-                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : dataSyrusFours.enjuague : getDisplayValue(COMMANDS.RINSE, parameters.enjuague)}
+                        currentlyValue={getDisplayValue(parameters.enjuague)}
                         buttonOperation="Cambiar enjuague"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
+                        isSyrus4={isSyrus4}
                     />
                 </div>
                 <div className="border-b border-b-[#ccc]">
@@ -60,19 +60,21 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.FLOW_ALERT}
                         typeOperation="Alerta de flujo disminuyendo"
-                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : `${dataSyrusFours.alerta} gpm` : getDisplayValue(COMMANDS.FLOW_ALERT, parameters.valorAlertaFlujo, "gpm")}
+                        currentlyValue={getDisplayValue(parameters.valorAlertaFlujo)}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
+                        isSyrus4={isSyrus4}
                     />
                     <Operations
                         isOnline={isOnline}
                         codeOperation={OPERATION_CODES.INSUFFICIENT_FLOW_ALARM}
-                        typeOperation="Alarmado por flujo insuficiente"
-                        currentlyValue={isSyrus4 ? isLoadingSyrus4 ? "Consultando" : `${dataSyrusFours.alarma} gpm` : getDisplayValue(COMMANDS.INSUFFICIENT_FLOW_ALARM, parameters.valorAlarmaInsuficiente, "gpm")}
+                        typeOperation="Alarma por flujo insuficiente"
+                        currentlyValue={getDisplayValue(parameters.valorAlarmaInsuficiente)}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
                         plant={plant}
+                        isSyrus4={isSyrus4}
                     />
                 </div>
             </div>
@@ -80,7 +82,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
     );
 }
 
-function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline, plant }) {
+function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline, plant, isSyrus4 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [timeValue, setTimeValue] = useState("");
     const [timeUnit, setTimeUnit] = useState('none');
@@ -172,11 +174,15 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         };
     }, []);
 
-    const sendAndQuery = async (commandMessage, codeOperation) => {
+    const sendAndQuery = async (commandMessage, codeOperation, isSyrus4) => {
         try {
             if (commandMessage != "") {
                 console.log(`Se está enviando el siguiente comando: ${commandMessage}`);
-                await executeMultipleCommands(plant.id, [commandMessage]);
+                if (!isSyrus4) {
+                    await executeMultipleCommands(plant.id, [commandMessage]);
+                } else {
+                    await plantsApi.commandExecutionSyrusFour(commandMessage, [plant.device])
+                }
             } else {
                 console.error("No existe un mensaje, por lo que no se puede formatear.")
             }
@@ -185,7 +191,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }
     };
 
-    const attemptToSend = (attemptsLeft, codeOp, commandMessage) => {
+    const attemptToSend = (attemptsLeft, codeOp, commandMessage, isSyrus4) => {
         if (attemptsLeft === 0) {
             setIsSending(false);
             setCommandFailed(true);
@@ -196,16 +202,16 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }
 
         startCountdown();
-        sendAndQuery(commandMessage, codeOp);
+        sendAndQuery(commandMessage, codeOp, isSyrus4);
 
         timeoutRef.current = setTimeout(() => {
-            attemptToSend(attemptsLeft - 1, codeOp);
+            attemptToSend(attemptsLeft - 1, codeOp, commandMessage, isSyrus4);
         }, 15000);
     };
 
-    function handleClick(codeOperation) {
+    async function handleClick(codeOperation, isSyrus4) {
         setIsOpen(false);
-        const commandMessage = getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);
+        let commandMessage = isSyrus4 ? getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);
         if (commandMessage === "") {
             setOutOfRangeError(true);
             setTimeout(() => {
@@ -219,7 +225,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         setCommandFailed(false);
         initialValueRef.current = currentlyValue;
         setIsSending(true);
-        attemptToSend(2, codeOperation, commandMessage);
+        attemptToSend(2, codeOperation, commandMessage, isSyrus4);
     };
 
     const formattedNewValue = useMemo(() => {
@@ -271,7 +277,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleClick(codeOperation)} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
+                                        <AlertDialogAction onClick={() => handleClick(codeOperation, isSyrus4)} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>

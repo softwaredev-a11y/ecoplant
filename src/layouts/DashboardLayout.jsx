@@ -1,14 +1,14 @@
-import Logo from "../components/Logo";
-import logoImage from '../assets/images/logo.webp';
-import searchIcon from '../assets/icons/search.svg'
+import Logo from "@/components/Logo";
+import logoImage from '@/assets/images/logo.webp';
+import searchIcon from '@/assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState, useMemo, useEffect } from "react";
-import { getPlantModel } from "../utils/plantUtils";
-import { usePlants } from "../hooks/usePlants";
-import { useAuth } from "../hooks/useAuth";
-import { useUsers } from "../hooks/useUsers";
-import { useLogout } from "../hooks/useLogout";
+import { getPlantModel } from "@/utils/plantUtils";
+import { usePlants } from "@/hooks/usePlants";
+import { useAuth } from "@/hooks/useAuth";
+import { useUsers } from "@/hooks/useUsers";
+import { useLogout } from "@/hooks/useSessionTimeout";
 
 /**
  * Componente principal del layout del Dashboard.

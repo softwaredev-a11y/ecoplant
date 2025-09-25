@@ -7,7 +7,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useUsers } from "@/hooks/useUsers";
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { getSetterCommandSyrus4 } from '@/utils/syrus4Utils';
-import plantsApi from '@/services/plants.service';
 
 function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { parameters, mvZeroValue } = useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4);
@@ -177,12 +176,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const sendAndQuery = async (commandMessage, codeOperation, isSyrus4) => {
         try {
             if (commandMessage != "") {
-                console.log(`Se está enviando el siguiente comando: ${commandMessage}`);
-                if (!isSyrus4) {
-                    await executeMultipleCommands(plant.id, [commandMessage]);
-                } else {
-                    await plantsApi.commandExecutionSyrusFour(commandMessage, [plant.device])
-                }
+                await executeMultipleCommands(plant.id, [commandMessage], isSyrus4);
             } else {
                 console.error("No existe un mensaje, por lo que no se puede formatear.")
             }

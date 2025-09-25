@@ -1,18 +1,18 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/plantUtils';
-import { COMMANDS, SOCKET_KEYS } from '@/utils/constants';
+import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET } from '@/utils/constants';
+import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
 
 /**
- * Hook para gestionar los parámetros de operación de dispositivos inferiores a Syrus 4.
+ * Hook para gestionar los parámetros de operación.
  *
- * Envía comandos de tipo query (QED) a dispositivos inferiores a syrus 4 al conectar, gestiona las 
- * respuestas que llegan vía WebSocket y maneja un sistema de reintentos para asegurar la obtención 
- * de los datos.
+ * Envía comandos de tipo query (QED) a dispositivos inferiores a syrus 4 al conectar, gestiona las respuestas que llegan vía WebSocket. 
+ * Maneja un sistema de reintentos para asegurar la obtención de los datos en el caso de dispositivos inferiores a syrus 4.
  * @param {object} plant - La planta seleccionada.
  * @param {boolean} isOnline - Indica si el dispositivo está online.
  * @param {boolean} isLoadingStatus - Indica si la información de conexión aún se está cargando.
- * @param {boolean} isSyrus4 - Indica si la planta es un Syrus 4 (en cuyo caso, el hook no se ejecuta).
+ * @param {boolean} isSyrus4 - Indica si la planta es un Syrus 4, en cuyo caso, no se ejecutan los comandos de tipo QED.
  * @returns {object} Un objeto con los parámetros, el estado de los comandos y el valor mvZero.
  */
 export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4) {
@@ -76,40 +76,39 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;
         if (!message) return;
-
-        const result = processSocketMessage(message, mvZeroValue);
+        const result = isSyrus4 ? proccessSyrus4SocketMessage(message, mvZeroValue) : processSocketMessage(message, mvZeroValue);
         if (!result) return;
 
         switch (result.key) {
             case SOCKET_KEYS.FILTRATION:
                 setFiltrado(result.value);
                 setCommandStatus(prev => ({ ...prev, [COMMANDS.FILTRATION]: "success" }));
-                if (!message.includes('RER')) sessionStorage.setItem("filtrado", message);
+                if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("filtrado", message);
                 break;
             case SOCKET_KEYS.BACKWASH:
                 setRetrolavado(result.value);
                 setCommandStatus(prev => ({ ...prev, [COMMANDS.BACKWASH]: "success" }));
-                if (!message.includes('RER')) sessionStorage.setItem("retrolavado", message);
+                if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("retrolavado", message);
                 break;
             case SOCKET_KEYS.RINSE:
                 setEnjuague(result.value);
                 setCommandStatus(prev => ({ ...prev, [COMMANDS.RINSE]: "success" }));
-                if (!message.includes('RER')) sessionStorage.setItem("enjuague", message);
+                if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("enjuague", message);
                 break;
             case SOCKET_KEYS.FLOW_ALERT:
                 setValorAlertaFlujo(result.value);
                 setCommandStatus(prev => ({ ...prev, [COMMANDS.FLOW_ALERT]: "success" }));
-                if (!message.includes('RER')) sessionStorage.setItem("alertaflujo", message);
+                if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("alertaflujo", message);
                 break;
             case SOCKET_KEYS.INSUFFICIENT_FLOW_ALARM:
                 setValorAlarmaInsuficiente(result.value);
                 setCommandStatus(prev => ({ ...prev, [COMMANDS.INSUFFICIENT_FLOW_ALARM]: "success" }));
-                if (!message.includes('RER')) sessionStorage.setItem("alarmainsuficiente", message);
+                if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("alarmainsuficiente", message);
                 break;
             default:
                 break;
         }
-    }, [lastEvent, mvZeroValue]);
+    }, [lastEvent, mvZeroValue, isSyrus4]);
 
     return { parameters: { filtrado, retrolavado, enjuague, valorAlarmaInsuficiente, valorAlertaFlujo, }, commandStatus, mvZeroValue };
 }

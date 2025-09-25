@@ -76,7 +76,7 @@ export const useAuth = () => {
      * Elimina el token cuando se cierra la ventana del navegador.
      */
     const logoutOnBrowserClose = useCallback(() => {
-        const logoutUrl = `${import.meta.ENV.VITE_API_URL}/logout`;
+        const logoutUrl = `${import.meta.env.VITE_API_URL}/logout`;
         const token = sessionStorage.getItem('token');
         if (token) {
             fetch(logoutUrl, {

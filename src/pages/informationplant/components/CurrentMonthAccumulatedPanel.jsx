@@ -5,7 +5,7 @@ import { useAccumulatedData } from "@/hooks/useAccumulatedData"; // Importar el 
  * Componente que muestra los valores acumulados de operación para el mes actual.
  * Obtiene y calcula los datos de filtración, retrolavado, enjuague y purgado.
  * @param {object} props - Las propiedades del componente.
- * @param {string} props.idPlant - ID de la planta a consultar.
+ * @param {number} props.idPlant - ID de la planta a consultar.
  * @param {string} props.mvZeroValue - Valor 'mv_zero' de la planta, usado para cálculos de caudal.
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
  * @returns {JSX.Element} El panel con los datos acumulados del mes actual.

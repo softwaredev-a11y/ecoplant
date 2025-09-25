@@ -6,8 +6,8 @@ import LastMonthAccumulatedPanel from "../components/LastMonthAccumulatedPanel";
 /**
  * Componente que renderiza los valores acumulados en el mes actual y anterior de la planta.
  * @param {object} props - Las propiedades del componente.
- * @param {string} props.plant - Planta seleccionada y a la cual se le va a calcular los valores acumulados.
- * @param {string} props.isOnline - Booleano que determina si el dispositivo está online o no.
+ * @param {object} props.plant - Planta seleccionada y a la cual se le va a calcular los valores acumulados.
+ * @param {boolean} props.isOnline - Booleano que determina si el dispositivo está online o no.
  * @returns {JSX.Element} El elemento JSX que contiene los paneles de acumulados.
  */
 function AcummulatedPanel({ plant, isOnline }) {

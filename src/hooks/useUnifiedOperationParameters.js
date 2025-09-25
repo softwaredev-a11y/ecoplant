@@ -8,10 +8,6 @@ import { COMMANDS } from '@/utils/constants';
  * Hook adaptador que unifica la obtención de parámetros de operación para dispositivos
  * Syrus 4 y modelos inferiores.
  *
- * Abstrae la complejidad de las dos fuentes de datos diferentes (API REST vs WebSocket)
- * y devuelve una estructura de datos consistente para que los componentes de la UI
- * la consuman sin necesidad de lógica condicional.
- *
  * @param {object} plant - La planta seleccionada.
  * @param {boolean} isOnline - Indica si el dispositivo está online.
  * @param {boolean} isLoadingStatus - Indica si el estado de conexión se está cargando.
@@ -38,17 +34,28 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
                 valorAlertaFlujo: unavailableParam, valorAlarmaInsuficiente: unavailableParam,
             };
         }
-
         if (isSyrus4) {
             const status = isLoadingSyrus4 ? 'loading' : (syrus4Data?.params ? 'success' : 'error');
             const data = status === 'success' ? getEcoplantParams(syrus4Data.params, mvZeroValue) : {};
 
+            // Lógica de fusión:
+            // 1. Usa el valor del socket (legacyParams) si existe y no está vacío.
+            // 2. Si no, usa el valor de la carga inicial (syrus4Data).
+            // 3. Si no, muestra un mensaje de error o carga.
+            const filtracionValue = legacyParams.filtrado || data.filtracion || 'Problemas de comunicación. Intente más tarde.';
+            const retrolavadoValue = legacyParams.retrolavado || data.retrolavado || 'Problemas de comunicación. Intente más tarde.';
+            const enjuagueValue = legacyParams.enjuague || data.enjuague || 'Problemas de comunicación. Intente más tarde.';
+            const alertaValue = legacyParams.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : (data.alerta ? `${data.alerta} gpm` : 'Problemas de comunicación. Intente más tarde.');
+            const alarmaValue = legacyParams.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : (data.alarma ? `${data.alarma} gpm` : 'Problemas de comunicación. Intente más tarde.');
+
+            const finalStatus = (status === 'loading' || status === 'success') ? status : (data.filtracion ? status : 'error');
+
             return {
-                filtracion: { value: data.filtracion || 'Problemas de comunicación. Intente más tarde.', status: (status == 'loading' || status == 'success') ? status : data.filtracion ? status : 'error' },
-                retrolavado: { value: data.retrolavado || 'Problemas de comunicación. Intente más tarde.', status: (status == 'loading' || status == 'success') ? status : data.retrolavado ? status : 'error' },
-                enjuague: { value: data.enjuague || 'Problemas de comunicación. Intente más tarde.', status: (status == 'loading' || status == 'success') ? status : data.enjuague ? status : 'error' },
-                valorAlertaFlujo: { value: data.alerta ? `${data.alerta} gpm` : 'Problemas de comunicación. Intente más tarde.', status: (status == 'loading' || status == 'success') ? status : data.alerta ? status : 'error' },
-                valorAlarmaInsuficiente: { value: data.alarma ? `${data.alarma} gpm` : 'Problemas de comunicación. Intente más tarde.', status: (status == 'loading' || status == 'success') ? status : data.alarma ? status : 'error' },
+                filtracion: { value: filtracionValue, status: finalStatus },
+                retrolavado: { value: retrolavadoValue, status: finalStatus },
+                enjuague: { value: enjuagueValue, status: finalStatus },
+                valorAlertaFlujo: { value: alertaValue, status: finalStatus },
+                valorAlarmaInsuficiente: { value: alarmaValue, status: finalStatus },
             };
         } else {
             return {

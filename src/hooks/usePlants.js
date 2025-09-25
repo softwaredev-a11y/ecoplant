@@ -99,7 +99,7 @@ export const useCommandExecution = () => {
     return () => abortControllerRef.current?.abort();
   }, []);
 
-  const executeMultipleCommands = useCallback(async (idDevice, commands) => {
+  const executeMultipleCommands = useCallback(async (idDevice, commands, isSyrus4 = false) => {
     // Cancela cualquier ejecución de comandos anterior
     abortControllerRef.current?.abort();
     const controller = new AbortController();
@@ -114,8 +114,8 @@ export const useCommandExecution = () => {
       for (let i = 0; i < commands.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
 
-        const response = await plants.commandExecution(idDevice, commands[i], signal);
-        if (response?.data?.cid) cids.push(response.data.cid);
+        const response = await plants.commandExecution(idDevice, commands[i], isSyrus4, signal);
+        if (!isSyrus4 && response?.data?.cid) cids.push(response.data.cid);
 
         if (i < commands.length - 1) {
           await new Promise((resolve, reject) => {

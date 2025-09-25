@@ -233,7 +233,6 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }, 15000);
     };
 
-    
     function handleClick(codeOperation, isSyrus4) {
         setIsOpen(false);
         let commandMessage = isSyrus4 ? getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);

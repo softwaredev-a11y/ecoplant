@@ -2,13 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { useCallback, useState } from 'react';
 import authApi from '@/services/auth.service';
 
-
 /**
 * Hook personalizado para gestionar la autenticación del usuario.
 * Proporciona un conjunto de funciones para manejar el ciclo de vida de la sesión,
 * incluyendo el inicio de sesión, cierre de sesión, renovación de token y
 * el manejo del cierre del navegador.
-* @returns {AuthHook} Un objeto con las funciones de autenticación.
+* @returns {useAuth} Un objeto con las funciones de autenticación.
 */
 export const useAuth = () => {
     const navigate = useNavigate();
@@ -29,6 +28,7 @@ export const useAuth = () => {
             //Envía la información del usuario (email, passowrd)
             setIsLoadingLogin(true);
             const { data } = await authApi.login(credentials);
+            //Consulta el token de admin en el servidor de la empresa.
             const responseCloud = await fetch('/api/cloud_login.php', { method: 'POST' });
             if (!responseCloud.ok) {
                 throw new Error(`El proxy de Cloud falló con estado: ${responseCloud.status}`);
@@ -38,6 +38,7 @@ export const useAuth = () => {
             sessionStorage.setItem('token', data.auth);
             sessionStorage.setItem('auth', true)
             sessionStorage.setItem("cloudToken", cloudData?.token);
+            sessionStorage.setItem("admToken", cloudData?.token_pegasus);
             //Redirige al dashboard.
             navigate('/dashboard');
         } catch (error) {
@@ -66,6 +67,7 @@ export const useAuth = () => {
             sessionStorage.removeItem('cloudToken');
             sessionStorage.removeItem('auth');
             sessionStorage.removeItem('listPlants');
+            sessionStorage.removeItem("admToken");
             //Redirige a la página de inicio/login
             navigate('/');
         }

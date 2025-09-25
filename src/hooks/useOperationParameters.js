@@ -13,7 +13,7 @@ import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
  * @param {boolean} isOnline - Indica si el dispositivo está online.
  * @param {boolean} isLoadingStatus - Indica si la información de conexión aún se está cargando.
  * @param {boolean} isSyrus4 - Indica si la planta es un Syrus 4, en cuyo caso, no se ejecutan los comandos de tipo QED.
- * @returns {object} Un objeto con los parámetros, el estado de los comandos y el valor mvZero.
+ * @returns {{parameters: object|null, commandStatus: string|null, mvZeroValue: string|null}} Un objeto con los parámetros, el estado de los comandos y el valor mvZero.
  */
 export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4) {
     const { executeMultipleCommands } = useCommandExecution();

@@ -8,7 +8,7 @@ import { OPERATION_CODES } from '@/utils/constants';
 * Realiza una solicitud a la API, y obtiene los valores relacionados a filtración, retrolavado y
 * enjuague, en un periodo determinado de tiempo (mes actual o pasado). Posteriormente realiza el cálculo
 * y conversión de estos para mostrarlos al usuario.
-* @returns {object} Un objecto con los valores acumulados correspondientes a filtración, retrolavado, enjuague y purgado.
+* @returns {{ data: object|null,  isLoading: boolean, combinedIsLoading: boolean,  error: string|null,  fetchAndCalculateData: function}} Un objecto con los valores acumulados correspondientes a filtración, retrolavado, enjuague y purgado.
 */
 export const useAccumulatedData = () => {
     const { rawDataConsult, isLoading: isFetchingRawData } = useRawDataConsult();

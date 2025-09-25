@@ -8,7 +8,7 @@ import axios from "axios";
  *
  * @param {object} plant - El objeto de la planta seleccionada, que debe contener la propiedad `device`.
  * @param {boolean} isSyrus4 - Indica si el dispositivo es un Syrus 4.
- * @returns {object} Un objeto con los datos del Syrus 4, estados de carga/error y la función para iniciar el proceso.
+ * @returns {isSyrus4: booolean, syrus4Data: object|null, isLoading: boolean, error: string, fetchData: function} Un objeto con los datos del Syrus 4, estados de carga/error y la función para iniciar el proceso.
  */
 export function useSyrus4Data(plant, isSyrus4) {
     const [syrus4Data, setSyrus4Data] = useState({});

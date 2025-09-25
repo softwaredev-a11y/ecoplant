@@ -120,6 +120,9 @@ export const MAX_VALUE_OPERATIONS = {
     INSUFFICIENT_FLOW_ALARM: 15000
 }
 
+/**
+ * Centraliza los valores de error en la aplicación.
+ */
 export const ERROR_MESSAGES = {
     COMMUNICATION_PROBLEMS: "Error de comunicación. Intente más tarde",
     INFORMATION_NOT_AVAILABLE: "Información no disponible",

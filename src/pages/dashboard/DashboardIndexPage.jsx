@@ -1,6 +1,4 @@
 import { LayoutDashboard } from "lucide-react";
-
-
 /**
  * Página de bienvenida que se muestra en el dashboard.
  * Muestra al usuario un mensaje de bienvenida, antes de realizar cualquier acción.

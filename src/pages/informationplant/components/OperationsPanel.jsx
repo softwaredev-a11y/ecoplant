@@ -7,6 +7,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useUsers } from "@/hooks/useUsers";
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { getSetterCommandSyrus4 } from '@/utils/syrus4Utils';
+import { toast } from 'react-toastify';
 
 /**
  * Componente que muestra la información de los parámetros de operación.
@@ -114,7 +115,6 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const [countdown, setCountdown] = useState(15);
     const [displayValue, setDisplayValue] = useState(currentlyValue);
     const [isShowingServerError, setIsShowingServerError] = useState(false);
-    const [outOfRangeError, setOutOfRangeError] = useState(false);
 
     const timeoutRef = useRef(null);
     const initialValueRef = useRef(null);
@@ -123,6 +123,17 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none');
     const { executeMultipleCommands } = useCommandExecution();
+    const notify = () => toast.error("Error: Valor fuera de rango", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
+
     //Consume hook personalizado para determinar si es super usuario o no.
     const { isSuperUser } = useUsers();
     //Obtiene los valores que se introduzcan en el input.
@@ -208,6 +219,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const sendAndQuery = async (commandMessage, codeOperation, isSyrus4) => {
         try {
             if (commandMessage != "") {
+                console.log("Se está enviando el siguiente comando: ", commandMessage)
                 await executeMultipleCommands(plant.id, [commandMessage], isSyrus4);
             } else {
                 console.error("No existe un mensaje, por lo que no se puede formatear.")
@@ -253,15 +265,11 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         setIsOpen(false);
         let commandMessage = isSyrus4 ? getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);
         if (commandMessage === "") {
-            setOutOfRangeError(true);
-            setTimeout(() => {
-                setOutOfRangeError(false);
-                setTimeValue("");
-                setTimeUnit("none");
-            }, 10000);
+            notify();
+            setTimeValue("");
+            setTimeUnit("none");
             return;
         }
-
         setCommandFailed(false);
         initialValueRef.current = currentlyValue;
         setIsSending(true);
@@ -286,12 +294,11 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                 <span className=''></span>
                 <div className='flex w-full justify-end'>
                     <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${isSending || commandFailed || displayValue ? "p-0.5 bg-gray-200 rounded-sm" : ""}  w-full  max-w-[300px] break-words`}>
-                        {outOfRangeError
-                            ? "Valor fuera de rango" : isSending
-                                ? `Cargando nuevo valor (${countdown}s)`
-                                : commandFailed
-                                    ? "Problemas de comunicación. Intente más tarde"
-                                    : displayValue}
+                        {isSending
+                            ? `Cargando nuevo valor (${countdown}s)`
+                            : commandFailed
+                                ? "Problemas de comunicación. Intente más tarde"
+                                : displayValue}
                     </span>
                 </div>
             </div>

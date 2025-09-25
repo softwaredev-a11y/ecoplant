@@ -8,6 +8,8 @@ import { getPlantModel } from "@/utils/plantUtils";
 import { usePlants } from "@/hooks/usePlants";
 import { useAuth } from "@/hooks/useAuth";
 import { useUsers } from "@/hooks/useUsers";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { useLogout } from "@/hooks/useSessionTimeout";
 
 /**
@@ -25,6 +27,7 @@ function DashboardLayout() {
 
     return (
         <div className="main-container flex flex-col md:flex-col w-[98%] min-h-[90dvh] max-h-[90dvh] box-border border bg-white border-[#ccc] p-0 md:p-0">
+            <ToastContainer />
             <Header toggleMenu={toggleMenu} />
             <MainLayout isOpen={isOpen} toggleMenu={toggleMenu} />
         </div>

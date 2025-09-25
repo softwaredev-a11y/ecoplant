@@ -1,5 +1,19 @@
 import { conversionToGpm, formatTime, conversionToVoltage, getTimeInSeconds } from "./plantUtils";
-import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS } from './constants'
+import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS } from './constants'
+
+
+/**
+ * Convierte en mayúscula la primera letra, y aquellas que estén después de un espacio de una oración.
+ * @param {string} str - Oración a convertir.
+ * @returns {string} - Palabra formateada.
+ */
+export function titleCase(str) {
+    var splitStr = str.toLowerCase().split(' ');
+    for (var i = 0; i < splitStr.length; i++) {
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+    }
+    return splitStr.join(' ');
+}
 
 /**
  * Busca la instancia de la aplicación 'ecoplant' en una lista y devuelve una cadena
@@ -7,17 +21,6 @@ import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS } from './co
  * @param {Array<object>} listInstances - La lista de instancias de aplicaciones del dispositivo.
  * @returns {string} Una cadena con el nombre y la versión, o un mensaje de error si no se encuentra.
  */
-export function titleCase(str) {
-    var splitStr = str.toLowerCase().split(' ');
-    for (var i = 0; i < splitStr.length; i++) {
-        // You do not need to check if i is larger than splitStr length, as your for does that for you
-        // Assign it back to the array
-        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
-    }
-    // Directly return the joined string
-    return splitStr.join(' ');
-}
-
 export function formatEcoplantVersion(listInstances) {
     if (listInstances === null || listInstances === undefined) return "Información no disponible";
     const ecoplantInstance = listInstances.find(instance =>
@@ -61,11 +64,11 @@ export function getValueParam(key, responseString) {
 }
 
 const OPERATION_CONFIG = {
-    [OPERATION_CODES.FILTRATION]: { operation: "fil_time", isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.FILTRATION] },
-    [OPERATION_CODES.BACKWASH]: { operation: "invw_time", isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.BACKWASH] },
-    [OPERATION_CODES.RINSE]: { operation: "rinse_time", isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.RINSE] },
-    [OPERATION_CODES.FLOW_ALERT]: { operation: "adc_fil_warning_thr", isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.FLOW_ALERT] },
-    [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { operation: "adc_fil_alarm_thr", isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM] },
+    [OPERATION_CODES.FILTRATION]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.FILTRATION] },
+    [OPERATION_CODES.BACKWASH]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.BACKWASH] },
+    [OPERATION_CODES.RINSE]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.RINSE] },
+    [OPERATION_CODES.FLOW_ALERT]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.FLOW_ALERT] },
+    [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM] },
 };
 export function getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) {
     const config = OPERATION_CONFIG[codeOperation];
@@ -79,4 +82,61 @@ export function getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZer
     if (convertedValue > config.maxValue) return "";
     const command = `${SYRUS_FOUR_COMMANDS.SET_ECOPLANT_PARAM} "{"${typeOperation}":${convertedValue}}"`;
     return command;
+}
+
+export function proccessSyrus4SocketMessage(message, mvZeroValue) {
+    if (!message) return null;
+    message = message.replace(/\\/g, '');
+    message = message.replace(/\s+/g, ' ');
+    const operationHandlers = {
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL]: { key: 'filtrado', calculate: calculateFiltrationValue },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B]: { key: 'retrolavado', calculate: calculateBackwashValue },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R]: { key: 'enjuague', calculate: calculateRinseValue },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', calculate: calculateFlowAlertValue },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: calculateInsufficientAlarmValue },
+    };
+    for (const opKey in operationHandlers) {
+        if (message.includes(opKey)) {
+            const handler = operationHandlers[opKey];
+            const value = handler.calculate(message, mvZeroValue);
+            if (value !== null) {
+                return { key: handler.key, value };
+            }
+        }
+    }
+    return null;
+}
+
+export function calculateFiltrationValue(message) {
+    return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL, parseInt));
+}
+
+export function calculateBackwashValue(message) {
+    return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B, parseInt));
+}
+
+export function calculateRinseValue(message) {
+    return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R, parseInt));
+}
+
+export function calculateFlowAlertValue(message, mvZeroValue) {
+    return conversionToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT, parseInt), mvZeroValue);
+}
+
+export function calculateInsufficientAlarmValue(message, mvZeroValue) {
+    return conversionToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM, parseInt), mvZeroValue);
+}
+
+function _extractValueByCode(message, code, parser) {
+    if (!message) return null;
+
+    const regex = new RegExp(`["']?${code}["']?:\\s*(\\d+)`);
+    const match = message.match(regex);
+
+    if (!match) {
+        console.warn(`No se encontró ${code} en el mensaje:`, message);
+        return null;
+    }
+
+    return parser(match[1], 10);
 }

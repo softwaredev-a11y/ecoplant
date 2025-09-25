@@ -1,4 +1,4 @@
-import { apiPegasusInstance, apiCloudInstance } from "./axiosInstance";
+import { apiPegasusInstance, apiCloudInstance, apiPegasusAdminsInstance } from "./axiosInstance";
 
 /**
  * Objeto que agrupa las llamadas a la API relacionadas a las Ecoplantas.
@@ -66,11 +66,19 @@ const plantsApi = {
     }),
     /**
      * Envía la solicitud POST para la ejecución del comando a un dispostivo.
+     * Si es un Syrus 4 utiliza un token en el header diferente a cuando son 
+     * dispositivos inferiores a syrus 4.
      * @param {int} idDevice - ID del dispositivo. 
      * @param {String} command - Comando que se quiere ejecutar en la consola. 
+     * @param {boolean} isSyrus4 - Determina si un dispositivo es Syrus 4.
      * @returns {Promise} Una promesa con los datos de resultado de la ejecución del comando
      */
-    commandExecution: (idDevice, command) => apiPegasusInstance.post(`/vehicles/${idDevice}/remote/console`, { cmd: command, includeImei: true }),
+    commandExecution: (idDevice, command, isSyrus4, signal) => {
+        if (isSyrus4) {
+            return apiPegasusAdminsInstance.post(`/vehicles/${idDevice}/remote/console`, { cmd: command, includeImei: true }, { signal });
+        }
+        return apiPegasusInstance.post(`/vehicles/${idDevice}/remote/console`, { cmd: command, includeImei: true }, { signal });
+    },
     /**
     * Envía la solicitud POST para la ejecución del comando a un dispositivo syrus 4.
     * @param {String} command - Comando que se va a ejecutar en el dispositivo.

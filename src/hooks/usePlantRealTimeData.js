@@ -8,6 +8,7 @@ import { usePlantDetailSocket } from './usePlants';
  *
  * Escucha los eventos del socket para determinar el proceso en ejecución,
  * el flujo actual y calcula el tiempo transcurrido desde el inicio del último proceso.
+ * Esta información se muestra en el panel de descripción.
  * @returns {object} Un objeto con los datos en tiempo real de la planta.
  */
 export function usePlantRealTimeData() {

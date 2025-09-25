@@ -3,6 +3,7 @@ import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
 import { usePlantRealTimeData } from '@/hooks/usePlantRealTimeData';
+import { ERROR_MESSAGES } from '@/utils/constants';
 
 
 /**
@@ -20,13 +21,13 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
     const isOnline = infoConnectionDevice?.connection?.online;
     const getGpsSignalStatus = () => {
         if (!isOnline) {
-            return "Información no disponible"
+            return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE
         }
         if (isSyrus4) {
             if (isLoadingSyrus4) {
                 return "Consultando";
             } if (syrus4Data?.gps === undefined) {
-                return "Error de comunicación. Intente más tarde."
+                return ERROR_MESSAGES.COMMUNICATION_PROBLEMS
             }
             return syrus4Data.gps ? "Ok" : "No óptimo";
         }
@@ -38,10 +39,10 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
     //Obtiene el último proceso que se ejecutó
     const runningProcessCode = infoConnectionDevice.latest.loc.code;
     //Genera el texto para el procesos en ejecución
-    const processDisplayText = isOnline ? currentlyProccess || stateProcess(runningProcessCode) : "Información no disponible";
+    const processDisplayText = isOnline ? currentlyProccess || stateProcess(runningProcessCode) : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
     // Determina el texto para "Flujo actual"
     const getFlowDisplayText = () => {
-        if (!isOnline) return "Información no disponible";
+        if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
         if (!showCurrentFlow(runningProcessCode)) return "---";
         const flowValue = currentlyValue !== "" ? currentlyValue : calculateStateFlow(infoConnectionDevice.latest.data.ad.value);
         return `${flowValue} gpm`;
@@ -54,7 +55,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
         ],
         [
             { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}` },
-            { label: "Estado del accesorio expansor", value: `${isOnline ? infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado" : "Información no disponible"}` },
+            { label: "Estado del accesorio expansor", value: `${isOnline ? infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado" : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE}` },
             { label: "Estado de señal GPS", value: gpsSignalStatus },
         ],
         [

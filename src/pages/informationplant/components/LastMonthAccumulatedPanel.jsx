@@ -2,6 +2,7 @@ import { buildDate } from "@/utils/plantUtils";
 import { useUsers } from "@/hooks/useUsers";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
 import { useState } from "react";
+import { ERROR_MESSAGES } from "@/utils/constants";
 
 /**
  * Componente que muestra los valores acumulados de operación para el mes anterior.
@@ -82,7 +83,7 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
  */
 function DataLastMonth({ item, value, isOnline, isLoading }) {
     const displayValue = () => {
-        if (!isOnline) return "Información no disponible";
+        if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
         // Si el valor es undefined, significa que aún no se ha consultado.
         if (value === undefined) return "\u00A0";
         if (isLoading) return "Consultando";

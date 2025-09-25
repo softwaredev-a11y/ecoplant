@@ -119,3 +119,8 @@ export const MAX_VALUE_OPERATIONS = {
     FLOW_ALERT: 15000,
     INSUFFICIENT_FLOW_ALARM: 15000
 }
+
+export const ERROR_MESSAGES = {
+    COMMUNICATION_PROBLEMS: "Error de comunicación. Intente más tarde",
+    INFORMATION_NOT_AVAILABLE: "Información no disponible",
+}

@@ -1,6 +1,6 @@
 import { conversionToGpm, formatTime, conversionToVoltage, getTimeInSeconds } from "./plantUtils";
 import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS } from './constants'
-
+import { ERROR_MESSAGES } from "./constants";
 
 /**
  * Convierte en mayúscula la primera letra, y aquellas que estén después de un espacio de una oración.
@@ -22,7 +22,7 @@ export function titleCase(str) {
  * @returns {string} Una cadena con el nombre y la versión, o un mensaje de error si no se encuentra.
  */
 export function formatEcoplantVersion(listInstances) {
-    if (listInstances === null || listInstances === undefined) return "Información no disponible";
+    if (listInstances === null || listInstances === undefined) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
     const ecoplantInstance = listInstances.find(instance =>
         instance && typeof instance.app_name === 'string' && instance.app_name.includes('ecoplant')
     );
@@ -58,7 +58,7 @@ export function getEcoplantParams(response, mvZeroValue) {
 
 export function getValueParam(key, responseString) {
     // Busca la clave seguida de espacios y captura el número que le sigue.
-    if(!responseString) return null;
+    if (!responseString) return null;
     const regex = new RegExp(`${key}\\s+([\\d.]+)`);
     const match = responseString.match(regex);
     return match ? match[1] : null;

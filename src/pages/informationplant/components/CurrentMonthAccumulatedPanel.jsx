@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { buildDate } from "@/utils/plantUtils";
-import { useAccumulatedData } from "@/hooks/useAccumulatedData"; // Importar el nuevo hook
+import { useAccumulatedData } from "@/hooks/useAccumulatedData";
+import { ERROR_MESSAGES } from "@/utils/constants";
+
 /**
  * Componente que muestra los valores acumulados de operación para el mes actual.
  * Obtiene y calcula los datos de filtración, retrolavado, enjuague y purgado.
@@ -57,11 +59,10 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
  */
 function DataCurrently({ currentlyData, isOnline, isLoading }) {
     const displayValue = () => {
-        if (!isOnline) return "Información no disponible";
+        if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
         if (isLoading) return "Consultando";
         return currentlyData.value || "Consultando";
     };
-
     return (
         <>
             <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base item-operation items-center gap-1.5">

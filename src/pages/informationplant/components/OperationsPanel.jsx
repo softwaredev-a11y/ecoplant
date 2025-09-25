@@ -8,6 +8,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { getSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from 'react-toastify';
+import { ERROR_MESSAGES } from "@/utils/constants";
 
 /**
  * Componente que muestra la información de los parámetros de operación.
@@ -24,9 +25,9 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
     const { parameters, mvZeroValue } = useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4);
     //Función que obtiene el valor a mostrar.
     const getDisplayValue = (param) => {
-        if (param.status === 'unavailable') return "Información no disponible";
+        if (param.status === 'unavailable') return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
         if (param.status === 'loading') return "Consultando";
-        if (param.status === 'error') return "Problemas de comunicación. Intente más tarde.";
+        if (param.status === 'error') return ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
         return param.value;
     };
 

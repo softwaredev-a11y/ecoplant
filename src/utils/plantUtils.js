@@ -439,6 +439,11 @@ export function getSetterMessage(codeOperation, value, unitValue, mvZero) {
     return messageWithValue.replace(/;(SI|KY).*/, "");
 }
 
+/**
+ * Realiza la conversión GPM a m3/min
+ * @param {number} gpmValue - Valor de los galones por minuto 
+ * @returns El valor convertido de m3/min
+ */
 export function gpmToCubicMetersPerMinute(gpmValue) {
     return gpmValue * 0.00378;
 }

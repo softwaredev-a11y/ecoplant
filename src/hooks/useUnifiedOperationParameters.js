@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useOperationParameters } from '@/hooks/useOperationParameters';
 import { getEcoplantParams } from '@/utils/syrus4Utils';
 import { getMvZeroText } from '@/utils/plantUtils';
-import { COMMANDS } from '@/utils/constants';
+import { COMMANDS, ERROR_MESSAGES } from '@/utils/constants';
 
 /**
  * Hook adaptador que unifica la obtención de parámetros de operación para dispositivos
@@ -38,13 +38,15 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             const status = isLoadingSyrus4 ? 'loading' : (syrus4Data?.params ? 'success' : 'error');
             const data = status === 'success' ? getEcoplantParams(syrus4Data.params, mvZeroValue) : {};
 
-            const filtracionValue = legacyParams.filtrado || data.filtracion || 'Problemas de comunicación. Intente más tarde.';
-            const retrolavadoValue = legacyParams.retrolavado || data.retrolavado || 'Problemas de comunicación. Intente más tarde.';
-            const enjuagueValue = legacyParams.enjuague || data.enjuague || 'Problemas de comunicación. Intente más tarde.';
-            const alertaValue = legacyParams.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : (data.alerta ? `${data.alerta} gpm` : 'Problemas de comunicación. Intente más tarde.');
-            const alarmaValue = legacyParams.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : (data.alarma ? `${data.alarma} gpm` : 'Problemas de comunicación. Intente más tarde.');
-
-            const finalStatus = (status === 'loading' || status === 'success') ? status : (data.filtracion ? status : 'error');
+            const filtracionValue = legacyParams?.filtrado || data?.filtracion || ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+            const retrolavadoValue = legacyParams?.retrolavado || data?.retrolavado || ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+            const enjuagueValue = legacyParams?.enjuague || data?.enjuague || ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+            const alertaValue = legacyParams?.valorAlertaFlujo ? `${legacyParams?.valorAlertaFlujo} gpm` : (data.alerta ? `${data.alerta} gpm` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
+            const alarmaValue = legacyParams?.valorAlarmaInsuficiente ? `${legacyParams?.valorAlarmaInsuficiente} gpm` : (data.alarma ? `${data.alarma} gpm` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
+            // Si el estado inicial no es 'success' o 'loading', se re-evalúa.
+            // El estado final será 'success' si el objeto 'data' procesado no está vacío,
+            // lo que indica que al menos un parámetro se pudo obtener. De lo contrario, es 'error'.
+            const finalStatus = (status === 'loading' || status === 'success') ? status : (Object.keys(data).length > 0 ? status : 'error');
 
             return {
                 filtracion: { value: filtracionValue, status: finalStatus },
@@ -55,11 +57,11 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             };
         } else {
             return {
-                filtracion: { value: legacyParams.filtrado, status: legacyCommandStatus[COMMANDS.FILTRATION] || 'loading' },
-                retrolavado: { value: legacyParams.retrolavado, status: legacyCommandStatus[COMMANDS.BACKWASH] || 'loading' },
-                enjuague: { value: legacyParams.enjuague, status: legacyCommandStatus[COMMANDS.RINSE] || 'loading' },
-                valorAlertaFlujo: { value: legacyParams.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : '', status: legacyCommandStatus[COMMANDS.FLOW_ALERT] || 'loading' },
-                valorAlarmaInsuficiente: { value: legacyParams.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : '', status: legacyCommandStatus[COMMANDS.INSUFFICIENT_FLOW_ALARM] || 'loading' },
+                filtracion: { value: legacyParams?.filtrado, status: legacyCommandStatus[COMMANDS.FILTRATION] || 'loading' },
+                retrolavado: { value: legacyParams?.retrolavado, status: legacyCommandStatus[COMMANDS.BACKWASH] || 'loading' },
+                enjuague: { value: legacyParams?.enjuague, status: legacyCommandStatus[COMMANDS.RINSE] || 'loading' },
+                valorAlertaFlujo: { value: legacyParams?.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : '', status: legacyCommandStatus[COMMANDS.FLOW_ALERT] || 'loading' },
+                valorAlarmaInsuficiente: { value: legacyParams?.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : '', status: legacyCommandStatus[COMMANDS.INSUFFICIENT_FLOW_ALARM] || 'loading' },
             };
         }
     }, [isSyrus4, isOnline, isLoadingSyrus4, syrus4Data, legacyParams, legacyCommandStatus, mvZeroValue]);

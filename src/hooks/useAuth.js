@@ -77,12 +77,21 @@ export const useAuth = () => {
      */
     const logoutOnBrowserClose = useCallback(() => {
         const logoutUrl = `${import.meta.env.VITE_API_URL}/logout`;
+        const logoutCloud = `${import.meta.env.VITE_API_CLOUD_URL}/auth/logout`
         const token = sessionStorage.getItem('token');
+        const cloudToken = sessionStorage.getItem('cloudToken');
         if (token) {
             fetch(logoutUrl, {
                 method: 'GET',
                 headers: {
                     'authenticate': `${token}`
+                },
+                keepalive: true
+            });
+            fetch(cloudToken, {
+                method: 'POST',
+                headers: {
+                    'Authentication': `${logoutCloud}`
                 },
                 keepalive: true
             });

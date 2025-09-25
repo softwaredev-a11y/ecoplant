@@ -51,7 +51,6 @@ export function useSyrus4Data(plant, isSyrus4) {
                 const sendResponse = await plantsApi.commandExecutionSyrusFour(cmd.command, [plant.device], signal);
                 const commandId = sendResponse?.data?.[0]?._id;
                 if (!commandId) {
-                    console.error(`No se recibió ID para el comando: ${cmd.command}`);
                     return { ...cmd, result: null };
                 }
                 return { ...cmd, commandId };
@@ -59,7 +58,6 @@ export function useSyrus4Data(plant, isSyrus4) {
 
             const sentCommands = await Promise.all(commandPromises);
 
-            console.log("Esperando 15 segundos para que los dispositivos procesen...");
             await new Promise((resolve, reject) => {
                 const timeoutId = setTimeout(resolve, 15000);
                 signal.addEventListener('abort', () => {
@@ -76,7 +74,7 @@ export function useSyrus4Data(plant, isSyrus4) {
 
                 if (resultResponse.data?.response) {
                     if (cmd.name === 'gps') {
-                        const gpsStatus = resultResponse.data.response.antenna?.includes('connected');
+                        const gpsStatus = resultResponse?.data?.response?.antenna?.includes('connected');
                         setSyrus4Data(prev => ({ ...prev, gps: gpsStatus }));
                     } else if (cmd.name === 'version') {
                         setSyrus4Data(prev => ({ ...prev, apps: resultResponse.data.response }));

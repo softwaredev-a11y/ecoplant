@@ -93,14 +93,6 @@ export const SOCKET_KEYS = {
 };
 
 /**
- * Códigos de operación utilizados específicamente para la consulta de datos crudos (raw data) de acumulados.
- */
-export const RAW_DATA_CODES = {
-    FILTRATION: 65,
-    RINSE: 32,
-    BACKWASH: 12,
-};
-/**
  * Grupos de los usuarios de las Ecoplantas.
  */
 export const ECOPLANT_GROUPS = {

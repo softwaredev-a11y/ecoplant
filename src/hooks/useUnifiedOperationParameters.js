@@ -38,10 +38,6 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             const status = isLoadingSyrus4 ? 'loading' : (syrus4Data?.params ? 'success' : 'error');
             const data = status === 'success' ? getEcoplantParams(syrus4Data.params, mvZeroValue) : {};
 
-            // Lógica de fusión:
-            // 1. Usa el valor del socket (legacyParams) si existe y no está vacío.
-            // 2. Si no, usa el valor de la carga inicial (syrus4Data).
-            // 3. Si no, muestra un mensaje de error o carga.
             const filtracionValue = legacyParams.filtrado || data.filtracion || 'Problemas de comunicación. Intente más tarde.';
             const retrolavadoValue = legacyParams.retrolavado || data.retrolavado || 'Problemas de comunicación. Intente más tarde.';
             const enjuagueValue = legacyParams.enjuague || data.enjuague || 'Problemas de comunicación. Intente más tarde.';

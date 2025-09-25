@@ -8,9 +8,20 @@ import { useUsers } from "@/hooks/useUsers";
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { getSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 
+/**
+ * Componente que muestra la información de los parámetros de operación.
+ * @param {object} props propiedades del componente
+ * @param {object} props.plant - Planta seleccionada.
+ * @param {boolean} props.isOnline - Valor que determina si la planta se encuentra en línea.
+ * @param {boolean} props.isSyrus4 - Valor que determina si la planta es un dispositivo syrus 4.
+ * @param {object} props.syrus4Data - Información de la planta en caso de que tenga un dispositivo Syrus 4.
+ * @param {boolean} props.isLoadingSyrus4 - Valor que determina si se están cargando información de un dispositivo Syrus 4.  
+ * @returns {JSX.Element} El componente de panel de operaciones.
+ */
 function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
+    //Hook personalizado que permite obtener la información unificada de dispositivos syrus 4 e inferiores.
     const { parameters, mvZeroValue } = useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4);
-    // 2. Una única función para obtener el valor a mostrar
+    //Función que obtiene el valor a mostrar.
     const getDisplayValue = (param) => {
         if (param.status === 'unavailable') return "Información no disponible";
         if (param.status === 'loading') return "Consultando";
@@ -81,6 +92,18 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
     );
 }
 
+/**
+ * Componente que renderiza la información de un parametro de operación en particular.
+ * @param {object} props Propiedades del componente.
+ * @param {string} props.codeOperation - Código de la operación (filtrado, retrolavado... etc).
+ * @param {string} props.typeOperation - Tipo de operación que va a ejecutar - Cambiar: filtración || retrolavado || enjuague || alerta gpm || alarma gpm
+ * @param {string} props.currentyValue - Valor actual correspondiente a la operación. Filtrado, retrolavado y enjuague: Tiempo. Alertas y alarmas: gpm.
+ * @param {string} props.buttonOperation - Texto que va a tener el botón de la operación.
+ * @param {string} props.mvZeroValue - Texto que se obtiene de la descripción de la planta.
+ * @param {boolean} props.isOnline - Valor que determina si la planta se encuentra en línea.
+ * @param {boolean} props.isSyrus4 - Valor que determina si la planta tiene un dispositivo syrus 4.
+ * @returns {JSX.Element} La fila correspondiente a la operación.
+ */
 function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline, plant, isSyrus4 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [timeValue, setTimeValue] = useState("");
@@ -100,9 +123,9 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none');
     const { executeMultipleCommands } = useCommandExecution();
+    //Consume hook personalizado para determinar si es super usuario o no.
     const { isSuperUser } = useUsers();
-
-
+    //Obtiene los valores que se introduzcan en el input.
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'timeValue') {
@@ -115,11 +138,12 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             setTimeUnit(value);
         }
     };
-
+    //Detiene la cuenta regresiva cuando existe una respuesta al comando ejecutado.
     const stopCountdown = () => {
         clearInterval(countdownIntervalRef.current);
     };
-
+    //Inicia una cuenta regresiva después de que se ejecuta un comando.
+    //La cuenta es de 15 segundos.
     const startCountdown = () => {
         stopCountdown();
         setCountdown(15);
@@ -127,7 +151,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             setCountdown(prev => (prev > 0 ? prev - 1 : 0));
         }, 1000);
     };
-
+    //Si no se está mostrando un mensaje de error del servidor, entonces,
+    //muestra el mensaje nuevo.
     useEffect(() => {
         if (!isShowingServerError) {
             setDisplayValue(currentlyValue);
@@ -162,6 +187,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             stopCountdown();
             setIsSending(false);
             setCommandFailed(false);
+            setTimeValue("");
+            setTimeUnit("none");
         }
         //Añadir validación
     }, [currentlyValue, isSending]);
@@ -173,6 +200,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         };
     }, []);
 
+    //Maneja el envío de comandos de los dispositivos.
     const sendAndQuery = async (commandMessage, codeOperation, isSyrus4) => {
         try {
             if (commandMessage != "") {
@@ -185,6 +213,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }
     };
 
+    //Maneja la lógica de reintentos. Son un total de 2:
+    //Envía el comando inicial, y si hubo error, lo vuelve a enviar.
     const attemptToSend = (attemptsLeft, codeOp, commandMessage, isSyrus4) => {
         if (attemptsLeft === 0) {
             setIsSending(false);
@@ -203,7 +233,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }, 15000);
     };
 
-    async function handleClick(codeOperation, isSyrus4) {
+    
+    function handleClick(codeOperation, isSyrus4) {
         setIsOpen(false);
         let commandMessage = isSyrus4 ? getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);
         if (commandMessage === "") {

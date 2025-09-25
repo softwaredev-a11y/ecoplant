@@ -28,7 +28,7 @@ function LoginPage() {
  */
 function FormLogin() {
     const [error, setError] = useState(null);
-    //Los datos utilizados son los requeridos para el obtener 
+    //Los datos utilizados son los requeridos para obtener el token de sesión. Obtiene un token de 6 horas. 
     const [dataForm, setDataForm] = useState({ username: '', password: '', scheme: "finite", limit: 21600 });
     const { isLoadingLogin, login } = useAuth();
 

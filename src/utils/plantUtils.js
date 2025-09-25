@@ -1,3 +1,4 @@
+import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET } from "./constants";
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.
@@ -128,7 +129,7 @@ function _extractValueByCode(message, code, parser) {
  * @returns {number|null} Valor de la filtración.
  */
 export function calculateFiltrationValue(message) {
-    return _extractValueByCode(message, 'SGC04TC', parseInt);
+    return _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL, parseInt);
 }
 
 /**
@@ -137,7 +138,7 @@ export function calculateFiltrationValue(message) {
  * @returns {number|null} Valor del retrolavado.
  */
 export function calculateBackwashValue(message) {
-    return _extractValueByCode(message, 'SGC07TC', parseFloat);
+    return _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B, parseInt);
 }
 
 /**
@@ -146,7 +147,7 @@ export function calculateBackwashValue(message) {
  * @returns {number|null} Valor del enjuague.
  */
 export function calculateRinseValue(message) {
-    return _extractValueByCode(message, 'SGC10TC', parseFloat);
+    return _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R, parseInt);
 }
 
 /**
@@ -156,7 +157,7 @@ export function calculateRinseValue(message) {
  * @returns {number|null} Valor de la alerta de flujo insuficiente en GPM, o null si no se puede calcular.
  */
 export function calculateFlowAlertValue(message, mvZeroValue) {
-    const rawValue = _extractValueByCode(message, 'RXAGA03V', parseInt);
+    const rawValue = _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT, parseInt);
     if (rawValue === null || mvZeroValue === null) return null;
     return conversionToGpm(rawValue, mvZeroValue);
 }
@@ -168,7 +169,7 @@ export function calculateFlowAlertValue(message, mvZeroValue) {
  * @returns {number|null} Valor de la alarma de flujo insuficiente en GPM, o null si no se puede calcular.
  */
 export function calculateInsufficientAlarmValue(message, mvZeroValue) {
-    const rawValue = _extractValueByCode(message, 'RXAGA00V', parseInt);
+    const rawValue = _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM, parseInt);
     if (rawValue === null || mvZeroValue === null) return null;
     return conversionToGpm(rawValue, mvZeroValue);
 }
@@ -247,21 +248,21 @@ export function processSocketMessage(message, mvZeroValue) {
         return null;
     }
     const operationHandlers = {
-        'SGC04TC': { key: 'filtrado', calculate: (msg) => formatTime('segundos', calculateFiltrationValue(msg)) },
-        'SGC07TC': { key: 'retrolavado', calculate: (msg) => formatTime('segundos', calculateBackwashValue(msg)) },
-        'SGC10TC': { key: 'enjuague', calculate: (msg) => formatTime('segundos', calculateRinseValue(msg)) },
-        'RXAGA03V': { key: 'valorAlertaFlujo', calculate: (msg) => calculateFlowAlertValue(msg, mvZeroValue) },
-        'RXAGA00V': { key: 'valorAlarmaInsuficiente', calculate: (msg) => calculateInsufficientAlarmValue(msg, mvZeroValue) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL]: { key: 'filtrado', calculate: (msg) => formatTime('segundos', calculateFiltrationValue(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B]: { key: 'retrolavado', calculate: (msg) => formatTime('segundos', calculateBackwashValue(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R]: { key: 'enjuague', calculate: (msg) => formatTime('segundos', calculateRinseValue(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT]: { key: 'valorAlertaFlujo', calculate: (msg) => calculateFlowAlertValue(msg, mvZeroValue) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: (msg) => calculateInsufficientAlarmValue(msg, mvZeroValue) },
     };
     const errorMessages = {
-        'SED06NA0': { key: 'filtrado', value: 'Párametro inválido.' },
-        'SED14NV0': { key: 'retrolavado', value: 'Párametro inválido.' },
-        'SED34NV0': { key: 'enjuague', value: 'Párametro inválido.' },
-        'SXAGA03': { key: 'valorAlertaFlujo', value: 'Párametro inválido.' },
-        'SXAGA00': { key: 'valorAlarmaInsuficiente', value: 'Párametro inválido.' },
-
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_FIL]: { key: 'filtrado', value: 'Párametro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_B]: { key: 'retrolavado', value: 'Párametro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_R]: { key: 'enjuague', value: 'Párametro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', value: 'Párametro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', value: 'Párametro inválido.' },
     }
-    if (!message.includes('RER')) {
+
+    if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) {
         for (const opKey in operationHandlers) {
             if (message.includes(opKey)) {
                 const handler = operationHandlers[opKey];
@@ -389,11 +390,11 @@ export function conversionToVoltage(gpmValue, mvZero) {
 }
 
 const OPERATION_CONFIG = {
-    "65": { name: "filtrado", header: "SGC04TC", isAlert: false, maxValue: 99999 },
-    "32": { name: "retrolavado", header: "SGC07TC", isAlert: false, maxValue: 99999 },
-    "12": { name: "enjuague", header: "SGC10TC", isAlert: false, maxValue: 99999 },
-    "03": { name: "alertaflujo", header: "RXAGA03V", isAlert: true, maxValue: 15000 },
-    "00": { name: "alarmainsuficiente", header: "RXAGA00V", isAlert: true, maxValue: 15000 },
+    [OPERATION_CODES.FILTRATION]: { name: "filtrado", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL, isAlert: false, maxValue: MAX_VALUE_OPERATIONS.FILTRATION },
+    [OPERATION_CODES.BACKWASH]: { name: "retrolavado", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B, isAlert: false, maxValue: MAX_VALUE_OPERATIONS.BACKWASH },
+    [OPERATION_CODES.RINSE]: { name: "enjuague", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R, isAlert: false, maxValue: MAX_VALUE_OPERATIONS.RINSE },
+    [OPERATION_CODES.FLOW_ALERT]: { name: "alertaflujo", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT, isAlert: true, maxValue: MAX_VALUE_OPERATIONS.FLOW_ALERT },
+    [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { name: "alarmainsuficiente", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM, isAlert: true, maxValue: MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM },
 };
 
 /**

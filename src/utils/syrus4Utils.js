@@ -58,6 +58,7 @@ export function getEcoplantParams(response, mvZeroValue) {
 
 export function getValueParam(key, responseString) {
     // Busca la clave seguida de espacios y captura el número que le sigue.
+    if(!responseString) return null;
     const regex = new RegExp(`${key}\\s+([\\d.]+)`);
     const match = responseString.match(regex);
     return match ? match[1] : null;

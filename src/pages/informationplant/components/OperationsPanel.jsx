@@ -200,7 +200,12 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         };
     }, []);
 
-    //Maneja el envío de comandos de los dispositivos.
+    /**
+     * Envia los comandos para modificar parámetros de operación
+     * @param {string} commandMessage Comando que se envía para modificar el valor del parámetro de operación.
+     * @param {string | number} codeOperation Código que identifica la operación.
+     * @param {boolean} isSyrus4 Determina si el dispositivo es Syrus 4.
+     */
     const sendAndQuery = async (commandMessage, codeOperation, isSyrus4) => {
         try {
             if (commandMessage != "") {
@@ -213,8 +218,14 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }
     };
 
-    //Maneja la lógica de reintentos. Son un total de 2:
-    //Envía el comando inicial, y si hubo error, lo vuelve a enviar.
+    /**
+     * Maneja la lógica para el reintento en envío de comandos.
+     * @param {number} attemptsLeft Intentos restantes para enviar el comando
+     * @param {string | number} codeOp Código que identifica la operación.
+     * @param {string} commandMessage Comando que se envía para realizar el cambio en el párametro de operación.
+     * @param {boolean} isSyrus4 Determina si el dispositivo es Syrus 4.
+     * @returns {void | null}
+     */
     const attemptToSend = (attemptsLeft, codeOp, commandMessage, isSyrus4) => {
         if (attemptsLeft === 0) {
             setIsSending(false);
@@ -233,6 +244,12 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         }, 15000);
     };
 
+    /**
+     * Maneja la lógica para el evento de click del botón de enviar de la alert.
+     * @param {string | number} codeOperation Código que identifica la operación.
+     * @param {boolean} isSyrus4 Determina si el dispositivo es un Syrus 4. 
+     * @returns {void | null}
+     */
     function handleClick(codeOperation, isSyrus4) {
         setIsOpen(false);
         let commandMessage = isSyrus4 ? getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);

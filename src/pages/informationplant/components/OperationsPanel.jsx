@@ -190,7 +190,6 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             setTimeValue("");
             setTimeUnit("none");
         }
-        //Añadir validación
     }, [currentlyValue, isSending]);
 
     useEffect(() => {

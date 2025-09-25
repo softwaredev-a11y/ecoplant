@@ -63,4 +63,10 @@ const apiCloudInstance = createApiInstance(
     "cloudToken",
     "Authentication"
 );
-export { apiPegasusInstance, apiCloudInstance };
+
+const apiPegasusAdminsInstance = createApiInstance(
+    import.meta.env.VITE_API_URL,
+    "admToken",
+    "authenticate"
+);
+export { apiPegasusInstance, apiCloudInstance, apiPegasusAdminsInstance };

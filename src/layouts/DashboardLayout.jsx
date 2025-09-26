@@ -26,10 +26,7 @@ function DashboardLayout() {
     useLogout();
 
     return (
-        <div
-            className="main-container flex flex-col w-[98%] min-h-[95dvh] md:min-h-[90dvh] max-h-[95dvh] md:max-h-[90dvh] box-border border bg-white border-[#ccc] p-0"
-            style={{ paddingTop: 'env(safe-area-inset-top)' }}
-        >
+        <div className="main-container flex flex-col w-[98%] min-h-[95dvh] md:min-h-[90dvh] max-h-[95dvh] md:max-h-[90dvh] box-border border bg-white border-[#ccc] p-0">
             <ToastContainer />
             <Header toggleMenu={toggleMenu} />
             <MainLayout isOpen={isOpen} toggleMenu={toggleMenu} />

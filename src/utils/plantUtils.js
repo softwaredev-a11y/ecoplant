@@ -1,10 +1,11 @@
-import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET } from "./constants";
+import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES } from "./constants";
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.
  * @returns {String} Modelo de la planta
  */
 export function getPlantModel(text) {
+    if (!text) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
     const match = text.match(/\*type:Ecoplant\s*(\d+)/i);
     if (match) {
         return `${parseInt(match[1], 10)}`;
@@ -28,6 +29,7 @@ export function searchPlant(plants, idPlant) {
  * @returns {String} valor de mv zero.
  */
 export function getMvZeroText(descripcion) {
+    if (!descripcion) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
     const match = descripcion.match(/mv_zero:(.*?)\nEND_PARAMS/s);
     return match ? match[1] : null;
 }
@@ -317,6 +319,7 @@ export function getCodeCurrentProcess(message) {
  * @returns {number|string} valor del flujo actual, o una cadena vacía si no se encuentra.
  */
 export function getFlowCurrentValue(message) {
+    if (!message) return "";
     const match = message.match(/AD=(\d+);/);
     if (!match) return "";
     const value = calculateStateFlow(match[1], 10);

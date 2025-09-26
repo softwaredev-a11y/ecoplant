@@ -60,8 +60,14 @@ export const useAccumulatedData = () => {
                 throw new Error("Datos de filtración no encontrados para calcular el caudal.");
             }
 
-            const adc_average = parseFloat(filtrationEvent.promedio_adc);
-            const caudal = (adc_average - parseFloat(mvZeroValue)) / 100;
+            const adcAverage = parseFloat(filtrationEvent.promedio_adc);
+            const mvZero = parseFloat(mvZeroValue);
+
+            if (isNaN(adcAverage) || isNaN(mvZero)) {
+                throw new Error(`Valores para cálculo de caudal inválidos. adc_average: ${adcAverage}, mvZero: ${mvZero}`);
+            }
+
+            const caudal = (adcAverage - mvZero) / 100;
 
             // Calcular valores
             const countFiltrado = filtrationEvent.count || 0;
@@ -77,10 +83,10 @@ export const useAccumulatedData = () => {
             const multiplyPurge = gpmToCubicMetersPerMinute(totalPurge);
 
             setData({
-                filtration: `${thousandsSeparator(Math.round(filtrationValue))} gal`,
-                rinse: `${thousandsSeparator(Math.round(rinseValue))} gal`,
-                backwash: `${thousandsSeparator(Math.round(backwashValue))} gal`,
-                purge: `${thousandsSeparator(Math.round(totalPurge))} gal (${multiplyPurge.toFixed(2)} m³/min)`
+                filtration: isNaN(filtrationValue) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : ` ${thousandsSeparator(Math.round(filtrationValue))} gal`,
+                rinse: isNaN(rinseValue) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(rinseValue))} gal`,
+                backwash: isNaN(backwashValue) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(backwashValue))} gal`,
+                purge: isNaN(totalPurge) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(totalPurge))} gal (${multiplyPurge.toFixed(2)} m³/min)`
             });
 
         } catch (err) {

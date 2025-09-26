@@ -51,7 +51,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
     const descriptionData = [
         [
             { label: "Descripción", value: `EcoPlant ${getPlantModel(plant.info.description)}` },
-            { label: "Versión del script", value: scriptVersion },
+            { label: "Versión del script", value: isOnline ? scriptVersion : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE },
         ],
         [
             { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}` },

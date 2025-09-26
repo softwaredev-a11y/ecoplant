@@ -187,7 +187,7 @@ export const useRawDataConsult = () => {
         setIsLoading(false);
       }
     }
-  }, []);
+  }, [setRawData, setIsLoading, setError]);
 
   return { isLoading, rawData, error, rawDataConsult };
 };

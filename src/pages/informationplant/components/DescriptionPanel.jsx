@@ -50,17 +50,17 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
 
     const descriptionData = [
         [
-            { label: "Descripción", value: `EcoPlant ${getPlantModel(plant.info.description)}` },
-            { label: "Versión del script", value: isOnline ? scriptVersion : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE },
+            { label: "Descripción", value: `EcoPlant ${getPlantModel(plant.info.description)}`, item: 'desc' },
+            { label: "Versión del script", value: isOnline ? scriptVersion : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE, item: 'script' },
         ],
         [
-            { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}` },
-            { label: "Estado del accesorio expansor", value: `${isOnline ? infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado" : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE}` },
-            { label: "Estado de señal GPS", value: gpsSignalStatus },
+            { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}`, item: 'phone' },
+            { label: "Estado del accesorio expansor", value: `${isOnline ? infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado" : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE}`, item: 'acc_exp' },
+            { label: "Estado de señal GPS", value: gpsSignalStatus, item: 'gps' },
         ],
         [
-            { label: "Proceso en ejecución", value: processDisplayText },
-            { label: "Flujo actual", value: getFlowDisplayText() },
+            { label: "Proceso en ejecución", value: processDisplayText, item: 'process' },
+            { label: "Flujo actual", value: getFlowDisplayText(), item: 'current_flow' },
         ],
     ];
 
@@ -70,7 +70,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
             <div>
                 <PlantImage plant={plant} />
             </div>
-            <InfoPanel itemGroups={descriptionData} />
+            <InfoPanel itemGroups={descriptionData} isSyrus4={isSyrus4} />
             <div className={`flex flex-col items-end p-1.5 ${isOnline ? "" : "hidden"}`}>
                 <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace ${formatTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
             </div>
@@ -84,7 +84,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
  * @param {Array<Array<{label: string, value: string|number}>>} props.itemGroups - Grupos de items a mostrar.
  * @returns {JSX.Element|null} El componente que muestra la información o null si no hay datos.
  */
-function InfoPanel({ itemGroups }) {
+function InfoPanel({ itemGroups, isSyrus4 }) {
     if (!itemGroups || itemGroups.length === 0) return null;
     return (
         <div className="items-panel flex flex-col p-1.5 gap-4">
@@ -92,9 +92,17 @@ function InfoPanel({ itemGroups }) {
                 <div key={groupIndex} className="flex flex-col gap-1.5 border-b border-b-[#ccc]">
                     {group.map((item, itemIndex) => (
                         <div className="div grid grid-cols-2 mb-0.5 items-center" key={`${groupIndex}-${itemIndex}`}>
-                            <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base">
-                                {item.label}: </span>
-                            <span className="font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm align-middle">{item.value} </span>
+                            {isSyrus4 && item.item === "acc_exp" ? null : (
+                                <>
+                                    <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base">
+                                        {item.label}:
+                                    </span>
+                                    <span className="font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm align-middle">
+                                        {item.value}
+                                    </span>
+                                </>
+                            )}
+
                         </div>
 
                     ))}

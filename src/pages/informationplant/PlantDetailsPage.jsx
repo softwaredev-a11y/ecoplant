@@ -40,27 +40,28 @@ function PlantDetailsPage() {
         }
     }, [plant, infoConnectionDevice, isSyrus4, loadingConnection, fetchSyrus4Data]);
 
-    // Muestra un estado de carga mientras se obtiene la info de la planta O la info de conexión.
-    // Se añade isLoadingSyrus4 para esperar los datos específicos del dispositivo.
-    if (loadingPlants || loadingConnection) return <StatusMessage message={"Cargando información de la planta, espere por favor."} />;
-
-    // Muestra un error si la planta no se encuentra O si hubo un error al obtener la conexión.
-    if (!plant || errorConnection) return <StatusMessage message={"Ocurrió un error. Recargue la página e intente nuevamente."} />;
-    if (!infoConnectionDevice) return <StatusMessage message={"Cargando información de la planta, espere por favor."} />;
-
     // Define el estado de conexión en una variable para mayor claridad y reutilización.
     const isOnline = infoConnectionDevice?.connection?.online ?? false;
+
     return (
-        <div className="info-container flex flex-col p-4 overflow-y-auto">
-            <h3 className="text-neutral-600 font-bold mb-2 text-2xl">{plant.name}</h3>
-            <PlantDetailSocketProvider plantId={isOnline ? plant.id : null} isOnline={isOnline}>
-                <div className="info-containers gap-4 grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(450px,1fr))]">
-                    <DescriptionPanel plant={plant} infoConnectionDevice={infoConnectionDevice} isSyrus4={isSyrus4} syrus4Data={syrus4Data} isLoadingSyrus4={isLoadingSyrus4} />
-                    <OperationsPanel plant={plant} isOnline={isOnline} isLoadingStatus={loadingConnection} isSyrus4={isSyrus4} syrus4Data={syrus4Data} isLoadingSyrus4={isLoadingSyrus4} />
-                    <AcummulatedPanel plant={plant} isOnline={isOnline} />
-                </div>
-            </PlantDetailSocketProvider>
-        </div>
+        <PlantDetailSocketProvider plantId={isOnline ? plant?.id : null} isOnline={isOnline}>
+            <div className="info-container flex flex-col p-4 overflow-y-auto">
+                {loadingPlants || loadingConnection ? (
+                    <StatusMessage message={"Cargando información de la planta, espere por favor."} />
+                ) : !plant || errorConnection || !infoConnectionDevice ? (
+                    <StatusMessage message={"Ocurrió un error. Recargue la página e intente nuevamente."} />
+                ) : (
+                    <>
+                        <h3 className="text-neutral-600 font-bold mb-2 text-2xl">{plant.name}</h3>
+                        <div className="info-containers gap-4 grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(450px,1fr))]">
+                            <DescriptionPanel plant={plant} infoConnectionDevice={infoConnectionDevice} isSyrus4={isSyrus4} syrus4Data={syrus4Data} isLoadingSyrus4={isLoadingSyrus4} />
+                            <OperationsPanel plant={plant} isOnline={isOnline} isLoadingStatus={loadingConnection} isSyrus4={isSyrus4} syrus4Data={syrus4Data} isLoadingSyrus4={isLoadingSyrus4} />
+                            <AcummulatedPanel plant={plant} isOnline={isOnline} />
+                        </div>
+                    </>
+                )}
+            </div>
+        </PlantDetailSocketProvider>
     );
 }
 

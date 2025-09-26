@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 
 /**
@@ -19,92 +19,100 @@ export const PlantDetailSocketContext = createContext();
  * @returns {JSX.Element}
  */
 export const PlantDetailSocketProvider = ({ children, plantId, isOnline }) => {
-    /** Almacena el último evento recibido del socket. */
     const [lastEvent, setLastEvent] = useState(null);
-    /** Indica si el socket está actualmente conectado y autenticado. */
     const [isConnected, setIsConnected] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const socketRef = useRef(null);
+    const lastPlantIdRef = useRef(null);
 
     /**
-     * Efecto que maneja el ciclo de vida de la conexión del socket.
-     * Se conecta cuando `plantId` y `isOnline` son verdaderos, y se desconecta
-     * cuando el componente se desmonta o las dependencias cambian.
+     * Efecto para manejar la conexión y desconexión global del socket.
+     * Se ejecuta solo una vez, al montar el componente.
      */
     useEffect(() => {
-        let socket;
+        // Inicializa la conexión del socket, forzando el transporte de websocket.
+        const socket = io("https://aws-live-1.pegasusgateway.com/socket", {
+            transports: ["websocket"],
+        });
+        socketRef.current = socket;
 
-        // Solo intenta conectar si tenemos un ID de planta y está online.
-        if (plantId && isOnline) {
-            // Inicializa la conexión del socket, forzando el transporte de websocket.
-            socket = io("https://aws-live-1.pegasusgateway.com/socket", {
-                transports: ["websocket"],
-            });
+        const credentials = {
+            pegasus: "https://rastreo.totaltracking.co",
+            auth: sessionStorage.getItem("token"),
+        };
 
-            // Credenciales para la autenticación en el socket.
-            const credentials = {
-                pegasus: "https://rastreo.totaltracking.co",
-                auth: sessionStorage.getItem("token"),
-            };
+        socket.on("connect", () => {
+            setIsConnected(true);
+            socket.emit("authenticate", credentials);
+        });
 
-            // Evento: Conexión exitosa.
-            socket.on("connect", () => {
-                if (!isOnline) return; // Doble chequeo por si el estado cambió durante la conexión.
-                setIsConnected(true);
-                // Intenta autenticar el socket.
-                socket.emit("authenticate", credentials);
-            });
+        socket.on("_authenticated", () => {
+            setIsAuthenticated(true);
+        });
 
-            // Evento: Autenticación exitosa.
-            socket.on("_authenticated", () => {
-                console.log("Autenticado en socket");
-                // Se suscribe a los eventos de la Ecoplanta seleccionada.
-                socket.emit("listen", {
-                    namespace: "vehicle-events",
-                    objects: plantId,
-                    compact: true,
-                });
-            });
+        socket.on("events", (envelope) => {
+            setLastEvent(envelope);
+        });
 
-            // Evento: Recepción de nuevos eventos de la planta.
-            socket.on("events", (envelope) => {
-                setLastEvent(envelope);
-            });
+        socket.on("disconnect", (reason) => {
+            setIsConnected(false);
+            console.warn(`Evento: 'disconnect'. Razón: ${reason}`);
+        });
 
-            // Evento: Desconexión del socket.
-            socket.on("disconnect", () => {
-                setIsConnected(false);
-                console.warn("Socket desconectado");
-            });
+        socket.on("connect_error", (err) => {
+            console.error(` Evento: 'connect_error'. Mensaje: ${err.message}`);
+            setIsConnected(false);
+        });
 
-            // Evento: Error durante el intento de conexión.
-            socket.on("connect_error", (err) => {
-                console.error("Error de conexión:", err.message);
-            });
+        socket.on("_error", (message) => {
+            console.error(`Evento: '_error'. Mensaje: ${message}`);
+        });
 
-            // Evento: Error de autenticación devuelto por el servidor de sockets.
-            socket.on("_error", (message) => {
-                console.error("Error de autenticación:", message);
-            });
-        } else {
-            console.log("Dispositivo offline, no conectar socket");
-        }
-
-        // Función de limpieza: se ejecuta cuando el componente se desmonta o las dependencias cambian.
+        // Función de limpieza: se ejecuta solo cuando el proveedor se desmonta.
         return () => {
-            if (socket) {
-                // Elimina todos los listeners para evitar fugas de memoria.
-                socket.removeAllListeners();
-                // Si el socket está conectado o conectándose, lo desconecta.
-                if (socket.connected || socket.connecting) {
-                    console.log("Cerrando socket...");
-                    socket.disconnect();
-                } else {
-                    console.log("Socket nunca terminó de conectar, no hay nada que cerrar");
-                }
-            }
-            // Resetea el estado de conexión.
+            socket.disconnect();
             setIsConnected(false);
         };
-    }, [plantId, isOnline]);
+    }, []); // El array vacío asegura que este efecto se ejecute solo una vez.
+
+    /**
+     * Efecto para manejar las suscripciones a plantas específicas.
+     * Se ejecuta cada vez que `plantId` o `isOnline` cambian.
+     */
+    useEffect(() => {
+        const socket = socketRef.current; 
+        // Nos aseguramos de que el socket esté inicializado, conectado Y AUTENTICADO.
+        if (!socket || !isAuthenticated) {
+            return;
+        }
+
+        const previousPlantId = lastPlantIdRef.current;
+
+        // Si el ID de la planta ha cambiado y teníamos uno anterior, nos desuscribimos.
+        if (previousPlantId && previousPlantId !== plantId) {
+            console.log(`Dejando de escuchar eventos para la planta: ${previousPlantId}`);
+            socket.emit("stop", {
+                namespace: "vehicle-events",
+                objects: [previousPlantId], // La API espera un array
+            });
+            // Limpiamos el último evento para evitar mostrar datos de la planta anterior.
+            setLastEvent(null);
+        }
+
+        // Si tenemos un nuevo ID de planta y está online, nos suscribimos.
+        if (plantId && isOnline) {
+            console.log(`Escuchando eventos para la planta: ${plantId}`);
+            socket.emit("listen", {
+                namespace: "vehicle-events",
+                objects: plantId,
+                compact: true,
+            });
+        }
+
+        // Actualizamos la referencia al ID de la planta actual.
+        lastPlantIdRef.current = plantId;
+
+    }, [plantId, isOnline, isAuthenticated]);
 
     // Proporciona el último evento y el estado de la conexión a los componentes hijos.
     return (

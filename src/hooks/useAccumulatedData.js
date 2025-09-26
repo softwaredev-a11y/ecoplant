@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash, gpmToCubicMetersPerMinute } from "@/utils/plantUtils";
-import { OPERATION_CODES } from '@/utils/constants';
+import { OPERATION_CODES, ERROR_MESSAGES } from '@/utils/constants';
 
 /**
 * Hook personalizado para gestionar la consulta de valores acumulados de la Ecoplanta.
@@ -42,10 +42,10 @@ export const useAccumulatedData = () => {
             //Si no obtuvo respuesta es porque hubo problemas en la comunicación.
             if (!result?.data?.events || result.data.events.length === 0) {
                 const noData = {
-                    filtration: "Problemas de comunicación. Intente más tarde.",
-                    rinse: "Problemas de comunicación. Intente más tarde.",
-                    backwash: "Problemas de comunicación. Intente más tarde.",
-                    purge: "Problemas de comunicación. Intente más tarde.",
+                    filtration: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
+                    rinse: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
+                    backwash: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
+                    purge: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
                 };
                 setData(noData);
                 return;

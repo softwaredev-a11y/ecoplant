@@ -72,7 +72,7 @@ export function useSyrus4Data(plant, isSyrus4) {
 
                 const resultResponse = await plantsApi.getResultCommandExecutionSyrusFour(cmd.commandId, signal);
 
-                if (resultResponse.data?.response) {
+                if (resultResponse?.data?.response) {
                     if (cmd.name === 'gps') {
                         const gpsStatus = resultResponse?.data?.response?.antenna?.includes('connected');
                         setSyrus4Data(prev => ({ ...prev, gps: gpsStatus }));

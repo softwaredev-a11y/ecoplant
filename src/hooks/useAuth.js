@@ -28,8 +28,11 @@ export const useAuth = () => {
             //Envía la información del usuario (email, passowrd)
             setIsLoadingLogin(true);
             const { data } = await authApi.login(credentials);
-            //Consulta el token de admin en el servidor de la empresa.
-            const responseCloud = await fetch('/api/cloud_login.php', { method: 'POST' });
+            // Construye la URL de forma dinámica para que funcione en desarrollo y producción.
+            // En producción, BASE_URL será '/apps/ecoplant/'.
+            const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+            const apiUrl = `${baseUrl}api/cloud_login.php`.replace('//', '/');
+            const responseCloud = await fetch(apiUrl, { method: 'POST' });
             if (!responseCloud.ok) {
                 throw new Error(`El proxy de Cloud falló con estado: ${responseCloud.status}`);
             }

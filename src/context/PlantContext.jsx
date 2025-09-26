@@ -27,7 +27,8 @@ export const PlantProvider = ({ children }) => {
    * Efecto que se ejecuta al montar el componente o cuando cambia el estado del usuario.
    * Obtiene la lista de plantas, primero intentando desde sessionStorage para caché,
    * y si no, realiza una llamada a la API.
-   * La consulta a la API varía si el usuario es un superusuario.
+   * La consulta a la API varía si el usuario es un superusuario, si es super usuario, 
+   * le muestra todas las Ecoplantas pero si no, solamente las que tiene asignadas.
    */
   useEffect(() => {
     // Espera a que la información del usuario esté disponible.
@@ -44,7 +45,7 @@ export const PlantProvider = ({ children }) => {
         } else {
           // Si no está en caché, realiza la llamada a la API.
           const params = isSuperUser
-            ? { groups: [ECOPLANT_GROUPS.SUPER_USERS_GROUP, ECOPLANT_GROUPS.DEVELOP_GROUP]} // Parámetros para superusuario. Quitar en producción.
+            ? { groups: ECOPLANT_GROUPS.SUPER_USERS_GROUP } // Parámetros para superusuario. Quitar en producción.
             : {}; // Sin parámetros para usuario normal.
           const response = await plantsApi.getPlants(params);
           const plantsData = response.data.data;

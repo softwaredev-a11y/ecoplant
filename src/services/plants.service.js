@@ -71,6 +71,7 @@ const plantsApi = {
      * @param {int} idDevice - ID del dispositivo. 
      * @param {String} command - Comando que se quiere ejecutar en la consola. 
      * @param {boolean} isSyrus4 - Determina si un dispositivo es Syrus 4.
+     * @param {AbortSignal} signal - Señal para abortar la petición.
      * @returns {Promise} Una promesa con los datos de resultado de la ejecución del comando
      */
     commandExecution: (idDevice, command, isSyrus4, signal) => {

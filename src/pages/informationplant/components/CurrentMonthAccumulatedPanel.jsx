@@ -15,22 +15,42 @@ import { ERROR_MESSAGES } from "@/utils/constants";
 export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     //Hook personalizado para obtener los acumulados
     const { data, isLoading, fetchAndCalculateData } = useAccumulatedData();
-    const isAuth = sessionStorage.getItem('auth');
     useEffect(() => {
-        // Se mantiene la condición para ejecutar la consulta
-        if (isOnline && isAuth && idPlant) {
-            const consult = async () => {
-                await new Promise(resolve => setTimeout(resolve, 15000));
-                const date = new Date();
-                const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
-                const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        const controller = new AbortController();
+        const signal = controller.signal;
 
-                // Llamamos a la función del hook con las fechas correspondientes
-                fetchAndCalculateData(idPlant, mvZeroValue, beginDate, currentlyDate);
+        if (isOnline && idPlant) {
+            const consult = async () => {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const timeoutId = setTimeout(resolve, 15000);
+                        signal.addEventListener('abort', () => {
+                            clearTimeout(timeoutId);
+                            reject(new DOMException('Aborted', 'AbortError'));
+                        });
+                    });
+
+                    const isAuth = sessionStorage.getItem('auth');
+                    if (isAuth && !signal.aborted) {
+                        const date = new Date();
+                        const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
+                        const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+                        // Llamamos a la función del hook con las fechas correspondientes
+                        fetchAndCalculateData(idPlant, mvZeroValue, beginDate, currentlyDate);
+                    }
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error("Error en la consulta de acumulados del mes actual:", error);
+                    }
+                }
             };
             consult();
         }
-    }, [idPlant, mvZeroValue, isOnline, isAuth, fetchAndCalculateData]);
+
+        return () => {
+            controller.abort();
+        };
+    }, [idPlant, mvZeroValue, isOnline, fetchAndCalculateData]);
 
     const currentlyData = [
         { id: 0, item: "Acumulado Filtración mes actual", value: data?.filtration },

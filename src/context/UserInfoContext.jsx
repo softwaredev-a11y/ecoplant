@@ -3,7 +3,7 @@ import usersApi from "@/services/users.service";
 
 export const UserContext = createContext();
 /**
- *Componente proveedor que envuelve la aplicación o partes de ella para dar detalles del tipo de usuario.
+ *Componente proveedor que envuelve la aplicación o partes de ella para dar detalles del usuario.
  * @param {object} props - Propiedades del componente.
  * @param {React.ReactNode} props.children - Componentes hijos que tendrán acceso al contexto.
  * @returns {JSX.Element}

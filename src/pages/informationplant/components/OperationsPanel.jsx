@@ -122,7 +122,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const countdownIntervalRef = useRef(null);
 
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
-    const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none');
+    const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
     const { executeMultipleCommands } = useCommandExecution();
     const notify = () => toast.error("Error: Valor fuera de rango", {
         position: "top-center",
@@ -298,7 +298,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                         {isSending
                             ? `Cargando nuevo valor (${countdown}s)`
                             : commandFailed
-                                ? "Problemas de comunicación. Intente más tarde"
+                                ? ERROR_MESSAGES.COMMUNICATION_PROBLEMS
                                 : displayValue}
                     </span>
                 </div>

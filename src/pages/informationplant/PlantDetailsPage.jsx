@@ -19,7 +19,7 @@ function PlantDetailsPage() {
     const { plants, isLoading: loadingPlants } = usePlants();
 
     // Busca la información de la planta una vez que la lista de plantas ha cargado.
-    const plant = !loadingPlants ? searchPlant(plants, idPlanta) : null;
+    const plant = !loadingPlants && Array.isArray(plants) ? searchPlant(plants, idPlanta) : null;
 
     // Obtiene el estado de conexión del dispositivo asociado a la planta.
     const { infoConnectionDevice, loading: loadingConnection, error: errorConnection } = useConnectionStatus(plant?.device);

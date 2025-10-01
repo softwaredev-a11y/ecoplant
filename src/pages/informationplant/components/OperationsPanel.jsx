@@ -9,6 +9,7 @@ import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParame
 import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from 'react-toastify';
 import { ERROR_MESSAGES } from "@/utils/constants";
+import ScheduleSelector from "../components/ScheduleSelector";
 
 /**
  * Componente que muestra la información de los parámetros de operación.
@@ -85,6 +86,14 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         currentlyValue={getDisplayValue(parameters.valorAlarmaInsuficiente)}
                         buttonOperation="Cambiar umbral (gpm)"
                         mvZeroValue={mvZeroValue}
+                        plant={plant}
+                        isSyrus4={isSyrus4}
+                    />
+                </div>
+                <div className="border-b border-b-[#ccc]">
+                    <ScheduleSelector
+                        isOnline={isOnline}
+                        currentlyValue={getDisplayValue(parameters.horario)}
                         plant={plant}
                         isSyrus4={isSyrus4}
                     />

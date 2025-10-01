@@ -1,5 +1,6 @@
 import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./syrusUtils";
 import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, ERROR_MESSAGES } from './constants'
+import { formatOperationHours, getSyrus4OperationHours } from "./operationHoursUtils";
 
 /**
  * Convierte en mayúscula la primera letra, y aquellas que estén después de un espacio de una oración.
@@ -45,6 +46,8 @@ export function getEcoplantParams(response, mvZeroValue) {
     const rinseValue = getValueParam('RINSE_TIME', response);
     const adcWarningValue = getValueParam('ADC_WARNING_THRESHOLD', response);
     const adcAlarmValue = getValueParam('ADC_ALARM_THRESHOLD', response);
+    const startTime = getValueParam('START_HOURS', response);
+    const endTime = getValueParam('END_HOURS', response);
 
     return {
         filtracion: filtrationValue ? formatTime('segundos', parseInt(filtrationValue, 10)) : '',
@@ -52,13 +55,20 @@ export function getEcoplantParams(response, mvZeroValue) {
         enjuague: rinseValue ? formatTime('segundos', parseInt(rinseValue, 10)) : '',
         alerta: adcWarningValue ? convertVoltageToGpm(adcWarningValue, mvZeroValue) : '',
         alarma: adcAlarmValue ? convertVoltageToGpm(adcAlarmValue, mvZeroValue) : '',
+        horario: startTime && endTime ? formatOperationHours(startTime, endTime) : '',
     };
 }
 
+/**
+ * Extrae el valor de un parámetro específico de una cadena de respuesta.
+ * @param {string} key - La clave del parámetro a buscar (ej. 'FILTRATION_TIME').
+ * @param {string} responseString - La cadena de respuesta completa del dispositivo.
+ * @returns {string|null} El valor numérico del parámetro como una cadena, o `null` si no se encuentra.
+ */
 export function getValueParam(key, responseString) {
     // Busca la clave seguida de espacios y captura el número que le sigue.
     if (responseString === null || responseString === undefined) return '';
-    const regex = new RegExp(`${key}\\s+([\\d.]+)`);
+    const regex = new RegExp(`${key}\\s*([\\d.]+)`);
     const match = responseString.match(regex);
     return match ? match[1] : null;
 }
@@ -70,6 +80,15 @@ const OPERATION_CONFIG = {
     [OPERATION_CODES.FLOW_ALERT]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.FLOW_ALERT] },
     [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM] },
 };
+/**
+ * Construye el comando para establecer un parámetro de operación en un dispositivo Syrus 4.
+ * @param {string} codeOperation - El código de la operación a modificar.
+ * @param {number} timeValue - El nuevo valor para el parámetro.
+ * @param {string} timeUnit - La unidad del valor ('segundos', 'minutos', 'horas', o 'gpm' para alertas).
+ * @param {string|number} mvZeroValue - El valor de 'mv_zero' necesario para conversiones de GPM a voltaje.
+ * @returns {string} El comando formateado para enviar al dispositivo, o una cadena vacía si el valor excede el máximo permitido.
+ * @throws {Error} Si el código de operación no es válido.
+ */
 export function buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) {
     const config = OPERATION_CONFIG[codeOperation];
     const typeOperation = config.operation;
@@ -84,6 +103,12 @@ export function buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZ
     return command;
 }
 
+/**
+ * Procesa un mensaje de socket de un Syrus 4 para extraer un parámetro de operación actualizado.
+ * @param {string} message - El mensaje recibido del socket.
+ * @param {string|number} mvZeroValue - El valor de 'mv_zero' para cálculos de GPM.
+ * @returns {{key: string, value: any}|null} Un objeto con la clave del parámetro y su nuevo valor, o `null` si el mensaje no es relevante.
+ */
 export function proccessSyrus4SocketMessage(message, mvZeroValue) {
     if (!message) return null;
     message = message.replace(/\\/g, '');
@@ -94,6 +119,7 @@ export function proccessSyrus4SocketMessage(message, mvZeroValue) {
         [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R]: { key: 'enjuague', calculate: getRinseValueFromMessage },
         [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', calculate: getFlowAlertValueFromMessage },
         [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: getInsufficientAlarmValueFromMessage },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_START_TIME]: { key: 'horario', calculate: getSyrus4OperationHours },
     };
     for (const opKey in operationHandlers) {
         if (message.includes(opKey)) {
@@ -107,26 +133,61 @@ export function proccessSyrus4SocketMessage(message, mvZeroValue) {
     return null;
 }
 
+/**
+ * Extrae y formatea el valor de tiempo de filtración de un mensaje de socket de Syrus 4.
+ * @param {string} message - El mensaje del socket.
+ * @returns {string|null} El tiempo de filtración formateado (ej. "10 minutos y 30 segundos") o `null`.
+ */
 export function getFiltrationValueFromMessage(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL, parseInt));
 }
 
+/**
+ * Extrae y formatea el valor de tiempo de retrolavado de un mensaje de socket de Syrus 4.
+ * @param {string} message - El mensaje del socket.
+ * @returns {string|null} El tiempo de retrolavado formateado o `null`.
+ */
 export function getInvWTimeValueFromMessage(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B, parseInt));
 }
 
+/**
+ * Extrae y formatea el valor de tiempo de enjuague de un mensaje de socket de Syrus 4.
+ * @param {string} message - El mensaje del socket.
+ * @returns {string|null} El tiempo de enjuague formateado o `null`.
+ */
 export function getRinseValueFromMessage(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R, parseInt));
 }
 
+/**
+ * Extrae y convierte el valor de alerta de flujo de un mensaje de socket de Syrus 4.
+ * @param {string} message - El mensaje del socket.
+ * @param {string|number} mvZeroValue - El valor de 'mv_zero' para la conversión de voltaje a GPM.
+ * @returns {number|null} El valor de la alerta en GPM o `null`.
+ */
 export function getFlowAlertValueFromMessage(message, mvZeroValue) {
     return convertVoltageToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT, parseInt), mvZeroValue);
 }
 
+/**
+ * Extrae y convierte el valor de alarma por flujo insuficiente de un mensaje de socket de Syrus 4.
+ * @param {string} message - El mensaje del socket.
+ * @param {string|number} mvZeroValue - El valor de 'mv_zero' para la conversión de voltaje a GPM.
+ * @returns {number|null} El valor de la alarma en GPM o `null`.
+ */
 export function getInsufficientAlarmValueFromMessage(message, mvZeroValue) {
     return convertVoltageToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM, parseInt), mvZeroValue);
 }
 
+/**
+ * Extrae un valor numérico de un mensaje de Syrus 4 basado en una clave.
+ * @private
+ * @param {string} message - El mensaje a parsear.
+ * @param {string} code - La clave que precede al valor (ej. "fil_time").
+ * @param {function} parser - La función para parsear el valor (parseInt o parseFloat).
+ * @returns {number|null} El valor parseado o `null` si no se encuentra.
+ */
 function _extractValueByCode(message, code, parser) {
     if (!message) return null;
 

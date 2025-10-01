@@ -2,6 +2,17 @@ import { replaceAt, fillLeftText } from "./syrusUtils";
 import { SYRUS4_SET_PARAMETER_KEYS, SYRUS_FOUR_COMMANDS } from "./constants";
 import { formatHour12, toGMT0, convertTo24h, toGMT5 } from "./timeUtils"
 
+
+export function generateOperationHours(messages) {
+    const qgt00 = messages['RGT001'];
+    const qgt01 = messages['RGT011'];
+    const response = qgt00.substring(1, 23).concat(qgt01.substring(23, qgt01.length - 1));
+    const startTime = response.charAt(12).concat(response.charAt(13));
+    const endTime = response.charAt(24).concat(response.charAt(25));
+    const schedule = formatOperationHours(startTime, endTime);
+    return schedule;
+}
+
 /**
  * Formatea un rango de horas de operación (en GMT 0) a una cadena de texto legible en hora local (GMT-5).
  * Esta función es compatible tanto para Syrus 3 como para Syrus 4.
@@ -132,4 +143,12 @@ export function getSyrus4OperationHours(message) {
     if (startHour24 === null || endHour24 === null) return null;
 
     return formatOperationHours(startHour24, endHour24);
+}
+
+export function isScheduleMessage(message) {
+    return message.includes('RGT001') || message.includes('RGT011') || message.includes('RGT021');
+}
+
+export function extractScheduleMessageHeader(message) {
+    return message.substring(1, 7);
 }

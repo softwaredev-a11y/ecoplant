@@ -8,6 +8,9 @@ export const COMMANDS = {
     RINSE: "QED34",
     FLOW_ALERT: "QXAGA03",
     INSUFFICIENT_FLOW_ALARM: "QXAGA00",
+    TIME_00: "QGT00",
+    TIME_01: "QGT01",
+    TIME_02: "QGT02",
 };
 
 /**

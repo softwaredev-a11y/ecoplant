@@ -3,6 +3,7 @@ import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
 import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET } from '@/utils/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
+import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours } from '../utils/operationHoursUtils';
 
 /**
  * Hook para gestionar los parámetros de operación.
@@ -24,7 +25,8 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
     const [enjuague, setEnjuague] = useState("");
     const [valorAlarmaInsuficiente, setValorAlarmaInsuficiente] = useState("");
     const [valorAlertaFlujo, setValorAlertaFlujo] = useState("");
-
+    const [horario, setHorario] = useState("");
+    const [scheduleParts, setScheduleParts] = useState({});
     const [commandStatus, setCommandStatus] = useState({});
 
     const mvZeroValue = useMemo(() => {
@@ -76,6 +78,22 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;
         if (!message) return;
+        if (!isSyrus4 && isScheduleMessage(message)) {
+            const header = extractScheduleMessageHeader(message);
+            const newParts = { ...scheduleParts, [header]: message };
+            setScheduleParts(newParts);
+            if (header.includes('RGT00')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: "success" }));
+            if (header.includes('RGT01')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: "success" }));
+            if (header.includes('RGT02')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: "success" }));
+            if (Object.keys(newParts).length === 3) {
+                const finalSchedule = generateOperationHours(newParts);
+                setHorario(finalSchedule);
+                // Opcional: Limpiar el estado de las partes para futuras actualizaciones.
+                setScheduleParts({});
+            }
+            return;
+        }
+
         const result = isSyrus4 ? proccessSyrus4SocketMessage(message, mvZeroValue) : processSocketMessage(message, mvZeroValue);
         if (!result) return;
 
@@ -110,5 +128,5 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
         }
     }, [lastEvent, mvZeroValue, isSyrus4]);
 
-    return { parameters: { filtrado, retrolavado, enjuague, valorAlarmaInsuficiente, valorAlertaFlujo, }, commandStatus, mvZeroValue };
+    return { parameters: { filtrado, retrolavado, enjuague, valorAlarmaInsuficiente, valorAlertaFlujo, horario }, commandStatus, mvZeroValue };
 }

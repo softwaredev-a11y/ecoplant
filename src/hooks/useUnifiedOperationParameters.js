@@ -31,7 +31,7 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             const unavailableParam = { value: '', status: 'unavailable' };
             return {
                 filtracion: unavailableParam, retrolavado: unavailableParam, enjuague: unavailableParam,
-                valorAlertaFlujo: unavailableParam, valorAlarmaInsuficiente: unavailableParam,
+                valorAlertaFlujo: unavailableParam, valorAlarmaInsuficiente: unavailableParam, horario: unavailableParam
             };
         }
         if (isSyrus4) {
@@ -58,12 +58,25 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
                 horario: { value: horarioValue, status: finalStatus },
             };
         } else {
+            const scheduleStatuses = [
+                legacyCommandStatus[COMMANDS.TIME_00],
+                legacyCommandStatus[COMMANDS.TIME_01],
+                legacyCommandStatus[COMMANDS.TIME_02]
+            ];
+            let finalScheduleStatus = 'loading';
+            if (scheduleStatuses.every(s => s === 'success') && legacyParams?.horario) {
+                finalScheduleStatus = 'success';
+            } else if (scheduleStatuses.some(s => s === 'error')) {
+                finalScheduleStatus = ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+            }
+
             return {
                 filtracion: { value: legacyParams?.filtrado, status: legacyCommandStatus[COMMANDS.FILTRATION] || 'loading' },
                 retrolavado: { value: legacyParams?.retrolavado, status: legacyCommandStatus[COMMANDS.INVW_TIME] || 'loading' },
                 enjuague: { value: legacyParams?.enjuague, status: legacyCommandStatus[COMMANDS.RINSE] || 'loading' },
                 valorAlertaFlujo: { value: legacyParams?.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : '', status: legacyCommandStatus[COMMANDS.FLOW_ALERT] || 'loading' },
                 valorAlarmaInsuficiente: { value: legacyParams?.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : '', status: legacyCommandStatus[COMMANDS.INSUFFICIENT_FLOW_ALARM] || 'loading' },
+                horario: { value: legacyParams?.horario, status: finalScheduleStatus }
             };
         }
     }, [isSyrus4, isOnline, isLoadingSyrus4, syrus4Data, legacyParams, legacyCommandStatus, mvZeroValue]);

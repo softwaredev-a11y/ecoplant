@@ -1,4 +1,4 @@
-import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, formatTime, calculateCurrentFlow, isCurrentFlowVisible } from '../../../utils/plantUtils';
+import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, formatTime, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
 import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';

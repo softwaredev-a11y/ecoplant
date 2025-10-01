@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
-import { processSocketMessage, getMvZeroText } from '@/utils/plantUtils';
+import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
 import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET } from '@/utils/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
 

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { buildDate } from "@/utils/plantUtils";
+import { buildDate } from "@/utils/syrusUtils";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
 import { ERROR_MESSAGES } from "@/utils/constants";
 

@@ -1,4 +1,4 @@
-import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./plantUtils";
+import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./syrusUtils";
 import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, ERROR_MESSAGES } from './constants'
 
 /**

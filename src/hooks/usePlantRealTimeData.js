@@ -1,4 +1,4 @@
-import { getFlowCurrentValue, getCodeCurrentProcess, getOperationByStatusCode } from '@/utils/plantUtils';
+import { getFlowCurrentValue, getCodeCurrentProcess, getOperationByStatusCode } from '@/utils/syrusUtils';
 import { HEADER_MESSAGES_SOCKET } from '@/utils/constants'
 import { useState, useEffect } from 'react';
 import { usePlantDetailSocket } from './usePlants';

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import HeaderPanel from './HeaderPanel';
 import { useCommandExecution } from '@/hooks/usePlants';
-import { formatTime, buildSetterCommand } from '@/utils/plantUtils';
+import { formatTime, buildSetterCommand } from '@/utils/syrusUtils';
 import { OPERATION_CODES } from '@/utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useUsers } from "@/hooks/useUsers";

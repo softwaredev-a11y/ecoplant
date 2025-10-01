@@ -4,7 +4,7 @@ import searchIcon from '@/assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState, useMemo, useEffect } from "react";
-import { getPlantModel } from "@/utils/plantUtils";
+import { getPlantModel } from "@/utils/syrusUtils";
 import { usePlants } from "@/hooks/usePlants";
 import { useAuth } from "@/hooks/useAuth";
 import { useUsers } from "@/hooks/useUsers";

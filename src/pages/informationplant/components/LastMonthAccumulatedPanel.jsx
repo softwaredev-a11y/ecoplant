@@ -1,4 +1,4 @@
-import { buildDate } from "@/utils/plantUtils";
+import { buildDate } from "@/utils/syrusUtils";
 import { useUsers } from "@/hooks/useUsers";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
 import { useState } from "react";

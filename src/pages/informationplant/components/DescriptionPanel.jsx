@@ -1,4 +1,4 @@
-import { getPlantModel, getSoftwareVersion, stateProcess, formatTime, calculateStateFlow, showCurrentFlow } from '../../../utils/plantUtils';
+import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, formatTime, calculateCurrentFlow, isCurrentFlowVisible } from '../../../utils/plantUtils';
 import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
@@ -39,12 +39,12 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
     //Obtiene el último proceso que se ejecutó
     const runningProcessCode = infoConnectionDevice.latest.loc.code;
     //Genera el texto para el procesos en ejecución
-    const processDisplayText = isOnline ? currentlyProccess || stateProcess(runningProcessCode) : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+    const processDisplayText = isOnline ? currentlyProccess || getOperationByStatusCode(runningProcessCode) : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
     // Determina el texto para "Flujo actual"
     const getFlowDisplayText = () => {
         if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
-        if (!showCurrentFlow(runningProcessCode)) return "---";
-        const flowValue = currentlyValue !== "" ? currentlyValue : calculateStateFlow(infoConnectionDevice.latest.data.ad.value);
+        if (!isCurrentFlowVisible(runningProcessCode)) return "---";
+        const flowValue = currentlyValue !== "" ? currentlyValue : calculateCurrentFlow(infoConnectionDevice.latest.data.ad.value);
         return `${flowValue} gpm`;
     };
 

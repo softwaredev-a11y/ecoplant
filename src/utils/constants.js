@@ -4,7 +4,7 @@
  */
 export const COMMANDS = {
     FILTRATION: "QED06",
-    BACKWASH: "QED14",
+    INVW_TIME: "QED14",
     RINSE: "QED34",
     FLOW_ALERT: "QXAGA03",
     INSUFFICIENT_FLOW_ALARM: "QXAGA00",
@@ -74,7 +74,7 @@ export const HEADER_MESSAGES_SOCKET = {
  */
 export const OPERATION_CODES = {
     FILTRATION: "65",
-    BACKWASH: "32",
+    INVW_TIME: "32",
     RINSE: "12",
     FLOW_ALERT: "03",
     INSUFFICIENT_FLOW_ALARM: "00",
@@ -86,7 +86,7 @@ export const OPERATION_CODES = {
  */
 export const SOCKET_KEYS = {
     FILTRATION: "filtrado",
-    BACKWASH: "retrolavado",
+    INVW_TIME: "retrolavado",
     RINSE: "enjuague",
     FLOW_ALERT: "valorAlertaFlujo",
     INSUFFICIENT_FLOW_ALARM: "valorAlarmaInsuficiente",
@@ -106,7 +106,7 @@ export const ECOPLANT_GROUPS = {
  */
 export const MAX_VALUE_OPERATIONS = {
     FILTRATION: 99999,
-    BACKWASH: 99999,
+    INVW_TIME: 99999,
     RINSE: 99999,
     FLOW_ALERT: 15000,
     INSUFFICIENT_FLOW_ALARM: 15000

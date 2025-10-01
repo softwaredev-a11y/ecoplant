@@ -93,10 +93,10 @@ export function buildSetOperationHoursCommandSyrus4(startTime, endTime) {
 }
 
 /**
- * Extrae un valor de hora (que se espera esté entre comillas) de un mensaje de respuesta de Syrus 4.
- * @private
+ * Extrae un valor de hora (que se espera esté entre comillas) de un mensaje de respuesta
+ * del socket de Syrus 4.
  * @param {string | null | undefined} message - El mensaje completo del cual extraer el valor.
- * @param {string} code - La clave a buscar en el mensaje (ej: "start_time").
+ * @param {string} code - La clave a buscar en el mensaje (ej: "START_TIME || END_TIME").
  * @returns {string | null} El valor de la hora extraído (incluyendo comillas) o null si no se encuentra.
  */
 function _extractOperationHour(message, code) {

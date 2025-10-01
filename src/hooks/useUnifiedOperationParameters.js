@@ -43,6 +43,7 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             const enjuagueValue = legacyParams?.enjuague || data?.enjuague || ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
             const alertaValue = legacyParams?.valorAlertaFlujo ? `${legacyParams?.valorAlertaFlujo} gpm` : (data.alerta ? `${data.alerta} gpm` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
             const alarmaValue = legacyParams?.valorAlarmaInsuficiente ? `${legacyParams?.valorAlarmaInsuficiente} gpm` : (data.alarma ? `${data.alarma} gpm` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
+            const horarioValue = legacyParams?.horario ? `${legacyParams?.horario}` : (data.horario ? `${data.horario}` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
             // Si el estado inicial no es 'success' o 'loading', se re-evalúa.
             // El estado final será 'success' si el objeto 'data' procesado no está vacío,
             // lo que indica que al menos un parámetro se pudo obtener. De lo contrario, es 'error'.
@@ -54,6 +55,7 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
                 enjuague: { value: enjuagueValue, status: finalStatus },
                 valorAlertaFlujo: { value: alertaValue, status: finalStatus },
                 valorAlarmaInsuficiente: { value: alarmaValue, status: finalStatus },
+                horario: { value: horarioValue, status: finalStatus },
             };
         } else {
             return {

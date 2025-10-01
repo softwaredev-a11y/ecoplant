@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useOperationParameters } from '@/hooks/useOperationParameters';
 import { getEcoplantParams } from '@/utils/syrus4Utils';
-import { getMvZeroText } from '@/utils/plantUtils';
+import { getMvZeroText } from '@/utils/syrusUtils';
 import { COMMANDS, ERROR_MESSAGES } from '@/utils/constants';
 
 /**

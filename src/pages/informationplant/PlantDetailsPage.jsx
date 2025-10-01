@@ -5,8 +5,8 @@ import { usePlants, useConnectionStatus } from "../../hooks/usePlants";
 import { useSyrus4Data } from '../../hooks/useSyrus4Data';
 import { PlantDetailSocketProvider } from '../../context/PlantDetailSocketContext';
 import { useParams } from 'react-router-dom';
-import { searchPlant } from '../../utils/plantUtils';
-import StatusMessage from '../../components/StatusMessage';
+import { searchPlant } from '@/utils/syrusUtils';
+import StatusMessage from '@/components/StatusMessage';
 import { useEffect, useMemo } from 'react';
 /**
  * Página que muestra los detalles de una planta específica.

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { getMvZeroText } from "@/utils/plantUtils";
+import { getMvZeroText } from "@/utils/syrusUtils";
 import HeaderPanel from "../components/HeaderPanel";
 import CurrentMonthAcummulatedPanel from "../components/CurrentMonthAccumulatedPanel";
 import LastMonthAccumulatedPanel from "../components/LastMonthAccumulatedPanel";

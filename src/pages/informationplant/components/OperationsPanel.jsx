@@ -305,7 +305,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             </div>
             <>
                 {isSuperUser && (
-                    <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" : "grid-cols-[70px_95px_1fr]"}  ${isSuperUser ? "" : "hidden"} gap-1.5`}>
+                    <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" :  "grid-cols-[63px_102px_1fr]"}  ${isSuperUser ? "" : "hidden"} gap-1.5`}>
                         <input min="1" type="number" name="timeValue" value={timeValue} disabled={isSending} onChange={handleChange} className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm" />
                         <select name="timeUnit" value={timeUnit} onChange={handleChange} disabled={isSending} className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`} >
                             <option value="none"></option>

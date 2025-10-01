@@ -1,6 +1,5 @@
 import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./plantUtils";
-import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS } from './constants'
-import { ERROR_MESSAGES } from "./constants";
+import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, ERROR_MESSAGES } from './constants'
 
 /**
  * Convierte en mayúscula la primera letra, y aquellas que estén después de un espacio de una oración.
@@ -90,11 +89,11 @@ export function proccessSyrus4SocketMessage(message, mvZeroValue) {
     message = message.replace(/\\/g, '');
     message = message.replace(/\s+/g, ' ');
     const operationHandlers = {
-        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL]: { key: 'filtrado', calculate: calculateFiltrationValue },
-        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B]: { key: 'retrolavado', calculate: calculateInvWTimeValue },
-        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R]: { key: 'enjuague', calculate: calculateRinseValue },
-        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', calculate: calculateFlowAlertValue },
-        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: calculateInsufficientAlarmValue },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL]: { key: 'filtrado', calculate: getFiltrationValueFromMessage },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B]: { key: 'retrolavado', calculate: getInvWTimeValueFromMessage },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R]: { key: 'enjuague', calculate: getRinseValueFromMessage },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', calculate: getFlowAlertValueFromMessage },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: getInsufficientAlarmValueFromMessage },
     };
     for (const opKey in operationHandlers) {
         if (message.includes(opKey)) {
@@ -108,23 +107,23 @@ export function proccessSyrus4SocketMessage(message, mvZeroValue) {
     return null;
 }
 
-export function calculateFiltrationValue(message) {
+export function getFiltrationValueFromMessage(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL, parseInt));
 }
 
-export function calculateInvWTimeValue(message) {
+export function getInvWTimeValueFromMessage(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B, parseInt));
 }
 
-export function calculateRinseValue(message) {
+export function getRinseValueFromMessage(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R, parseInt));
 }
 
-export function calculateFlowAlertValue(message, mvZeroValue) {
+export function getFlowAlertValueFromMessage(message, mvZeroValue) {
     return convertVoltageToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT, parseInt), mvZeroValue);
 }
 
-export function calculateInsufficientAlarmValue(message, mvZeroValue) {
+export function getInsufficientAlarmValueFromMessage(message, mvZeroValue) {
     return convertVoltageToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM, parseInt), mvZeroValue);
 }
 

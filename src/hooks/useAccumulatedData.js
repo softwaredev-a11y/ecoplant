@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useRawDataConsult } from '@/hooks/usePlants';
-import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueBackwash, gpmToCubicMetersPerMinute } from "@/utils/plantUtils";
+import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueInvWTime, gpmToCubicMetersPerMinute } from "@/utils/plantUtils";
 import { OPERATION_CODES, ERROR_MESSAGES } from '@/utils/constants';
 
 /**
@@ -34,7 +34,7 @@ export const useAccumulatedData = () => {
             //Los códigos correspondientes a las operaciones que se van a consultar.
             const operationCodes = [
                 OPERATION_CODES.FILTRATION,
-                OPERATION_CODES.BACKWASH,
+                OPERATION_CODES.INVW_TIME,
                 OPERATION_CODES.RINSE
             ];
             //Se realiza la consulta y se obtiene la promesa.
@@ -44,7 +44,7 @@ export const useAccumulatedData = () => {
                 const noData = {
                     filtration: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
                     rinse: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
-                    backwash: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
+                    invwTime: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
                     purge: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
                 };
                 setData(noData);
@@ -53,7 +53,7 @@ export const useAccumulatedData = () => {
 
             // Buscamos cada evento por su código, convirtiendo el `e.code` a String para evitar errores de tipo (e.g. 65 vs "65")
             const filtrationEvent = result.data.events.find(e => String(e.code) === OPERATION_CODES.FILTRATION);
-            const backwashEvent = result.data.events.find(e => String(e.code) === OPERATION_CODES.BACKWASH);
+            const invwTimeEvent = result.data.events.find(e => String(e.code) === OPERATION_CODES.INVW_TIME);
             const rinseEvent = result.data.events.find(e => String(e.code) === OPERATION_CODES.RINSE);
             // Si no existe el evento de filtración, no se puede realizar ningún cálculo por eso lanza error.
             if (!filtrationEvent) {
@@ -76,23 +76,23 @@ export const useAccumulatedData = () => {
             const countEnjuague = rinseEvent?.count || 0;
             const rinseValue = calculateAccumulatedValueRinse(caudal, countEnjuague);
 
-            const countRetrolavado = backwashEvent?.count || 0;
-            const backwashValue = calculateAccumulatedValueBackwash(caudal, countRetrolavado);
+            const countRetrolavado = invwTimeEvent?.count || 0;
+            const invwTimeValue = calculateAccumulatedValueInvWTime(caudal, countRetrolavado);
 
-            const totalPurge = rinseValue + backwashValue;
+            const totalPurge = rinseValue + invwTimeValue;
             const multiplyPurge = gpmToCubicMetersPerMinute(totalPurge);
 
             setData({
                 filtration: isNaN(filtrationValue) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : ` ${thousandsSeparator(Math.round(filtrationValue))} gal`,
                 rinse: isNaN(rinseValue) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(rinseValue))} gal`,
-                backwash: isNaN(backwashValue) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(backwashValue))} gal`,
+                invwTime: isNaN(invwTimeValue) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(invwTimeValue))} gal`,
                 purge: isNaN(totalPurge) ? ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(totalPurge))} gal (${multiplyPurge.toFixed(2)} m³/min)`
             });
 
         } catch (err) {
             console.error("Error al calcular datos acumulados:", err);
             setError("Error al calcular los datos acumulados.");
-            setData({ filtration: "Ocurrió un error. Intente más tarde.", rinse: "Ocurrió un error. Intente más tarde.", backwash: "Ocurrió un error. Intente más tarde.", purge: "Ocurrió un error. Intente más tarde." });
+            setData({ filtration: "Ocurrió un error. Intente más tarde.", rinse: "Ocurrió un error. Intente más tarde.", invwTime: "Ocurrió un error. Intente más tarde.", purge: "Ocurrió un error. Intente más tarde." });
         } finally {
             setIsLoading(false);
         }

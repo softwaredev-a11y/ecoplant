@@ -1,4 +1,4 @@
-import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES } from "./constants";
+import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SOCKET_KEYS } from "./constants";
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.
@@ -130,7 +130,7 @@ function _extractValueByCode(message, code, parser) {
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
  * @returns {number|null} Valor de la filtración.
  */
-export function calculateFiltrationValue(message) {
+export function getFiltrationValueFromMessage(message) {
     return _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL, parseInt);
 }
 
@@ -139,7 +139,7 @@ export function calculateFiltrationValue(message) {
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
  * @returns {number|null} Valor del retrolavado.
  */
-export function calculateBackwashValue(message) {
+export function getInvWTimeValueFromMessage(message) {
     return _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B, parseInt);
 }
 
@@ -148,7 +148,7 @@ export function calculateBackwashValue(message) {
  * @param {String} message Mensaje que viene de una consulta a una api o del servidor.
  * @returns {number|null} Valor del enjuague.
  */
-export function calculateRinseValue(message) {
+export function getRinseValueFromMessage(message) {
     return _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R, parseInt);
 }
 
@@ -158,10 +158,10 @@ export function calculateRinseValue(message) {
  * @param {string | null} mvZeroValue Valor del caudal cero (mv_zero).
  * @returns {number|null} Valor de la alerta de flujo insuficiente en GPM, o null si no se puede calcular.
  */
-export function calculateFlowAlertValue(message, mvZeroValue) {
+export function getFlowAlertValueFromMessage(message, mvZeroValue) {
     const rawValue = _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT, parseInt);
     if (rawValue === null || mvZeroValue === null) return null;
-    return conversionToGpm(rawValue, mvZeroValue);
+    return convertVoltageToGpm(rawValue, mvZeroValue);
 }
 
 /**
@@ -170,10 +170,10 @@ export function calculateFlowAlertValue(message, mvZeroValue) {
  * @param {string | null} mvZeroValue Valor del caudal cero (mv_zero).
  * @returns {number|null} Valor de la alarma de flujo insuficiente en GPM, o null si no se puede calcular.
  */
-export function calculateInsufficientAlarmValue(message, mvZeroValue) {
+export function getInsufficientAlarmValueFromMessage(message, mvZeroValue) {
     const rawValue = _extractValueByCode(message, SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM, parseInt);
     if (rawValue === null || mvZeroValue === null) return null;
-    return conversionToGpm(rawValue, mvZeroValue);
+    return convertVoltageToGpm(rawValue, mvZeroValue);
 }
 
 /**
@@ -182,7 +182,7 @@ export function calculateInsufficientAlarmValue(message, mvZeroValue) {
  * @param {int} mvZeroValue Valor del caudal.
  * @returns {int} Valor de GPM.
  */
-export function conversionToGpm(voltageValue, mvZeroValue) {
+export function convertVoltageToGpm(voltageValue, mvZeroValue) {
     const resultConversion = Math.round((voltageValue - parseInt(mvZeroValue)) / 100);
     return resultConversion;
 }
@@ -192,7 +192,7 @@ export function conversionToGpm(voltageValue, mvZeroValue) {
  * @param {int} statusCode Código de la operación
  * @returns {String} Operación que se está ejecutando.
  */
-export function stateProcess(statusCode) {
+export function getOperationByStatusCode(statusCode) {
     const statesByCode = {
         20: "Contacto bomba activado. Esperando...",
         21: "Contacto bomba desactivado",
@@ -225,7 +225,7 @@ export function stateProcess(statusCode) {
  * @param {int} statusCode Código de la operación
  * @returns {boolean}si se debe mostrar o no el flujo actual en el panel de descripción.
  */
-export function showCurrentFlow(statusCode) {
+export function isCurrentFlowVisible(statusCode) {
     const codFiltracion = [4, 6, 7, 8, 17, 19, 65, 66];
     if (codFiltracion.includes(statusCode)) {
         return true;
@@ -250,11 +250,11 @@ export function processSocketMessage(message, mvZeroValue) {
         return null;
     }
     const operationHandlers = {
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL]: { key: 'filtrado', calculate: (msg) => formatTime('segundos', calculateFiltrationValue(msg)) },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B]: { key: 'retrolavado', calculate: (msg) => formatTime('segundos', calculateBackwashValue(msg)) },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R]: { key: 'enjuague', calculate: (msg) => formatTime('segundos', calculateRinseValue(msg)) },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT]: { key: 'valorAlertaFlujo', calculate: (msg) => calculateFlowAlertValue(msg, mvZeroValue) },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: (msg) => calculateInsufficientAlarmValue(msg, mvZeroValue) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL]: { key: 'filtrado', calculate: (msg) => formatTime('segundos', getFiltrationValueFromMessage(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B]: { key: 'retrolavado', calculate: (msg) => formatTime('segundos', getInvWTimeValueFromMessage(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R]: { key: 'enjuague', calculate: (msg) => formatTime('segundos', getRinseValueFromMessage(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT]: { key: 'valorAlertaFlujo', calculate: (msg) => getFlowAlertValueFromMessage(msg, mvZeroValue) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: (msg) => getInsufficientAlarmValueFromMessage(msg, mvZeroValue) },
     };
     const errorMessages = {
         [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_FIL]: { key: 'filtrado', value: 'Párametro inválido.' },
@@ -288,7 +288,7 @@ export function processSocketMessage(message, mvZeroValue) {
  * @param {int} currentValue valor que viene en el mensaje del websocket o de la consulta a la API.
  * @returns {int} valor del flujo actual.
  */
-export function calculateStateFlow(currentValue) {
+export function calculateCurrentFlow(currentValue) {
     let flowValue = currentValue / 100;
     if (flowValue >= 20) {
         flowValue = flowValue - 20;
@@ -322,7 +322,7 @@ export function getFlowCurrentValue(message) {
     if (!message) return "";
     const match = message.match(/AD=(\d+);/);
     if (!match) return "";
-    const value = calculateStateFlow(match[1], 10);
+    const value = calculateCurrentFlow(match[1], 10);
     return value;
 }
 
@@ -361,11 +361,11 @@ export function calculateAccumulatedValueRinse(caudalValue, countFiltered) {
 /**
  * Calcula el valor del retrolavado
  * @param {float} caudalValue  
- * @param {float} countBackwash 
+ * @param {float} countInvWTime 
  * @returns  {float}  valor del retrolavado
  */
-export function calculateAccumulatedValueBackwash(caudalValue, countBackwash) {
-    return caudalValue * countBackwash * 3;
+export function calculateAccumulatedValueInvWTime(caudalValue, countInvWTime) {
+    return caudalValue * countInvWTime * 3;
 }
 
 /**
@@ -386,7 +386,7 @@ export function replaceAt(str, index, replacement) {
  * @param {String} mvZero valor que hace parte de la información de la planta.
  * @returns {int} valor converitido a voltage.
  */
-export function conversionToVoltage(gpmValue, mvZero) {
+export function convertGpmToVoltage(gpmValue, mvZero) {
     const result = (parseInt(gpmValue) * 100) + parseInt(mvZero);
     //si resultado es mayor a 15000 devolver error (Valor fuera de rango)
     return result;
@@ -394,14 +394,14 @@ export function conversionToVoltage(gpmValue, mvZero) {
 
 const OPERATION_CONFIG = {
     [OPERATION_CODES.FILTRATION]: { name: "filtrado", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL, isAlert: false, maxValue: MAX_VALUE_OPERATIONS.FILTRATION },
-    [OPERATION_CODES.BACKWASH]: { name: "retrolavado", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B, isAlert: false, maxValue: MAX_VALUE_OPERATIONS.BACKWASH },
+    [OPERATION_CODES.INVW_TIME]: { name: "retrolavado", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B, isAlert: false, maxValue: MAX_VALUE_OPERATIONS.INVW_TIME },
     [OPERATION_CODES.RINSE]: { name: "enjuague", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R, isAlert: false, maxValue: MAX_VALUE_OPERATIONS.RINSE },
     [OPERATION_CODES.FLOW_ALERT]: { name: "alertaflujo", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT, isAlert: true, maxValue: MAX_VALUE_OPERATIONS.FLOW_ALERT },
     [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { name: "alarmainsuficiente", header: SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM, isAlert: true, maxValue: MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM },
 };
 
 /**
- * Obtiene el comando set para cambiar los parametros de operación.
+ * Construye el comando set para cambiar los parametros de operación (filtración, retrolavado, enjuague, alarma y alerta).
  * Construye el string del comando a enviar al dispositivo para actualizar un parámetro.
  * @param {string} codeOperation  código de la operación (65:filtrado, 32:retrolavado, 12:enjuague, 03:alertaflujo, 00:alarmainsuficiente).
  * @param {int} value valor ingresado por el usuario.
@@ -409,7 +409,7 @@ const OPERATION_CONFIG = {
  * @param {int} mvZero valor que hace parte de la información de la planta.
  * @returns {string} El comando formateado para enviar al dispositivo, o una cadena vacía si hay un error.
  */
-export function getSetterMessage(codeOperation, value, unitValue, mvZero) {
+export function buildSetterCommand(codeOperation, value, unitValue, mvZero) {
     const config = OPERATION_CONFIG[codeOperation];
     if (!config) {
         throw new Error(`Operación no válida para el código: ${codeOperation}`);
@@ -428,7 +428,7 @@ export function getSetterMessage(codeOperation, value, unitValue, mvZero) {
 
     let convertedValue;
     if (config.isAlert) {
-        convertedValue = conversionToVoltage(value, mvZero);
+        convertedValue = convertGpmToVoltage(value, mvZero);
     } else {
         convertedValue = getTimeInSeconds(unitValue, value);
     }

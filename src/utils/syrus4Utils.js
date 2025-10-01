@@ -1,4 +1,4 @@
-import { conversionToGpm, formatTime, conversionToVoltage, getTimeInSeconds } from "./plantUtils";
+import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./plantUtils";
 import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS } from './constants'
 import { ERROR_MESSAGES } from "./constants";
 
@@ -51,8 +51,8 @@ export function getEcoplantParams(response, mvZeroValue) {
         filtracion: filtrationValue ? formatTime('segundos', parseInt(filtrationValue, 10)) : '',
         retrolavado: invWashingValue ? formatTime('segundos', parseInt(invWashingValue, 10)) : '',
         enjuague: rinseValue ? formatTime('segundos', parseInt(rinseValue, 10)) : '',
-        alerta: adcWarningValue ? conversionToGpm(adcWarningValue, mvZeroValue) : '',
-        alarma: adcAlarmValue ? conversionToGpm(adcAlarmValue, mvZeroValue) : '',
+        alerta: adcWarningValue ? convertVoltageToGpm(adcWarningValue, mvZeroValue) : '',
+        alarma: adcAlarmValue ? convertVoltageToGpm(adcAlarmValue, mvZeroValue) : '',
     };
 }
 
@@ -66,17 +66,17 @@ export function getValueParam(key, responseString) {
 
 const OPERATION_CONFIG = {
     [OPERATION_CODES.FILTRATION]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.FILTRATION] },
-    [OPERATION_CODES.BACKWASH]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.BACKWASH] },
+    [OPERATION_CODES.INVW_TIME]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.INVW_TIME] },
     [OPERATION_CODES.RINSE]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.RINSE] },
     [OPERATION_CODES.FLOW_ALERT]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.FLOW_ALERT] },
     [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM] },
 };
-export function getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) {
+export function buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) {
     const config = OPERATION_CONFIG[codeOperation];
     const typeOperation = config.operation;
     let convertedValue;
     if (config.isAlert) {
-        convertedValue = conversionToVoltage(timeValue, mvZeroValue);
+        convertedValue = convertGpmToVoltage(timeValue, mvZeroValue);
     } else {
         convertedValue = getTimeInSeconds(timeUnit, timeValue);
     }
@@ -91,7 +91,7 @@ export function proccessSyrus4SocketMessage(message, mvZeroValue) {
     message = message.replace(/\s+/g, ' ');
     const operationHandlers = {
         [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL]: { key: 'filtrado', calculate: calculateFiltrationValue },
-        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B]: { key: 'retrolavado', calculate: calculateBackwashValue },
+        [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B]: { key: 'retrolavado', calculate: calculateInvWTimeValue },
         [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R]: { key: 'enjuague', calculate: calculateRinseValue },
         [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', calculate: calculateFlowAlertValue },
         [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: calculateInsufficientAlarmValue },
@@ -112,7 +112,7 @@ export function calculateFiltrationValue(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL, parseInt));
 }
 
-export function calculateBackwashValue(message) {
+export function calculateInvWTimeValue(message) {
     return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B, parseInt));
 }
 
@@ -121,11 +121,11 @@ export function calculateRinseValue(message) {
 }
 
 export function calculateFlowAlertValue(message, mvZeroValue) {
-    return conversionToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT, parseInt), mvZeroValue);
+    return convertVoltageToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT, parseInt), mvZeroValue);
 }
 
 export function calculateInsufficientAlarmValue(message, mvZeroValue) {
-    return conversionToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM, parseInt), mvZeroValue);
+    return convertVoltageToGpm(_extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM, parseInt), mvZeroValue);
 }
 
 function _extractValueByCode(message, code, parser) {

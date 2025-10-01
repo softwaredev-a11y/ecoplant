@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import HeaderPanel from './HeaderPanel';
 import { useCommandExecution } from '@/hooks/usePlants';
-import { formatTime, getSetterMessage } from '@/utils/plantUtils';
+import { formatTime, buildSetterCommand } from '@/utils/plantUtils';
 import { OPERATION_CODES } from '@/utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useUsers } from "@/hooks/useUsers";
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
-import { getSetterCommandSyrus4 } from '@/utils/syrus4Utils';
+import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from 'react-toastify';
 import { ERROR_MESSAGES } from "@/utils/constants";
 
@@ -48,7 +48,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                     />
                     <Operations
                         isOnline={isOnline}
-                        codeOperation={OPERATION_CODES.BACKWASH}
+                        codeOperation={OPERATION_CODES.INVW_TIME}
                         typeOperation="Retrolavado"
                         currentlyValue={getDisplayValue(parameters.retrolavado)}
                         buttonOperation="Cambiar retrolavado"
@@ -264,7 +264,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
      */
     function handleClick(codeOperation, isSyrus4) {
         setIsOpen(false);
-        let commandMessage = isSyrus4 ? getSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : getSetterMessage(codeOperation, timeValue, timeUnit, mvZeroValue);
+        let commandMessage = isSyrus4 ? buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : buildSetterCommand(codeOperation, timeValue, timeUnit, mvZeroValue);
         if (commandMessage === "") {
             notify();
             setTimeValue("");
@@ -305,7 +305,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             </div>
             <>
                 {isSuperUser && (
-                    <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" :  "grid-cols-[63px_102px_1fr]"}  ${isSuperUser ? "" : "hidden"} gap-1.5`}>
+                    <div className={`item-operation  grid ${isAlertOperation ? "grid-cols-[165px_1fr]" : "grid-cols-[63px_102px_1fr]"}  ${isSuperUser ? "" : "hidden"} gap-1.5`}>
                         <input min="1" type="number" name="timeValue" value={timeValue} disabled={isSending} onChange={handleChange} className="border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm" />
                         <select name="timeUnit" value={timeUnit} onChange={handleChange} disabled={isSending} className={`border border-[#ccc] text-sm p-0.5 text-gray-600 rounded-sm ${isAlertOperation ? "hidden" : "block"}`} >
                             <option value="none"></option>

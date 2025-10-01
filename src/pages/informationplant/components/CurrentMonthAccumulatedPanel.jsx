@@ -54,7 +54,7 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
 
     const currentlyData = [
         { id: 0, item: "Acumulado Filtración mes actual", value: data?.filtration },
-        { id: 1, item: "Acumulado Retrolavado mes actual", value: data?.backwash },
+        { id: 1, item: "Acumulado Retrolavado mes actual", value: data?.invwTime },
         { id: 2, item: "Acumulado Enjuague mes actual", value: data?.rinse },
         { id: 3, item: "Acumulado Purgado mes actual", value: data?.purge }
     ];

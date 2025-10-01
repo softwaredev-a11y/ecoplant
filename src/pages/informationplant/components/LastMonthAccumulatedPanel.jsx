@@ -40,7 +40,7 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
     const dataLastMonth = [
         { id: 0, item: "Acumulado Filtración mes anterior", value: data?.filtration },
         { id: 1, item: "Acumulado Enjuague mes anterior", value: data?.rinse },
-        { id: 2, item: "Acumulado Retrolavado mes anterior", value: data?.backwash },
+        { id: 2, item: "Acumulado Retrolavado mes anterior", value: data?.invwTime },
     ];
 
     return (

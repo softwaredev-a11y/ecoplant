@@ -85,9 +85,9 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                 setCommandStatus(prev => ({ ...prev, [COMMANDS.FILTRATION]: "success" }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("filtrado", message);
                 break;
-            case SOCKET_KEYS.BACKWASH:
+            case SOCKET_KEYS.INVW_TIME:
                 setRetrolavado(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.BACKWASH]: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.INVW_TIME]: "success" }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("retrolavado", message);
                 break;
             case SOCKET_KEYS.RINSE:

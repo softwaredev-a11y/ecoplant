@@ -25,6 +25,7 @@ export function toGMT0(hour24) {
  * @returns {number} La hora en formato de 24h (0-23).
  */
 export function convertTo24h(timeStr) {
+    timeStr = timeStr.replace(/["']/g, '');
     const hour = parseInt(timeStr.replace(/\s*[ap]\.?m?\.?/i, ''), 10);
     const isPm = timeStr.toLowerCase().includes('p');
     if (isPm && hour < 12) return hour + 12;

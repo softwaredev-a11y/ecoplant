@@ -2,7 +2,11 @@ import { replaceAt, fillLeftText } from "./syrusUtils";
 import { SYRUS4_SET_PARAMETER_KEYS, SYRUS_FOUR_COMMANDS } from "./constants";
 import { formatHour12, toGMT0, convertTo24h, toGMT5 } from "./timeUtils"
 
-
+/**
+ * Procesa un mensaje de socket de un Syrus 4 para obtener y formatear el horario de operación.
+ * @param {string | null | undefined} message - El mensaje del socket a procesar.
+ * @returns {string | null} Una cadena de texto con el horario de operación en formato local (ej: "08:00 a.m a 05:00 p.m") o null si no se pudo procesar.
+ */
 export function generateOperationHours(messages) {
     const qgt00 = messages['RGT001'];
     const qgt01 = messages['RGT011'];

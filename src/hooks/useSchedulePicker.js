@@ -110,8 +110,8 @@ export function useSchedulePicker() {
      */
     const selectAll = () => {
         // Al poner la misma hora de inicio y fin, la lógica lo interpreta como 24h.
-        setRangeStart(hours[0]);
-        setRangeEnd(hours[0]);
+        setRangeStart("8a");
+        setRangeEnd("8a");
         setSelectedHours(hours);
     }
 

@@ -150,7 +150,7 @@ export function getSyrus4OperationHours(message) {
 }
 
 export function isScheduleMessage(message) {
-    return message.includes('RGT001') || message.includes('RGT011') || message.includes('RGT021');
+    return message.includes('RGT001') || message.includes('RGT011') || message.includes('RGT021') || (message.includes(`"start_time"`) && message.includes(`"end_time"`));
 }
 
 export function extractScheduleMessageHeader(message) {

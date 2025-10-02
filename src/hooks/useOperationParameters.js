@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
-import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET } from '@/utils/constants';
+import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET, COMMAND_STATES } from '@/utils/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
 import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours, getSyrus4OperationHours } from '../utils/operationHoursUtils';
 
@@ -46,12 +46,12 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
         if (hasRunRef.current) return;
         hasRunRef.current = true;
         const commands = Object.values(COMMANDS);
-        setCommandStatus(Object.fromEntries(commands.map(c => [c, "loading"])));
+        setCommandStatus(Object.fromEntries(commands.map(c => [c, COMMAND_STATES.LOADING])));
         executeMultipleCommands(plant.id, commands);
         const firstTimeout = setTimeout(() => {
             commands.forEach(cmd => {
                 setCommandStatus(prev => {
-                    if (prev[cmd] === "loading") {
+                    if (prev[cmd] === COMMAND_STATES.LOADING) {
                         executeMultipleCommands(plant.id, [cmd]);
                     }
                     return prev;
@@ -63,7 +63,7 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                 Object.fromEntries(
                     commands.map(cmd => [
                         cmd,
-                        prev[cmd] === "loading" ? "error" : prev[cmd],
+                        prev[cmd] === COMMAND_STATES.LOADING ? COMMAND_STATES.ERROR : prev[cmd],
                     ])
                 )
             );
@@ -83,14 +83,15 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                 const header = extractScheduleMessageHeader(message);
                 const newParts = { ...scheduleParts, [header]: message };
                 setScheduleParts(newParts);
-                if (header.includes('RGT00')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: "success" }));
-                if (header.includes('RGT01')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: "success" }));
-                if (header.includes('RGT02')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: "success" }));
+                if (header.includes('RGT00')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: COMMAND_STATES.SUCCESS }));
+                if (header.includes('RGT01')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: COMMAND_STATES.SUCCESS }));
+                if (header.includes('RGT02')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: COMMAND_STATES.SUCCESS }));
                 if (Object.keys(newParts).length === 3) {
                     const finalSchedule = generateOperationHours(newParts);
                     setHorario(finalSchedule);
                     setScheduleParts({});
                 }
+                console.log("Mensaje del socket parametros de operación S3: ", message)
             } else {
                 const finalSchedule = getSyrus4OperationHours(message);
                 setHorario(finalSchedule);
@@ -104,27 +105,27 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
         switch (result.key) {
             case SOCKET_KEYS.FILTRATION:
                 setFiltrado(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.FILTRATION]: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.FILTRATION]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("filtrado", message);
                 break;
             case SOCKET_KEYS.INVW_TIME:
                 setRetrolavado(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.INVW_TIME]: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.INVW_TIME]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("retrolavado", message);
                 break;
             case SOCKET_KEYS.RINSE:
                 setEnjuague(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.RINSE]: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.RINSE]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("enjuague", message);
                 break;
             case SOCKET_KEYS.FLOW_ALERT:
                 setValorAlertaFlujo(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.FLOW_ALERT]: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.FLOW_ALERT]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("alertaflujo", message);
                 break;
             case SOCKET_KEYS.INSUFFICIENT_FLOW_ALARM:
                 setValorAlarmaInsuficiente(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.INSUFFICIENT_FLOW_ALARM]: "success" }));
+                setCommandStatus(prev => ({ ...prev, [COMMANDS.INSUFFICIENT_FLOW_ALARM]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("alarmainsuficiente", message);
                 break;
             default:

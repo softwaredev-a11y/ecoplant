@@ -124,3 +124,9 @@ export const ERROR_MESSAGES = {
     COMMUNICATION_PROBLEMS: "Problemas de comunicación. Intente más tarde",
     INFORMATION_NOT_AVAILABLE: "Información no disponible",
 }
+
+export const COMMAND_STATES = {
+    LOADING: "loading",
+    ERROR: "error",
+    SUCCESS: "success",
+}

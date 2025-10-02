@@ -6,6 +6,7 @@ import { buildSetOperationHoursCommand, buildSetOperationHoursCommandSyrus4 } fr
 import { useSchedulePicker } from "@/hooks/useSchedulePicker";
 import { ERROR_MESSAGES } from "@/utils/constants";
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
+import { useUsers } from "@/hooks/useUsers";
 
 export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyrus4 }) {
 
@@ -13,6 +14,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
     const { rangeStart, rangeEnd, selectedHours, scheduleDescription, handleHourClick, clearAll, selectAll, selectWorkingHours, selectNonWorkingHours, hours, startHour, endHour } = useSchedulePicker();
     const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4);
     const isButtonDisabled = !isOnline || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS || selectedHours.length <= 1 && (rangeStart == null || rangeEnd == null) || isSending || commandFailed;
+    const { isSuperUser } = useUsers();
 
     function handleClick() {
         setIsOpen(false);
@@ -34,58 +36,60 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
             <span className=''></span>
             <div className='flex w-full justify-end'>
                 <span className={` font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm   w-full  max-w-[300px] break-words`}>
-                    {displayValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === "Cargando" ? "" : "(gmt-5)"}</span>
+                    {displayValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === "Consultando" ? "" : "(gmt-5)"}</span>
                 </span>
             </div>
-            <Accordion type="single" collapsible className={"col-span-3"}>
-                <AccordionItem value="item-1">
-                    <AccordionTrigger className="flex justify-center text-gray-600 font-semibold mr-1.5 break-words text-sm text-center">Establecer nuevo horario</AccordionTrigger>
-                    <AccordionContent>
-                        <div className="flex justify-between">
-                            <Clock color="#718096" />
-                            <button onClick={selectAll} className="text-[#005596] font-semibold mr-1.5 break-words text-sm cursor-pointer">24 horas</button>
-                            <button onClick={selectWorkingHours} className="text-[#005596] font-semibold mr-1.5 break-words text-sm cursor-pointer">Horas laborales</button>
-                            <button onClick={selectNonWorkingHours} className="text-[#005596] font-semibold mr-1.5 break-words text-sm cursor-pointer">Horas no laborales</button>
-                        </div>
-                        <div className="grid grid-cols-8 gap-1 mb-4">
-                            {hours.map((hour) => (
-                                <button key={hour} onClick={() => handleHourClick(hour)}
-                                    className={`py-1 text-sm cursor-pointer ${hour === startHour || hour === endHour
-                                        ? "bg-gray-400 text-gray-600 font-semibold"
-                                        : selectedHours.includes(hour)
-                                            ? "bg-gray-300 text-gray-600 font-semibold"
-                                            : "bg-gray-100 text-gray-600"
-                                        }`}
-                                >
-                                    {hour}
+            {isSuperUser && (
+                <Accordion type="single" collapsible className={"col-span-3"}>
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger className="flex justify-center text-gray-600 font-semibold mr-1.5 break-words text-sm text-center">Establecer nuevo horario</AccordionTrigger>
+                        <AccordionContent>
+                            <div className="flex justify-between">
+                                <Clock color="#718096" />
+                                <button onClick={selectAll} className="text-[#005596] font-semibold mr-1.5 break-words text-sm cursor-pointer">24 horas</button>
+                                <button onClick={selectWorkingHours} className="text-[#005596] font-semibold mr-1.5 break-words text-sm cursor-pointer">Horas laborales</button>
+                                <button onClick={selectNonWorkingHours} className="text-[#005596] font-semibold mr-1.5 break-words text-sm cursor-pointer">Horas no laborales</button>
+                            </div>
+                            <div className="grid grid-cols-8 gap-1 mb-4">
+                                {hours.map((hour) => (
+                                    <button key={hour} onClick={() => handleHourClick(hour)}
+                                        className={`py-1 text-sm cursor-pointer ${hour === startHour || hour === endHour
+                                            ? "bg-gray-400 text-gray-600 font-semibold"
+                                            : selectedHours.includes(hour)
+                                                ? "bg-gray-300 text-gray-600 font-semibold"
+                                                : "bg-gray-100 text-gray-600"
+                                            }`}
+                                    >
+                                        {hour}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="flex justify-between">
+                                <button onClick={clearAll} className="px-0.5 py-0.5 text-red-600 font-medium text-sm rounded  cursor-pointer">
+                                    Cancelar
                                 </button>
-                            ))}
-                        </div>
-                        <div className="flex justify-between">
-                            <button onClick={clearAll} className="px-0.5 py-0.5 text-red-600 font-medium text-sm rounded  cursor-pointer">
-                                Cancelar
-                            </button>
-                            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                                <AlertDialogTrigger disabled={isButtonDisabled} className="px-0.5 py-0.5  text-sm rounded font-semibold text-[#005596] cursor-pointer disabled:cursor-not-allowed">
-                                    Cambiar horario de operación
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
-                                        <AlertDialogDescription className="text-sm text-gray-600" >
-                                            Se cambiará el <span className="text-red-700 font-bold">horario de operación</span> de la Ecoplanta {startHour === endHour && startHour != null && endHour != null ? "a" : "de"}: <span className="text-red-700 font-bold">{scheduleDescription}</span>.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction onClick={handleClick} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+                                <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+                                    <AlertDialogTrigger disabled={isButtonDisabled} className="px-0.5 py-0.5  text-sm rounded font-semibold text-[#005596] cursor-pointer disabled:cursor-not-allowed">
+                                        Cambiar horario de operación
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle className="text-sm text-gray-600 font-semibold tracking-wide">¿Está seguro de realizar esta acción?</AlertDialogTitle>
+                                            <AlertDialogDescription className="text-sm text-gray-600" >
+                                                Se cambiará el <span className="text-red-700 font-bold">horario de operación</span> de la Ecoplanta {startHour === endHour && startHour != null && endHour != null ? "a" : "de"}: <span className="text-red-700 font-bold">{scheduleDescription}</span>.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleClick} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            )}
         </div>
     );
 }

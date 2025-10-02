@@ -45,6 +45,7 @@ export const PlantProvider = ({ children }) => {
         } else {
           // Si no está en caché, realiza la llamada a la API.
           const params = isSuperUser
+            //? { groups: [ECOPLANT_GROUPS.SUPER_USERS_GROUP, ECOPLANT_GROUPS.DEVELOP_GROUP] } // Parámetros para superusuario. Quitar en producción.
             ? { groups: ECOPLANT_GROUPS.SUPER_USERS_GROUP } // Parámetros para superusuario. Quitar en producción.
             : {}; // Sin parámetros para usuario normal.
           const response = await plantsApi.getPlants(params);

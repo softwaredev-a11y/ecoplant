@@ -84,16 +84,17 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
 
     //Envía el comando a la planta seleccionada.
     const sendCommand = useCallback(async (commandMessage) => {
+        const commandsToSend = Array.isArray(commandMessage) ? commandMessage : [commandMessage];
         try {
-            if (commandMessage) {
-                await executeMultipleCommands(plantId, [commandMessage], isSyrus4);
+            if (commandsToSend.length > 0) {
+                await executeMultipleCommands(plantId, commandsToSend, isSyrus4);
             } else {
                 console.error("No existe un mensaje, por lo que no se puede formatear.");
             }
         } catch (error) {
             console.error(`Ocurrió un error en la ejecución del comando: ${error}`);
         }
-    }, [plantId, executeMultipleCommands]);
+    }, [plantId, isSyrus4, executeMultipleCommands]);
 
     //Maneja la lógica para calcular los reintentos.
     const attemptToSend = useCallback((attemptsLeft, commandMessage) => {

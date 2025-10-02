@@ -19,7 +19,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
     function handleClick() {
         setIsOpen(false);
         try {
-            let commands = isSyrus4 ? buildSetOperationHoursCommandSyrus4(rangeStart, rangeEnd) : [buildSetOperationHoursCommand(rangeStart, rangeEnd)];
+            let commands = isSyrus4 ? [buildSetOperationHoursCommandSyrus4(rangeStart, rangeEnd)] : buildSetOperationHoursCommand(rangeStart, rangeEnd);
             if (!commands || commands.length === 0 || commands.includes("")) {
                 console.log("Error")
                 return;

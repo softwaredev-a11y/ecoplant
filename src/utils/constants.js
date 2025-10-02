@@ -56,7 +56,9 @@ export const SYRUS4_SET_PARAMETER_KEYS = {
     CMD_SET_B: 'invw_time',
     CMD_SET_R: 'rinse_time',
     CMD_SET_F_ALERT: 'adc_fil_warning_thr',
-    CMD_SET_F_ALARM: 'adc_fil_alarm_thr'
+    CMD_SET_F_ALARM: 'adc_fil_alarm_thr',
+    CMD_SET_START_TIME: 'start_time',
+    CMD_SET_END_TIME: 'end_time',
 }
 
 /**

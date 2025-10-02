@@ -4,8 +4,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Clock } from 'lucide-react';
 import { buildSetOperationHoursCommand, buildSetOperationHoursCommandSyrus4 } from "@/utils/operationHoursUtils";
 import { useSchedulePicker } from "@/hooks/useSchedulePicker";
-import { ERROR_MESSAGES } from "../../../utils/constants";
-
+import { ERROR_MESSAGES } from "@/utils/constants";
 
 export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyrus4 }) {
 
@@ -19,7 +18,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
             <span className=''></span>
             <div className='flex w-full justify-end'>
                 <span className={` font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm   w-full  max-w-[300px] break-words`}>
-                    {currentlyValue} <span className='text-xs text-gray-600 font-normal'>(gmt-5)</span>
+                    {currentlyValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === "Cargando" ? "" : "(gmt-5)"}</span>
                 </span>
             </div>
             <Accordion type="single" collapsible className={"col-span-3"}>

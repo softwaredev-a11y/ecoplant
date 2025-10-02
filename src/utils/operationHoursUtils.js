@@ -3,7 +3,7 @@ import { SYRUS4_SET_PARAMETER_KEYS, SYRUS_FOUR_COMMANDS } from "./constants";
 import { formatHour12, toGMT0, convertTo24h, toGMT5 } from "./timeUtils"
 
 /**
- * Procesa un mensaje de socket de un Syrus 4 para obtener y formatear el horario de operación.
+ * Procesa el mensaje de socket de un Syrus para obtener y formatear el horario de operación.
  * @param {string | null | undefined} message - El mensaje del socket a procesar.
  * @returns {string | null} Una cadena de texto con el horario de operación en formato local (ej: "08:00 a.m a 05:00 p.m") o null si no se pudo procesar.
  */
@@ -149,10 +149,20 @@ export function getSyrus4OperationHours(message) {
     return formatOperationHours(startHour24, endHour24);
 }
 
+/**
+ * Revisa el mensaje del socket, para determinar si el mensaje está relacionado a los horarios de operación.
+ * @param {string | null | undefined} message - El mensaje del socket a procesar.
+ * @returns {boolean} Valor booleando que demuestra el si el mensaje es o no de horarios de operación.
+ */
 export function isScheduleMessage(message) {
-    return message.includes('RGT001') || message.includes('RGT011') || message.includes('RGT021') || (message.includes(`"start_time"`) && message.includes(`"end_time"`));
+    return message.includes('RGT001') || message.includes('RGT011') || message.includes('RGT021') || (message.includes(`"start_time"`) && message.includes(`"end_time"`)) || message.includes('SGT001') || message.includes('SGT011') || message.includes('SGT021');
 }
 
+/**
+ * Extrae los primeros 6 caracteres del mensaje para utilizarlos como identificadores. EJ: RGT001, RGT011, RGT0021
+ * @param {string | null | undefined} message - El mensaje del socket a procesar.
+ * @returns {string || null} Una cadena de texto con la cabecera del mensaje
+ */
 export function extractScheduleMessageHeader(message) {
     return message.substring(1, 7);
 }

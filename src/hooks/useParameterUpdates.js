@@ -2,7 +2,17 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandExecution } from "./usePlants";
 import { ERROR_MESSAGES } from "@/utils/constants";
 
+/**
+ * Hook personalizado para gestionar el envío de comandos para el cambio de parámetros de 
+ * operación de la Ecoplanta (filtración, retrolavado, enjuague, alerta, alarma y horarios de operación).
+ * @param {number} plantId ID de la planta seleccionada 
+ * @param {number || string} currentlyValue  Valor actual del parámetro de operación
+ * @param {boolean} isSyrus4 Valor que demuestra si es un dispositivo syrus 4.
+ * @returns {isSending: boolean, commandFailed: boolean, 
+ * displayValue: string, executeUpdate: (commandMessage: string) => void}
+ */
 export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
+    //Llama al hook que permite realizar el envio de múltiplés comandos.
     const { executeMultipleCommands } = useCommandExecution();
 
     const [isSending, setIsSending] = useState(false);
@@ -10,7 +20,6 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
     const [countdown, setCountdown] = useState(15);
     const [displayValue, setDisplayValue] = useState(currentlyValue);
     const [isShowingServerError, setIsShowingServerError] = useState(false);
-
 
     const timeoutRef = useRef(null);
     const initialValueRef = useRef(null);
@@ -73,6 +82,7 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
         };
     }, []);
 
+    //Envía el comando a la planta seleccionada.
     const sendCommand = useCallback(async (commandMessage) => {
         try {
             if (commandMessage) {
@@ -85,6 +95,7 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
         }
     }, [plantId, executeMultipleCommands]);
 
+    //Maneja la lógica para calcular los reintentos.
     const attemptToSend = useCallback((attemptsLeft, commandMessage) => {
         if (attemptsLeft === 0) {
             setIsSending(false);

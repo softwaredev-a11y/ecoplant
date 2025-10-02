@@ -11,6 +11,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { useLogout } from "@/hooks/useSessionTimeout";
+import { Menu, X } from 'lucide-react';
 
 /**
  * Componente principal del layout del Dashboard.
@@ -51,11 +52,8 @@ function Header({ toggleMenu }) {
             <div className="left-options flex items-center gap-3">
                 {/* Botón hamburguesa solo visible en móviles/tablets */}
                 <button className="block lg:hidden" onClick={toggleMenu}>
-                    <span className="w-6 h-0.5 bg-[#005596] block mb-1"></span>
-                    <span className="w-6 h-0.5 bg-[#005596] block mb-1"></span>
-                    <span className="w-6 h-0.5 bg-[#005596] block"></span>
+                    <Menu />
                 </button>
-
                 {/* Logo solo visible en pantallas grandes */}
                 <Logo url={logoImage} className="w-[200px] h-auto ml-2 hidden lg:block" />
             </div>
@@ -117,7 +115,7 @@ function PanelLeft({ isOpen, toggleMenu }) {
             <div className="flex justify-between lg:hidden mb-4">
                 <Logo url={logoImage} className="w-[200px] h-auto ml-2" />
                 <button onClick={toggleMenu} className="text-[#004275] hover:text-black text-2xl font-bold">
-                    ✕
+                    <X />
                 </button>
             </div>
             <InputSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} numberPlants={numberPlants} />

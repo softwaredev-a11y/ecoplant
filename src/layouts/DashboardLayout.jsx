@@ -52,7 +52,7 @@ function Header({ toggleMenu }) {
             <div className="left-options flex items-center gap-3">
                 {/* Botón hamburguesa solo visible en móviles/tablets */}
                 <button className="block lg:hidden" onClick={toggleMenu}>
-                    <Menu />
+                    <Menu color="#005596" />
                 </button>
                 {/* Logo solo visible en pantallas grandes */}
                 <Logo url={logoImage} className="w-[200px] h-auto ml-2 hidden lg:block" />
@@ -115,7 +115,7 @@ function PanelLeft({ isOpen, toggleMenu }) {
             <div className="flex justify-between lg:hidden mb-4">
                 <Logo url={logoImage} className="w-[200px] h-auto ml-2" />
                 <button onClick={toggleMenu} className="text-[#004275] hover:text-black text-2xl font-bold">
-                    <X />
+                    <X color="#005596" />
                 </button>
             </div>
             <InputSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} numberPlants={numberPlants} />

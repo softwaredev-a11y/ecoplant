@@ -46,6 +46,7 @@ export const useAuth = () => {
             navigate('/dashboard');
         } catch (error) {
             console.error("Fallo al iniciar sesión:", error);
+            await authApi.logout();
             throw error;
         } finally {
             setIsLoadingLogin(false);

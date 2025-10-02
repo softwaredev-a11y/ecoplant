@@ -5,20 +5,36 @@ import { Clock } from 'lucide-react';
 import { buildSetOperationHoursCommand, buildSetOperationHoursCommandSyrus4 } from "@/utils/operationHoursUtils";
 import { useSchedulePicker } from "@/hooks/useSchedulePicker";
 import { ERROR_MESSAGES } from "@/utils/constants";
+import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 
 export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyrus4 }) {
 
     const [isOpen, setIsOpen] = useState(false);
     const { rangeStart, rangeEnd, selectedHours, scheduleDescription, handleHourClick, clearAll, selectAll, selectWorkingHours, selectNonWorkingHours, hours, startHour, endHour } = useSchedulePicker();
-    const isButtonDisabled = !isOnline || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS || selectedHours.length <= 1 && (rangeStart == null || rangeEnd == null);
+    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4);
+    const isButtonDisabled = !isOnline || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS || selectedHours.length <= 1 && (rangeStart == null || rangeEnd == null) || isSending || commandFailed;
 
+    function handleClick() {
+        setIsOpen(false);
+        try {
+            let commands = isSyrus4 ? buildSetOperationHoursCommandSyrus4(rangeStart, rangeEnd) : [buildSetOperationHoursCommand(rangeStart, rangeEnd)];
+            if (!commands || commands.length === 0 || commands.includes("")) {
+                console.log("Error")
+                return;
+            }
+            console.log("Se están enviando los siguientes comandos: ", commands)
+            executeUpdate(commands);
+        } catch (error) {
+            console.log(`Ocurrió el siguiente error: ${error}`);
+        }
+    };
     return (
         <div className='div grid grid-cols-[130px_35px_1fr] gap-1.5 mb-0.5 items-center'>
             <span className="text-gray-600 font-semibold mr-1.5 break-words text-sm md:text-base lg:text-base">Horario de operación:</ span>
             <span className=''></span>
             <div className='flex w-full justify-end'>
                 <span className={` font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm   w-full  max-w-[300px] break-words`}>
-                    {currentlyValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === "Cargando" ? "" : "(gmt-5)"}</span>
+                    {displayValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === "Cargando" ? "" : "(gmt-5)"}</span>
                 </span>
             </div>
             <Accordion type="single" collapsible className={"col-span-3"}>
@@ -62,7 +78,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => console.log(isSyrus4 ? `El comando a enviar es:\n${buildSetOperationHoursCommandSyrus4(rangeStart, rangeEnd)}` : buildSetOperationHoursCommand(rangeStart, rangeEnd))} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
+                                        <AlertDialogAction onClick={handleClick} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>

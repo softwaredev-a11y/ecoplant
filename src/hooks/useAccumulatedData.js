@@ -5,8 +5,8 @@ import { OPERATION_CODES, ERROR_MESSAGES } from '@/utils/constants';
 
 /**
 * Hook personalizado para gestionar la consulta de valores acumulados de la Ecoplanta.
-* Realiza una solicitud a la API, y obtiene los valores relacionados a filtración, retrolavado y
-* enjuague, en un periodo determinado de tiempo (mes actual o pasado). Posteriormente realiza el cálculo
+* Realiza una solicitud a la API, y obtiene los valores relacionados a filtración, retrolavado,
+* enjuague y purgado, en un periodo determinado de tiempo (mes actual o pasado). Posteriormente realiza el cálculo
 * y conversión de estos para mostrarlos al usuario.
 * @returns {{ data: object|null,  isLoading: boolean, combinedIsLoading: boolean,  error: string|null,  fetchAndCalculateData: function}} Un objecto con los valores acumulados correspondientes a filtración, retrolavado, enjuague y purgado.
 */

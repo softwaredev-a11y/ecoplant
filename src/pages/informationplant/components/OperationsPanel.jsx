@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import HeaderPanel from './HeaderPanel';
-import { useCommandExecution } from '@/hooks/usePlants';
 import { formatTime, buildSetterCommand } from '@/utils/syrusUtils';
 import { OPERATION_CODES } from '@/utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { useUsers } from "@/hooks/useUsers";
+import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from 'react-toastify';
@@ -119,33 +118,30 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const [isOpen, setIsOpen] = useState(false);
     const [timeValue, setTimeValue] = useState("");
     const [timeUnit, setTimeUnit] = useState('none');
-
-    const [isSending, setIsSending] = useState(false);
-    const [commandFailed, setCommandFailed] = useState(false);
-    const [countdown, setCountdown] = useState(15);
-    const [displayValue, setDisplayValue] = useState(currentlyValue);
-    const [isShowingServerError, setIsShowingServerError] = useState(false);
-
-    const timeoutRef = useRef(null);
-    const initialValueRef = useRef(null);
-    const countdownIntervalRef = useRef(null);
+    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4);
 
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
-    const { executeMultipleCommands } = useCommandExecution();
-    const notify = () => toast.error("Error: Valor fuera de rango", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-    });
+    const notify = (text) => {
+        const message = (
+            <span>
+                <strong>Error: </strong> {text}
+            </span>
+        );
+        toast.error(message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
 
     //Consume hook personalizado para determinar si es super usuario o no.
-    const { isSuperUser } = useUsers();
+    const isSuperUser = true;
     //Obtiene los valores que se introduzcan en el input.
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -159,111 +155,6 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             setTimeUnit(value);
         }
     };
-    //Detiene la cuenta regresiva cuando existe una respuesta al comando ejecutado.
-    const stopCountdown = () => {
-        clearInterval(countdownIntervalRef.current);
-    };
-    //Inicia una cuenta regresiva después de que se ejecuta un comando.
-    //La cuenta es de 15 segundos.
-    const startCountdown = () => {
-        stopCountdown();
-        setCountdown(15);
-        countdownIntervalRef.current = setInterval(() => {
-            setCountdown(prev => (prev > 0 ? prev - 1 : 0));
-        }, 1000);
-    };
-    //Si no se está mostrando un mensaje de error del servidor, entonces,
-    //muestra el mensaje nuevo.
-    useEffect(() => {
-        if (!isShowingServerError) {
-            setDisplayValue(currentlyValue);
-        }
-    }, [currentlyValue, isShowingServerError]);
-
-    useEffect(() => {
-        if (!isSending) return;
-        const isErrorValue = currentlyValue.includes("inválido");
-        // Caso 1: El servidor respondió con un mensaje de error conocido
-        if (isErrorValue) {
-            clearTimeout(timeoutRef.current);
-            stopCountdown();
-            setIsSending(false);
-            setIsShowingServerError(true);
-            setDisplayValue(currentlyValue);
-            setCommandFailed(false);
-
-            const errorTimer = setTimeout(() => {
-                setDisplayValue(initialValueRef.current);
-                setIsShowingServerError(false);
-            }, 5000);
-
-            setTimeValue("");
-            setTimeUnit("none");
-
-            return () => clearTimeout(errorTimer);
-        }
-        // Caso 2: El servidor respondió con un nuevo valor exitoso
-        else if (currentlyValue !== initialValueRef.current && !currentlyValue.includes("Consultando")) {
-            clearTimeout(timeoutRef.current);
-            stopCountdown();
-            setIsSending(false);
-            setCommandFailed(false);
-            setTimeValue("");
-            setTimeUnit("none");
-        }
-    }, [currentlyValue, isSending]);
-
-    useEffect(() => {
-        return () => {
-            clearTimeout(timeoutRef.current);
-            stopCountdown();
-        };
-    }, []);
-
-    /**
-     * Envia los comandos para modificar parámetros de operación
-     * @param {string} commandMessage Comando que se envía para modificar el valor del parámetro de operación.
-     * @param {string | number} codeOperation Código que identifica la operación.
-     * @param {boolean} isSyrus4 Determina si el dispositivo es Syrus 4.
-     */
-    const sendAndQuery = async (commandMessage, codeOperation, isSyrus4) => {
-        try {
-            if (commandMessage != "") {
-                console.log("Se está enviando el siguiente comando: ", commandMessage)
-                await executeMultipleCommands(plant.id, [commandMessage], isSyrus4);
-            } else {
-                console.error("No existe un mensaje, por lo que no se puede formatear.")
-            }
-        } catch (error) {
-            console.error(`Ocurrió el siguiente error ${error} en la ejecución del comando ${codeOperation}`);
-        }
-    };
-
-    /**
-     * Maneja la lógica para el reintento en envío de comandos.
-     * @param {number} attemptsLeft Intentos restantes para enviar el comando
-     * @param {string | number} codeOp Código que identifica la operación.
-     * @param {string} commandMessage Comando que se envía para realizar el cambio en el párametro de operación.
-     * @param {boolean} isSyrus4 Determina si el dispositivo es Syrus 4.
-     * @returns {void | null}
-     */
-    const attemptToSend = (attemptsLeft, codeOp, commandMessage, isSyrus4) => {
-        if (attemptsLeft === 0) {
-            setIsSending(false);
-            setCommandFailed(true);
-            stopCountdown();
-            setTimeValue("");
-            setTimeUnit("none");
-            return;
-        }
-
-        startCountdown();
-        sendAndQuery(commandMessage, codeOp, isSyrus4);
-
-        timeoutRef.current = setTimeout(() => {
-            attemptToSend(attemptsLeft - 1, codeOp, commandMessage, isSyrus4);
-        }, 15000);
-    };
 
     /**
      * Maneja la lógica para el evento de click del botón de enviar de la alert.
@@ -271,22 +162,31 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
      * @param {boolean} isSyrus4 Determina si el dispositivo es un Syrus 4. 
      * @returns {void | null}
      */
-    function handleClick(codeOperation, isSyrus4) {
+    function handleClick() {
         setIsOpen(false);
-        let commandMessage = isSyrus4 ? buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : buildSetterCommand(codeOperation, timeValue, timeUnit, mvZeroValue);
-        if (commandMessage === "") {
-            notify();
-            setTimeValue("");
-            setTimeUnit("none");
-            return;
+        try {
+            let commandMessage = isSyrus4 ? buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : buildSetterCommand(codeOperation, timeValue, timeUnit, mvZeroValue);
+            if (commandMessage === "") {
+                notify("Valor fuera de rango.");
+                setTimeValue("");
+                setTimeUnit("none");
+                return;
+            }
+            executeUpdate(commandMessage);
+
+        } catch (error) {
+            if (error.message && error.message.includes('sessionStorage')) {
+                notify("No es posible realizar el cambio. Por favor, inicie sesión e intente nuevamente.");
+            } else {
+                notify("Error: No fue posible realizar el cambio. Intente más tarde.");
+            }
+            console.log(`Ocurrió el siguiente error: ${error}`);
         }
-        setCommandFailed(false);
-        initialValueRef.current = currentlyValue;
-        setIsSending(true);
-        attemptToSend(2, codeOperation, commandMessage, isSyrus4);
     };
 
     const formattedNewValue = useMemo(() => {
+        setTimeUnit("");
+        setTimeValue("");
         if (!isOpen || !timeValue) return null;
         if (isAlertOperation) {
             return `${timeValue} gpm`;
@@ -303,12 +203,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                 <span className="text-gray-600 font-semibold mr-1.5 break-words text-sm md:text-base lg:text-base">{typeOperation}: </ span>
                 <span className=''></span>
                 <div className='flex w-full justify-end'>
-                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${isSending || commandFailed || displayValue ? "p-0.5 bg-gray-200 rounded-sm" : ""}  w-full  max-w-[300px] break-words`}>
-                        {isSending
-                            ? `Cargando nuevo valor (${countdown}s)`
-                            : commandFailed
-                                ? ERROR_MESSAGES.COMMUNICATION_PROBLEMS
-                                : displayValue}
+                    <span className={`font-semibold text-gray-600  text-sm md:text-base lg:text-base ${isSending || commandFailed || currentlyValue ? "p-0.5 bg-gray-200 rounded-sm" : ""}  w-full  max-w-[300px] break-words`}>
+                        {displayValue}
                     </span>
                 </div>
             </div>
@@ -334,7 +230,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleClick(codeOperation, isSyrus4)} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
+                                        <AlertDialogAction onClick={handleClick} className="cursor-pointer bg-[#004275] hover:bg-[#0076D1]">Continuar</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>

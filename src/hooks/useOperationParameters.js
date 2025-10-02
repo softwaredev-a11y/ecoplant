@@ -3,7 +3,7 @@ import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
 import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET } from '@/utils/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
-import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours } from '../utils/operationHoursUtils';
+import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours, getSyrus4OperationHours } from '../utils/operationHoursUtils';
 
 /**
  * Hook para gestionar los parámetros de operación.
@@ -78,18 +78,22 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;
         if (!message) return;
-        if (!isSyrus4 && isScheduleMessage(message)) {
-            const header = extractScheduleMessageHeader(message);
-            const newParts = { ...scheduleParts, [header]: message };
-            setScheduleParts(newParts);
-            if (header.includes('RGT00')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: "success" }));
-            if (header.includes('RGT01')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: "success" }));
-            if (header.includes('RGT02')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: "success" }));
-            if (Object.keys(newParts).length === 3) {
-                const finalSchedule = generateOperationHours(newParts);
+        if (isScheduleMessage(message)) {
+            if (!isSyrus4) {
+                const header = extractScheduleMessageHeader(message);
+                const newParts = { ...scheduleParts, [header]: message };
+                setScheduleParts(newParts);
+                if (header.includes('RGT00')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: "success" }));
+                if (header.includes('RGT01')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: "success" }));
+                if (header.includes('RGT02')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: "success" }));
+                if (Object.keys(newParts).length === 3) {
+                    const finalSchedule = generateOperationHours(newParts);
+                    setHorario(finalSchedule);
+                    setScheduleParts({});
+                }
+            } else {
+                const finalSchedule = getSyrus4OperationHours(message);
                 setHorario(finalSchedule);
-                // Opcional: Limpiar el estado de las partes para futuras actualizaciones.
-                setScheduleParts({});
             }
             return;
         }

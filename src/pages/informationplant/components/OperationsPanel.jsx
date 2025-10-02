@@ -6,8 +6,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
-import { toast } from 'react-toastify';
+import { toast } from "sonner"
 import { ERROR_MESSAGES } from "@/utils/constants";
+import { useUsers } from "@/hooks/useUsers";
 import ScheduleSelector from "../components/ScheduleSelector";
 
 /**
@@ -122,26 +123,9 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
-    const notify = (text) => {
-        const message = (
-            <span>
-                <strong>Error: </strong> {text}
-            </span>
-        );
-        toast.error(message, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
-    };
 
     //Consume hook personalizado para determinar si es super usuario o no.
-    const isSuperUser = true;
+    const { isSuperUser } = useUsers();
     //Obtiene los valores que se introduzcan en el input.
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -167,7 +151,9 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
         try {
             let commandMessage = isSyrus4 ? buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : buildSetterCommand(codeOperation, timeValue, timeUnit, mvZeroValue);
             if (commandMessage === "") {
-                notify("Valor fuera de rango.");
+                toast.error("Error", {
+                    description: "El valor ingresado está fuera de rango.",
+                });
                 setTimeValue("");
                 setTimeUnit("none");
                 return;
@@ -175,18 +161,14 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             executeUpdate(commandMessage);
 
         } catch (error) {
-            if (error.message && error.message.includes('sessionStorage')) {
-                notify("No es posible realizar el cambio. Por favor, inicie sesión e intente nuevamente.");
-            } else {
-                notify("Error: No fue posible realizar el cambio. Intente más tarde.");
-            }
+            toast.error("Error", {
+                description: "No fue posible realizar la operación. Intente nuevamente.",
+            });
             console.log(`Ocurrió el siguiente error: ${error}`);
         }
     };
 
     const formattedNewValue = useMemo(() => {
-        setTimeUnit("");
-        setTimeValue("");
         if (!isOpen || !timeValue) return null;
         if (isAlertOperation) {
             return `${timeValue} gpm`;

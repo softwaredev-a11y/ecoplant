@@ -8,8 +8,7 @@ import { getPlantModel } from "@/utils/syrusUtils";
 import { usePlants } from "@/hooks/usePlants";
 import { useAuth } from "@/hooks/useAuth";
 import { useUsers } from "@/hooks/useUsers";
-import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import { Toaster } from "@/components/ui/sonner"
 import { useLogout } from "@/hooks/useSessionTimeout";
 import { Menu, X } from 'lucide-react';
 
@@ -28,7 +27,14 @@ function DashboardLayout() {
 
     return (
         <div className="main-container flex flex-col w-[98%] min-h-[95dvh] md:min-h-[90dvh] max-h-[95vh] md:max-h-[90dvh] box-border border bg-white border-[#ccc] p-0">
-            <ToastContainer />
+            <Toaster position="top-center" richColors closeButton toastOptions={{ unstyled: false }}
+                style={{
+                    '--error-bg': 'oklch(1 0 0)',
+                    '--error-border': 'var(--destructive)',
+                    '--error-text': 'var(--destructive)',
+                    '--normal-bg-hover': 'hsl(0 0% 100%)',
+                }}
+            />
             <Header toggleMenu={toggleMenu} />
             <MainLayout isOpen={isOpen} toggleMenu={toggleMenu} />
         </div>

@@ -11,13 +11,13 @@ import { ERROR_MESSAGES } from "@/utils/constants";
  * @returns {isSending: boolean, commandFailed: boolean, 
  * displayValue: string, executeUpdate: (commandMessage: string) => void}
  */
-export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
+export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualChangeRef) {
     //Llama al hook que permite realizar el envio de múltiplés comandos.
     const { executeMultipleCommands } = useCommandExecution();
 
     const [isSending, setIsSending] = useState(false);
     const [commandFailed, setCommandFailed] = useState(false);
-    const [countdown, setCountdown] = useState(15);
+    const [countdown, setCountdown] = useState(30);
     const [displayValue, setDisplayValue] = useState(currentlyValue);
     const [isShowingServerError, setIsShowingServerError] = useState(false);
 
@@ -31,10 +31,10 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
     };
 
     //Inicia una cuenta regresiva después de que se ejecuta un comando.
-    //La cuenta es de 15 segundos.
+    //La cuenta es de 30 segundos.
     const startCountdown = () => {
         stopCountdown();
-        setCountdown(15);
+        setCountdown(30);
         countdownIntervalRef.current = setInterval(() => {
             setCountdown(prev => (prev > 0 ? prev - 1 : 0));
         }, 1000);
@@ -110,16 +110,20 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4) {
 
         timeoutRef.current = setTimeout(() => {
             attemptToSend(attemptsLeft - 1, commandMessage);
-        }, 15000);
+        }, 30000);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sendCommand]);
 
     const executeUpdate = useCallback((commandMessage) => {
         if (!commandMessage) return;
-
+        if (isManualChangeRef) {
+            isManualChangeRef.current = true;
+        }
         setCommandFailed(false);
         initialValueRef.current = currentlyValue;
         setIsSending(true);
         attemptToSend(2, commandMessage);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentlyValue, attemptToSend]);
 
     const display = isSending ? `Cargando nuevo valor (${countdown}s)` : (commandFailed ? ERROR_MESSAGES.COMMUNICATION_PROBLEMS : displayValue);

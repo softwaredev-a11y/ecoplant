@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 
 /**
  * Formatea una hora en formato 24h a un string en formato 12h con sufijo 'a' o 'p'.
@@ -43,11 +43,81 @@ const nonWorkingHours = [...evening, ...night];
  *  hours: string[]
  * }}
  */
-export function useSchedulePicker() {
-    //const [selectedDays, setSelectedDays] = useState([]);
+export function useSchedulePicker(currentlyValue) {
     const [selectedHours, setSelectedHours] = useState([]);
     const [rangeStart, setRangeStart] = useState(null);
     const [rangeEnd, setRangeEnd] = useState(null);
+
+    /**
+     * Parsea el valor de horario actual (ej: "08:00 a.m a 05:00 p.m")
+     * y establece el estado del selector.
+     */
+    const parseAndSetInitialState = useCallback(() => {
+        const clearSelection = () => {
+            setSelectedHours([]);
+            setRangeStart(null);
+            setRangeEnd(null);
+        };
+
+        if (!currentlyValue || typeof currentlyValue !== 'string') {
+            clearSelection();
+            return;
+        }
+
+        if (currentlyValue.toLowerCase() === "24 horas") {
+            selectAll();
+            return;
+        }
+
+        const timeRegex = /(\d{1,2}):\d{2}\s*(a\.m|p\.m)/gi;
+        const matches = [...currentlyValue.matchAll(timeRegex)];
+
+        if (matches.length !== 2) {
+            clearSelection();
+            return;
+        }
+
+        const [startMatch, endMatch] = matches;
+
+        const parseHourString = (match) => {
+            let hour = parseInt(match[1], 10);
+            const period = match[2].toLowerCase();
+
+            if (period === 'p.m' && hour !== 12) {
+                hour += 12;
+            } else if (period === 'a.m' && hour === 12) {
+                hour = 0;
+            }
+            return formatHour(hour);
+        };
+
+        const start = parseHourString(startMatch);
+        const end = parseHourString(endMatch);
+
+        setRangeStart(start);
+        setRangeEnd(end);
+
+        const startIndex = hours.indexOf(start);
+        const endIndex = hours.indexOf(end);
+
+        if (startIndex === -1 || endIndex === -1) {
+            clearSelection();
+            return;
+        }
+
+        let hoursToSelect;
+        if (startIndex <= endIndex) {
+            hoursToSelect = hours.slice(startIndex, endIndex + 1);
+        } else { // Rango que cruza la medianoche
+            hoursToSelect = [...hours.slice(startIndex), ...hours.slice(0, endIndex + 1)];
+        }
+        setSelectedHours(hoursToSelect);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentlyValue]);
+
+    useEffect(() => {
+        parseAndSetInitialState();
+    }, [parseAndSetInitialState]);
 
     const startHour = rangeStart;
     const endHour = rangeEnd;
@@ -97,12 +167,10 @@ export function useSchedulePicker() {
     };
 
     /**
-     * Limpia toda la selección de horas y reinicia los rangos.
+     * Revierte la selección de horas al estado inicial basado en `currentlyValue`.
      */
-    const clearAll = () => {
-        setSelectedHours([]);
-        setRangeStart(null);
-        setRangeEnd(null);
+    const revertToInitialState = () => {
+        parseAndSetInitialState();
     };
 
     /**
@@ -110,8 +178,8 @@ export function useSchedulePicker() {
      */
     const selectAll = () => {
         // Al poner la misma hora de inicio y fin, la lógica lo interpreta como 24h.
-        setRangeStart("8a");
-        setRangeEnd("8a");
+        setRangeStart(hours[8]);
+        setRangeEnd(hours[8]);
         setSelectedHours(hours);
     }
 
@@ -119,8 +187,8 @@ export function useSchedulePicker() {
      * Selecciona un rango predefinido de horas laborales.
      */
     const selectWorkingHours = () => {
-        setRangeStart("8a");
-        setRangeEnd("6p");
+        setRangeStart(hours[8]);
+        setRangeEnd(hours[18]);
         setSelectedHours(workingHours);
     }
 
@@ -128,8 +196,8 @@ export function useSchedulePicker() {
      * Selecciona un rango predefinido de horas no laborales.
      */
     const selectNonWorkingHours = () => {
-        setRangeStart("7p");
-        setRangeEnd("7a");
+        setRangeStart(hours[7]);
+        setRangeEnd(hours[19]);
         setSelectedHours(nonWorkingHours);
     }
 
@@ -154,7 +222,7 @@ export function useSchedulePicker() {
         selectedHours,
         scheduleDescription,
         handleHourClick,
-        clearAll,
+        revertToInitialState,
         selectAll,
         selectWorkingHours,
         selectNonWorkingHours,

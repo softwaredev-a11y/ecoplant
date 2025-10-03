@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useState } from 'react';
 import authApi from '@/services/auth.service';
+import axios from 'axios';
+import { clearAllSessionStorage } from "../utils/syrusUtils"
 
 /**
 * Hook personalizado para gestionar la autenticación del usuario.
@@ -24,6 +26,7 @@ export const useAuth = () => {
      * @throws {Error} Lanza un error si la autenticación falla, permitiendo que el componente que lo llama maneje el error (por ejemplo, para mostrar un mensaje).
      */
     const login = async (credentials) => {
+        let pegasusToken = null; // Variable para almacenar el token temporalmente
         try {
             //Envía la información del usuario (email, passowrd)
             setIsLoadingLogin(true);
@@ -31,6 +34,7 @@ export const useAuth = () => {
             // Construye la URL de forma dinámica para que funcione en desarrollo y producción.
             // En producción, BASE_URL será '/apps/ecoplant/'.
             const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+            pegasusToken = data.auth; // Guardamos el token en cuanto lo recibimos
             const apiUrl = `${baseUrl}api/cloud_login.php`.replace('//', '/');
             const responseCloud = await fetch(apiUrl, { method: 'POST' });
             if (!responseCloud.ok) {
@@ -38,7 +42,7 @@ export const useAuth = () => {
             }
             const cloudData = await responseCloud.json();
             //Si es exitoso, almacena la siguiente información en variables de session.
-            sessionStorage.setItem('token', data.auth);
+            sessionStorage.setItem('token', pegasusToken);
             sessionStorage.setItem('auth', true)
             sessionStorage.setItem("cloudToken", cloudData?.token);
             sessionStorage.setItem("admToken", cloudData?.token_pegasus);
@@ -46,7 +50,19 @@ export const useAuth = () => {
             navigate('/dashboard');
         } catch (error) {
             console.error("Fallo al iniciar sesión:", error);
-            await authApi.logout();
+            /**
+             * Validación que elimina el token de sesión de Pegasus en caso de que no se pueda
+             * ingresar a cloud.
+             */
+            if (pegasusToken) {
+                try {
+                    await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {
+                        headers: { authenticate: pegasusToken }
+                    });
+                } catch (logoutError) {
+                    console.error("Fallo al intentar revertir el logout de Pegasus:", logoutError);
+                }
+            }
             throw error;
         } finally {
             setIsLoadingLogin(false);
@@ -67,11 +83,7 @@ export const useAuth = () => {
             console.error("Fallo al cerrar sesión en el servidor:", error);
         } finally {
             //Elimina información almacenada en variables de session.
-            sessionStorage.removeItem('token');
-            sessionStorage.removeItem('cloudToken');
-            sessionStorage.removeItem('auth');
-            sessionStorage.removeItem('listPlants');
-            sessionStorage.removeItem("admToken");
+            clearAllSessionStorage();
             //Redirige a la página de inicio/login
             navigate('/');
         }
@@ -99,6 +111,7 @@ export const useAuth = () => {
                 },
                 keepalive: true
             });
+            clearAllSessionStorage();
         }
     }, []);
     return { isLoadingLogin, login, logout, logoutOnBrowserClose };

@@ -36,11 +36,9 @@ export const useLogout = () => {
 
         const handleBeforeUnload = () => {
             logoutOnBrowserClose();
-            sessionStorage.removeItem("token");
         };
         const handlePageHide = () => {
             logoutOnBrowserClose();
-            sessionStorage.removeItem("token");
         };
         window.addEventListener("beforeunload", handleBeforeUnload);
         window.addEventListener("pagehide", handlePageHide);

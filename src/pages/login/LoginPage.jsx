@@ -53,6 +53,8 @@ function FormLogin() {
         } catch (err) {
             if (err.response?.status === 401) {
                 setError('Email y/o contraseña incorrectos.');
+            } else {
+                setError('Ocurrió un error inesperado. Intente nuevamente más tarde.')
             }
         }
     }

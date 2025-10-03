@@ -7,7 +7,7 @@ import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from "sonner"
-import { ERROR_MESSAGES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
 import { useUsers } from "@/hooks/useUsers";
 import ScheduleSelector from "../components/ScheduleSelector";
 
@@ -23,12 +23,12 @@ import ScheduleSelector from "../components/ScheduleSelector";
  */
 function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     //Hook personalizado que permite obtener la información unificada de dispositivos syrus 4 e inferiores.
-    const { parameters, mvZeroValue } = useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4);
+    const { parameters, mvZeroValue, isManualChangeRef } = useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4);
     //Función que obtiene el valor a mostrar.
     const getDisplayValue = (param) => {
         if (param.status === 'unavailable') return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
-        if (param.status === 'loading') return "Consultando";
-        if (param.status === 'error') return ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+        if (param.status === COMMAND_STATES.LOADING) return COMMAND_STATES.CONSULTANDO;
+        if (param.status === COMMAND_STATES.ERROR) return ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
         return param.value;
     };
 
@@ -46,6 +46,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                         isSyrus4={isSyrus4}
+                        isManualChangeRef={isManualChangeRef}
                     />
                     <Operations
                         isOnline={isOnline}
@@ -56,6 +57,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                         isSyrus4={isSyrus4}
+                        isManualChangeRef={isManualChangeRef}
                     />
                     <Operations
                         isOnline={isOnline}
@@ -66,6 +68,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                         isSyrus4={isSyrus4}
+                        isManualChangeRef={isManualChangeRef}
                     />
                 </div>
                 <div className="border-b border-b-[#ccc]">
@@ -78,6 +81,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                         isSyrus4={isSyrus4}
+                        isManualChangeRef={isManualChangeRef}
                     />
                     <Operations
                         isOnline={isOnline}
@@ -88,6 +92,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         mvZeroValue={mvZeroValue}
                         plant={plant}
                         isSyrus4={isSyrus4}
+                        isManualChangeRef={isManualChangeRef}
                     />
                 </div>
                 <div className="border-b border-b-[#ccc]">
@@ -96,6 +101,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         currentlyValue={getDisplayValue(parameters.horario)}
                         plant={plant}
                         isSyrus4={isSyrus4}
+                        isManualChangeRef={isManualChangeRef}
                     />
                 </div>
             </div>
@@ -115,11 +121,11 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
  * @param {boolean} props.isSyrus4 - Valor que determina si la planta tiene un dispositivo syrus 4.
  * @returns {JSX.Element} La fila correspondiente a la operación.
  */
-function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline, plant, isSyrus4 }) {
+function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperation, mvZeroValue, isOnline, plant, isSyrus4, isManualChangeRef }) {
     const [isOpen, setIsOpen] = useState(false);
     const [timeValue, setTimeValue] = useState("");
     const [timeUnit, setTimeUnit] = useState('none');
-    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4);
+    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4, isManualChangeRef);
 
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS;

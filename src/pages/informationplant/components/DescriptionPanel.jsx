@@ -3,7 +3,7 @@ import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
 import { usePlantRealTimeData } from '@/hooks/usePlantRealTimeData';
-import { ERROR_MESSAGES } from '@/utils/constants';
+import { ERROR_MESSAGES, COMMAND_STATES } from '@/utils/constants';
 
 
 /**
@@ -25,7 +25,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
         }
         if (isSyrus4) {
             if (isLoadingSyrus4) {
-                return "Consultando";
+                return COMMAND_STATES.CONSULTANDO;
             } if (syrus4Data?.gps === undefined) {
                 return ERROR_MESSAGES.COMMUNICATION_PROBLEMS
             }
@@ -34,7 +34,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
         return infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo";
     };
 
-    const scriptVersion = isSyrus4 ? (isLoadingSyrus4 || !syrus4Data?.apps) ? "Consultando" : formatEcoplantVersion(syrus4Data.apps) : getSoftwareVersion(plant.configuration);
+    const scriptVersion = isSyrus4 ? (isLoadingSyrus4 || !syrus4Data?.apps) ? COMMAND_STATES.CONSULTANDO : formatEcoplantVersion(syrus4Data.apps) : getSoftwareVersion(plant.configuration);
     const gpsSignalStatus = getGpsSignalStatus();
     //Obtiene el último proceso que se ejecutó
     const runningProcessCode = infoConnectionDevice.latest.loc.code;

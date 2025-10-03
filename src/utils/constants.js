@@ -129,4 +129,14 @@ export const COMMAND_STATES = {
     LOADING: "loading",
     ERROR: "error",
     SUCCESS: "success",
+    CONSULTANDO: "Consultando"
 }
+
+export const SESSION_STORAGE_KEYS_TO_CLEAR = [
+    'token',
+    'cloudToken',
+    'auth',
+    'listPlants',
+    'admToken',
+    'userData',
+];

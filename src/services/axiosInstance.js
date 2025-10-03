@@ -14,7 +14,7 @@ function createApiInstance(baseURL, tokenKey, authHeader = "Authorization") {
         headers: {
             accept: "application/json",
         },
-        timeout: 10000,
+        timeout: 30000, // 30 segundos de tiempo de espera
     });
 
     // Interceptor de request → añade token

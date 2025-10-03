@@ -10,6 +10,7 @@ import { formatHour12, toGMT0, convertTo24h, toGMT5 } from "./timeUtils"
 export function generateOperationHours(messages) {
     const qgt00 = messages['RGT001'];
     const qgt01 = messages['RGT011'];
+    if (!qgt00 || !qgt01) return "Parámetro inválido.";
     const response = qgt00.substring(1, 23).concat(qgt01.substring(23, qgt01.length - 1));
     const startTime = response.charAt(12).concat(response.charAt(13));
     const endTime = response.charAt(24).concat(response.charAt(25));

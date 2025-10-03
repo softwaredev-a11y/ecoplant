@@ -80,7 +80,7 @@ export const PlantDetailSocketProvider = ({ children, plantId, isOnline }) => {
      * Se ejecuta cada vez que `plantId` o `isOnline` cambian.
      */
     useEffect(() => {
-        const socket = socketRef.current; 
+        const socket = socketRef.current;
         // Nos aseguramos de que el socket esté inicializado, conectado Y AUTENTICADO.
         if (!socket || !isAuthenticated) {
             return;
@@ -90,7 +90,6 @@ export const PlantDetailSocketProvider = ({ children, plantId, isOnline }) => {
 
         // Si el ID de la planta ha cambiado y teníamos uno anterior, nos desuscribimos.
         if (previousPlantId && previousPlantId !== plantId) {
-            console.log(`Dejando de escuchar eventos para la planta: ${previousPlantId}`);
             socket.emit("stop", {
                 namespace: "vehicle-events",
                 objects: [previousPlantId], // La API espera un array

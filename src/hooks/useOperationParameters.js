@@ -37,16 +37,25 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
     }, [plant?.info?.description]);
 
     const hasRunRef = useRef(false);
+    const isManualChangeRef = useRef(false);
 
+    // Efecto para la carga inicial de parámetros en Syrus 3.
+    // Este efecto está diseñado para ejecutarse UNA SOLA VEZ cuando el componente se monta.
     useEffect(() => {
+        // Si no se cumplen las condiciones para iniciar, o si ya se ejecutó, no hacemos nada.
         if (isLoadingStatus || !isConnected || !isOnline || isSyrus4) {
             hasRunRef.current = false;
+            return;
+        }
+        if (isManualChangeRef.current) {
+            isManualChangeRef.current = false;
             return;
         }
         if (hasRunRef.current) return;
         hasRunRef.current = true;
         const commands = Object.values(COMMANDS);
         setCommandStatus(Object.fromEntries(commands.map(c => [c, COMMAND_STATES.LOADING])));
+        //Ejecuta los comandos que tienen cómo estado de carga: Loading.
         executeMultipleCommands(plant.id, commands);
         const firstTimeout = setTimeout(() => {
             commands.forEach(cmd => {
@@ -57,7 +66,8 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                     return prev;
                 });
             });
-        }, 20000);
+        }, 25000);
+        //Verfica los estados de los comandos después de su ejecución, en caso de que sigan en Loading, los deja como problemas de comunicación.
         const secondTimeout = setTimeout(() => {
             setCommandStatus(prev =>
                 Object.fromEntries(
@@ -67,13 +77,13 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                     ])
                 )
             );
-        }, 30000);
-
+        }, 35000);
         return () => {
             clearTimeout(firstTimeout);
             clearTimeout(secondTimeout);
         };
-    }, [isLoadingStatus, isConnected, isOnline, plant.id, isSyrus4, executeMultipleCommands]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [plant.id, isLoadingStatus]);
 
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;
@@ -83,22 +93,20 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                 const header = extractScheduleMessageHeader(message);
                 const newParts = { ...scheduleParts, [header]: message };
                 setScheduleParts(newParts);
-                if (header.includes('RGT00')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: COMMAND_STATES.SUCCESS }));
-                if (header.includes('RGT01')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: COMMAND_STATES.SUCCESS }));
-                if (header.includes('RGT02')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: COMMAND_STATES.SUCCESS }));
+                if (header.includes('RGT001')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: COMMAND_STATES.SUCCESS }));
+                if (header.includes('RGT011')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: COMMAND_STATES.SUCCESS }));
+                if (header.includes('RGT021')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: COMMAND_STATES.SUCCESS }));
                 if (Object.keys(newParts).length === 3) {
                     const finalSchedule = generateOperationHours(newParts);
                     setHorario(finalSchedule);
                     setScheduleParts({});
                 }
-                console.log("Mensaje del socket parametros de operación S3: ", message)
             } else {
                 const finalSchedule = getSyrus4OperationHours(message);
                 setHorario(finalSchedule);
             }
             return;
         }
-
         const result = isSyrus4 ? proccessSyrus4SocketMessage(message, mvZeroValue) : processSocketMessage(message, mvZeroValue);
         if (!result) return;
 
@@ -131,7 +139,8 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
             default:
                 break;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastEvent, mvZeroValue, isSyrus4]);
 
-    return { parameters: { filtrado, retrolavado, enjuague, valorAlarmaInsuficiente, valorAlertaFlujo, horario }, commandStatus, mvZeroValue };
+    return { parameters: { filtrado, retrolavado, enjuague, valorAlarmaInsuficiente, valorAlertaFlujo, horario }, commandStatus, mvZeroValue, isManualChangeRef };
 }

@@ -64,10 +64,10 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
                 legacyCommandStatus[COMMANDS.TIME_02]
             ];
             let finalScheduleStatus = COMMAND_STATES.LOADING;
-            if (scheduleStatuses.every(s => s === COMMAND_STATES) && legacyParams?.horario) {
+            if (scheduleStatuses.every(s => s === COMMAND_STATES.SUCCESS) && legacyParams?.horario) {
                 finalScheduleStatus = COMMAND_STATES.SUCCESS;
             } else if (scheduleStatuses.some(s => s === COMMAND_STATES.ERROR)) {
-                finalScheduleStatus = ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+                finalScheduleStatus = COMMAND_STATES.ERROR;
             }
 
             return {

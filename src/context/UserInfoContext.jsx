@@ -15,16 +15,25 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         const getInfoUser = async () => {
+            // 1. Intentar obtener los datos del usuario desde sessionStorage
+            const cachedUserData = sessionStorage.getItem('userData');
+            if (cachedUserData) {
+                const userData = JSON.parse(cachedUserData);
+                setUser(userData);
+                setIsSuperUser(userData.last_name.includes('superuser'));
+                setLoading(false);
+                return; // Si los datos están en caché, no hacemos la llamada a la API
+            }
+            // 2. Si no hay datos en caché, hacer la llamada a la API
             try {
                 const response = await usersApi.getUser();
                 const userData = response.data;
-                //Se obtiene la información del usuario consultado.
                 setUser(userData);
-                //Para diferenciar un usuario normal de un superuser, se debe fijar en el apellido.
-                //La diferencia entre ambos está en las funcionalidades a las que pueden acceder.
-                //Si es normal, solamente puede visualizar información en tiempo real, mientras que si
-                //es superuser, puede realizar cambios en parámetros de operación y consultar datos acumulados.
                 setIsSuperUser(userData.last_name.includes('superuser'));
+
+                // 3. Guardar los datos obtenidos en sessionStorage para futuras cargas
+                sessionStorage.setItem('userData', JSON.stringify(userData));
+
             } catch (error) {
                 setError(error);
             } finally {

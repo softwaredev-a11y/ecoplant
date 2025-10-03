@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { buildDate } from "@/utils/syrusUtils";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
-import { ERROR_MESSAGES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
 
 /**
  * Componente que muestra los valores acumulados de operación para el mes actual.
@@ -80,8 +80,8 @@ export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isO
 function DataCurrently({ currentlyData, isOnline, isLoading }) {
     const displayValue = () => {
         if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
-        if (isLoading) return "Consultando";
-        return currentlyData.value || "Consultando";
+        if (isLoading) return COMMAND_STATES.CONSULTANDO;
+        return currentlyData.value || COMMAND_STATES.CONSULTANDO;
     };
     return (
         <>

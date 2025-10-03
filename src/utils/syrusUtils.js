@@ -1,4 +1,4 @@
-import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SOCKET_KEYS } from "./constants";
+import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SESSION_STORAGE_KEYS_TO_CLEAR } from "./constants";
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.
@@ -257,11 +257,11 @@ export function processSocketMessage(message, mvZeroValue) {
         [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: (msg) => getInsufficientAlarmValueFromMessage(msg, mvZeroValue) },
     };
     const errorMessages = {
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_FIL]: { key: 'filtrado', value: 'Párametro inválido.' },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_B]: { key: 'retrolavado', value: 'Párametro inválido.' },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_R]: { key: 'enjuague', value: 'Párametro inválido.' },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', value: 'Párametro inválido.' },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', value: 'Párametro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_FIL]: { key: 'filtrado', value: 'Parámetro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_B]: { key: 'retrolavado', value: 'Parámetro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_R]: { key: 'enjuague', value: 'Parámetro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_F_ALERT]: { key: 'valorAlertaFlujo', value: 'Parámetro inválido.' },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_SET_F_ALARM]: { key: 'valorAlarmaInsuficiente', value: 'Parámetro inválido.' },
     }
 
     if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) {
@@ -450,3 +450,9 @@ export function buildSetterCommand(codeOperation, value, unitValue, mvZero) {
 export function gpmToCubicMetersPerMinute(gpmValue) {
     return gpmValue * 0.00378;
 }
+
+export function clearAllSessionStorage() {
+    SESSION_STORAGE_KEYS_TO_CLEAR.forEach(key => {
+        sessionStorage.removeItem(key);
+    });
+};

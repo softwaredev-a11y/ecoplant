@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { SESSION_STORAGE_KEYS_TO_USE } from "../utils/constants";
 
 /**
  * Hook personalizado para gestionar el ciclo de vida de la sesión del usuario.
@@ -23,7 +24,7 @@ export const useLogout = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = sessionStorage.getItem("token");
+        const token = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN);
         if (!token) {
             navigate("/login");
         }

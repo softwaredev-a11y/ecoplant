@@ -39,6 +39,9 @@ export const SYRUS3_MESSAGE_HEADERS = {
     RES_CMD_QED_R: 'SGC10TC',
     RES_CMD_QED_F_ALERT: 'RXAGA03V',
     RES_CMD_QED_F_ALARM: 'RXAGA00V',
+    RES_CMD_QGT001: 'RGT001',
+    RES_CMD_QGT011: 'RGT011',
+    RES_CMD_QGT021: 'RGT021',
     // Usados para identificar mensajes de error 'RER'
     RES_CMD_SET_FIL: 'SED06NA0',
     RES_CMD_SET_B: 'SED14NV0',

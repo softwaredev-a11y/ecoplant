@@ -11,6 +11,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { Toaster } from "@/components/ui/sonner"
 import { useLogout } from "@/hooks/useSessionTimeout";
 import { Menu, X } from 'lucide-react';
+import {ERROR_MESSAGES} from '../utils/constants'
 
 /**
  * Componente principal del layout del Dashboard.
@@ -165,7 +166,7 @@ function InputSearch({ searchTerm, setSearchTerm, numberPlants }) {
  * @returns {JSX.Element}
  */
 function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
-    const { plants } = usePlants();
+    const { plants, isLoading } = usePlants();
     const navigate = useNavigate();
     const handleNavigate = (idPlanta) => {
         navigate(`planta/${idPlanta}`);
@@ -206,7 +207,7 @@ function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
                 ))
             ) : (
                 <p className="text-center text-gray-500 mt-4">
-                    No se encontraron resultados.
+                    {isLoading ? "Cargando Ecoplantas." : ERROR_MESSAGES.COMMUNICATION_PROBLEMS}
                 </p>
             )}
         </div>

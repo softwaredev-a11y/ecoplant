@@ -33,6 +33,8 @@ function PlantDetailsPage() {
 
     useEffect(() => {
         const isOnline = infoConnectionDevice?.connection?.online ?? false;
+        //Este condicional evita la condición de carrera cuando se pasa de un s4 a un s3.
+        //Esto evita que se realicen consultas de S4 a APIS de S3.
         if (plant?.device === infoConnectionDevice?.imei && !loadingConnection) {
             if (plant && isOnline && isSyrus4) {
                 fetchSyrus4Data();

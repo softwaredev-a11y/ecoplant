@@ -11,6 +11,7 @@ import { SYRUS3_MESSAGE_HEADERS } from '@/utils/constants';
  *
  * Envía comandos de tipo query (QED) a dispositivos inferiores a syrus 4 al conectar, gestiona las respuestas que llegan vía WebSocket. 
  * Maneja un sistema de reintentos para asegurar la obtención de los datos en el caso de dispositivos inferiores a syrus 4.
+ * La gestión de respuestas es para todo tipo de dispositivos, S4 e inferiores.
  * @param {object} plant - La planta seleccionada.
  * @param {boolean} isOnline - Indica si el dispositivo está online.
  * @param {boolean} isLoadingStatus - Indica si la información de conexión aún se está cargando.

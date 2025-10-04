@@ -138,7 +138,7 @@ export const COMMAND_STATES = {
     CONSULTANDO: "Consultando"
 }
 /**
- * Centraliza las variables que se gurdan por session en la memoría del navegador.
+ * Centraliza las variables que se guardan por session en la memoria del navegador.
  */
 export const SESSION_STORAGE_KEYS_TO_CLEAR = [
     'token',
@@ -148,3 +148,10 @@ export const SESSION_STORAGE_KEYS_TO_CLEAR = [
     'admToken',
     'userData',
 ];
+
+/**
+ * Centraliza cuando el estado está en línea, o es correcto.
+ */
+export const STATUS = {
+    OK: "Ok",
+}

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { COMMAND_STATES, ERROR_MESSAGES } from "../utils/constants"
+import { COMMAND_STATES, ERROR_MESSAGES, STATUS } from "../utils/constants"
 import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
 
@@ -48,14 +48,14 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
     //Determina el estado de la conectividad del celular
     const isMobileOnline = useMemo(() => {
         return isOnline ?
-            "Ok" : "No Ok (Fuera de línea)"
+            STATUS.OK : "No Ok (Fuera de línea)"
     }, [isOnline])
 
     //Determina el estado de la conexión del accesorio expansor
     const expansorState = useMemo(() => {
         return isOnline ?
             infoConnectionDevice?.ios_state?.io_exp_state ?
-                "Ok" : "No conectado" : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+                STATUS.OK : "No conectado" : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
     }, [isOnline, infoConnectionDevice?.ios_state?.io_exp_state])
 
     //Determina el estado de la señal del gps.
@@ -69,9 +69,9 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
             } if (syrus4Data?.gps === undefined) {
                 return ERROR_MESSAGES.COMMUNICATION_PROBLEMS
             }
-            return syrus4Data.gps ? "Ok" : "No óptimo";
+            return syrus4Data.gps ? STATUS.OK : "No óptimo";
         }
-        return infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo";
+        return infoConnectionDevice?.latest?.loc?.valid ? STATUS.OK : "No óptimo";
     }, [isOnline, isSyrus4, syrus4Data?.gps, infoConnectionDevice?.latest?.loc?.valid, isLoadingSyrus4])
 
     //Genera el texto para el procesos en ejecución

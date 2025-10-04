@@ -138,7 +138,7 @@ export const COMMAND_STATES = {
     CONSULTANDO: "Consultando"
 }
 /**
- * Centraliza las variables que se guardan por session en la memoria del navegador.
+ * Centraliza las claves utilizadas para guardar o eliminar datos del `sessionStorage` del navegador.
  */
 export const SESSION_STORAGE_KEYS_TO_USE = {
     PEGASUS_TOKEN: 'token',

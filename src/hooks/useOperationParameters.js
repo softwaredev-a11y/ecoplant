@@ -3,8 +3,8 @@ import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
 import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET, COMMAND_STATES } from '@/utils/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
-import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours, getSyrus4OperationHours } from '../utils/operationHoursUtils';
-import { SYRUS3_MESSAGE_HEADERS } from '../utils/constants';
+import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours, getSyrus4OperationHours } from '@/utils/operationHoursUtils';
+import { SYRUS3_MESSAGE_HEADERS } from '@/utils/constants';
 
 /**
  * Hook para gestionar los parámetros de operación.
@@ -48,6 +48,8 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
             hasRunRef.current = false;
             return;
         }
+        //Si se intenta ejecutar cuando solamente es un cambio en algún parámetro de operación,
+        //entonces se detiene la ejecución.
         if (isManualChangeRef.current) {
             isManualChangeRef.current = false;
             return;

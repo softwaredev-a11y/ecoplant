@@ -9,7 +9,7 @@ import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
  * Permite a los superusuarios consultar bajo demanda los datos de filtración, retrolavado y enjuague.
  * @param {object} props - Las propiedades del componente.
  * @param {string|number} props.idPlant - ID de la planta a consultar.
- * @param {string|null} props.mvZeroValue - Valor 'mv_zero' de la planta, usado para cálculos de caudal.
+ * @param {string|null} props.mvZeroValue - Valor 'mv_zero' de la planta, usado para cálculos de caudal. Viene en la descripción de la planta.
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
  * @returns {JSX.Element | null} El panel con los datos acumulados del mes anterior, o `null` si el usuario no es superusuario.
  */
@@ -19,12 +19,6 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
     const [isConsulted, setIsConsulted] = useState(false);
     const { isSuperUser } = useUsers();
 
-    /**
-     * Consulta y calcula el valor acumulado para una operación específica del mes anterior.
-     * @param {number} code - El código de operación a consultar (filtración, enjuague, etc.).
-     * @param {function(string): void} setValue - La función para actualizar el estado del valor calculado.
-     * @param {string} type - El tipo de operación (ej. "filtracion", "enjuague") para gestionar el estado de carga.
-     */
     const handleConsultLastMonth = () => {
         const date = new Date();
         const year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
@@ -74,11 +68,8 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
  * @param {object} props - Las propiedades del componente.
  * @param {string} props.item - La etiqueta del dato a mostrar (ej. "Acumulado Filtración mes anterior").
  * @param {string} props.value - El valor del dato, si ya ha sido calculado.
- * @param {function(): void} props.onConsult - Función a ejecutar cuando se hace clic en el botón de consulta.
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
- * @param {boolean} props.isButtonDisabled - Indica si el botón de consulta debe estar deshabilitado.
- * @param {boolean} props.isCurrentlyLoading - Indica si este dato específico se está cargando actualmente.
- * @param {boolean} props.isSuperUser - Indica si el usuario actual tiene permisos de superusuario. Esto determina si puede realizar o no la consulta.
+ * @param {boolean} props.isLoading - Indica si este dato específico se está cargando actualmente.
  * @returns {JSX.Element} Un fragmento JSX que representa una fila de datos del mes anterior.
  */
 function DataLastMonth({ item, value, isOnline, isLoading }) {
@@ -87,7 +78,6 @@ function DataLastMonth({ item, value, isOnline, isLoading }) {
         // Si el valor es undefined, significa que aún no se ha consultado.
         if (value === undefined) return "\u00A0";
         if (isLoading) return COMMAND_STATES.CONSULTANDO;
-        // El hook ya se encarga de los casos "No disponible" o "Error"
         return value;
     };
     return (

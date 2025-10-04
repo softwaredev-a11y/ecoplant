@@ -13,12 +13,16 @@ import { ERROR_MESSAGES, COMMAND_STATES } from '@/utils/constants';
  * @param {object} props - Propiedades del componente.
  * @param {object} props.plant - Objeto con la información de la planta.
  * @param {object} props.infoConnectionDevice - Objeto con el estado de conexión del dispositivo.
+ * @param {object} props.isSyrus4 - Booleano que determina si el dispositivo es un Syrus 4.
+ * @param {object} props.syrus4Data - Objeto con la información de dispositivo Syrus 4.
+ * @param {object} props.isLoadingSyrus4 - Booleando que determina si la información del dispositivo Syrus 4 se está consultando.
  * @returns {JSX.Element} El panel de descripción de la planta.
  */
 function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
     //Determina si el dispositivo está online
     const isOnline = infoConnectionDevice?.connection?.online;
+    //Determina el estado de la señal GPS.
     const getGpsSignalStatus = () => {
         if (!isOnline) {
             return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE
@@ -33,7 +37,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
         }
         return infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo";
     };
-
+    //Determina la versión del scrip
     const scriptVersion = isSyrus4 ? (isLoadingSyrus4 || !syrus4Data?.apps) ? COMMAND_STATES.CONSULTANDO : formatEcoplantVersion(syrus4Data.apps) : getSoftwareVersion(plant.configuration);
     const gpsSignalStatus = getGpsSignalStatus();
     //Obtiene el último proceso que se ejecutó

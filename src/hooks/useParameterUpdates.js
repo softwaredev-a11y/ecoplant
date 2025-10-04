@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandExecution } from "./usePlants";
-import { ERROR_MESSAGES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
 
 /**
  * Hook personalizado para gestionar el envío de comandos para el cambio de parámetros de 
@@ -63,11 +63,10 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualC
                 setDisplayValue(initialValueRef.current);
                 setIsShowingServerError(false);
             }, 5000);
-
             return () => clearTimeout(errorTimer);
         }
         // Caso 2: El servidor respondió con un nuevo valor exitoso
-        else if (displayValue !== initialValueRef.current && displayValue !== "Consultando") {
+        else if (displayValue !== initialValueRef.current && displayValue !== COMMAND_STATES.CONSULTANDO) {
             clearTimeout(timeoutRef.current);
             stopCountdown();
             setIsSending(false);

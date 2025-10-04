@@ -128,13 +128,18 @@ export const ERROR_MESSAGES = {
     INFORMATION_NOT_AVAILABLE: "Información no disponible",
 }
 
+/**
+ * Centraliza los valores que puede tener el envío de comandos.
+ */
 export const COMMAND_STATES = {
     LOADING: "loading",
     ERROR: "error",
     SUCCESS: "success",
     CONSULTANDO: "Consultando"
 }
-
+/**
+ * Centraliza las variables que se gurdan por session en la memoría del navegador.
+ */
 export const SESSION_STORAGE_KEYS_TO_CLEAR = [
     'token',
     'cloudToken',

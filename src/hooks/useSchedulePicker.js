@@ -68,7 +68,8 @@ export function useSchedulePicker(currentlyValue) {
             selectAll();
             return;
         }
-
+        //Formatea el horario en caso de que tenga el siguiente formato:
+        //##:## a.m/ p.m a ##:## a.m/p.m
         const timeRegex = /(\d{1,2}):\d{2}\s*(a\.m|p\.m)/gi;
         const matches = [...currentlyValue.matchAll(timeRegex)];
 

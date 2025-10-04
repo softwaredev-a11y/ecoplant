@@ -91,6 +91,7 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;
         if (!message) return;
+        //Determina el mensaje que viene del socket está relacionado a los horarios de operación.
         if (isScheduleMessage(message)) {
             if (!isSyrus4) {
                 const header = extractScheduleMessageHeader(message);

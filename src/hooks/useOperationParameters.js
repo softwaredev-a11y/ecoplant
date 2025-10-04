@@ -4,6 +4,7 @@ import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
 import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET, COMMAND_STATES } from '@/utils/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
 import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours, getSyrus4OperationHours } from '../utils/operationHoursUtils';
+import { SYRUS3_MESSAGE_HEADERS } from '../utils/constants';
 
 /**
  * Hook para gestionar los parámetros de operación.
@@ -92,9 +93,9 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                 const header = extractScheduleMessageHeader(message);
                 const newParts = { ...scheduleParts, [header]: message };
                 setScheduleParts(newParts);
-                if (header.includes('RGT001')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: COMMAND_STATES.SUCCESS }));
-                if (header.includes('RGT011')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: COMMAND_STATES.SUCCESS }));
-                if (header.includes('RGT021')) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: COMMAND_STATES.SUCCESS }));
+                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT001)) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: COMMAND_STATES.SUCCESS }));
+                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT011)) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: COMMAND_STATES.SUCCESS }));
+                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT021)) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: COMMAND_STATES.SUCCESS }));
                 if (Object.keys(newParts).length === 3) {
                     const finalSchedule = generateOperationHours(newParts);
                     setHorario(finalSchedule);

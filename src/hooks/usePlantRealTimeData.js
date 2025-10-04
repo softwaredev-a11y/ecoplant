@@ -25,16 +25,20 @@ export function usePlantRealTimeData() {
         if (message.includes(HEADER_MESSAGES_SOCKET.GET_CURRENT_PROCCESS)) {
             const processCode = getCodeCurrentProcess(message);
             if (processCode !== null) {
+                //Actualiza la información relacionada al proceso que se está ejecutando.
                 setCurrentlyProccess(getOperationByStatusCode(processCode));
             }
             const eventTime = lastEvent?.payload?.event?.timestamp || Date.now();
             setBegin(eventTime);
         }
+
         if (message.includes(HEADER_MESSAGES_SOCKET.GET_CURRENT_FLOW)) {
+            //Actualiza la información relacionada al flujo que está corriendo actualmente.
             setCurrentlyValue(getFlowCurrentValue(message));
         }
     }, [lastEvent]);
 
+    //Contador que determina cuando fue la última vez que recibió un evento.
     useEffect(() => {
         if (!begin) return;
         const interval = setInterval(() => {

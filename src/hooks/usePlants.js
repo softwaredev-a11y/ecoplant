@@ -143,13 +143,13 @@ export const useCommandExecution = () => {
 };
 
 /**
- * Hook personalizado para consultar datos crudos (raw data) de una planta.
+ * Hook personalizado para consultar datos de los eventos de una planta.
  * @returns {{
  *   isLoading: boolean,
  *   rawData: object|Array,
  *   error: string|null,
  *   rawDataConsult: (startDate: string, endDate: string, idPlant: number, command: number) => Promise<object|Array>
- * }} Objeto con el estado de carga, los datos crudos, error y la función para consultar.
+ * }} Objeto con el estado de carga, los eventos, error y la función para consultar.
  */
 export const useRawDataConsult = () => {
   const [isLoading, setIsLoading] = useState(false);

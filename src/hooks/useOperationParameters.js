@@ -82,8 +82,7 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
             clearTimeout(firstTimeout);
             clearTimeout(secondTimeout);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [plant.id, isLoadingStatus]);
+    }, [isLoadingStatus, isConnected, isOnline, plant.id, isSyrus4, executeMultipleCommands]);
 
     useEffect(() => {
         const message = lastEvent?.payload?.event?.message;

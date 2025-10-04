@@ -1,4 +1,4 @@
-import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SESSION_STORAGE_KEYS_TO_CLEAR } from "./constants";
+import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SESSION_STORAGE_KEYS_TO_USE } from "./constants";
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.
@@ -452,7 +452,11 @@ export function gpmToCubicMetersPerMinute(gpmValue) {
 }
 
 export function clearAllSessionStorage() {
-    SESSION_STORAGE_KEYS_TO_CLEAR.forEach(key => {
+    const sessionStorageToClear = [SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN, SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN,
+    SESSION_STORAGE_KEYS_TO_USE.AUTH, SESSION_STORAGE_KEYS_TO_USE.LIST_PLANTS, SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN,
+    SESSION_STORAGE_KEYS_TO_USE.USER_DATA
+    ];
+    sessionStorageToClear.forEach(key => {
         sessionStorage.removeItem(key);
     });
 };

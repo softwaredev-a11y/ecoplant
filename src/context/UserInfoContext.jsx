@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState } from "react";
+import { SESSION_STORAGE_KEYS_TO_USE } from '../utils/constants';
 import usersApi from "@/services/users.service";
 
 export const UserContext = createContext();
@@ -16,7 +17,7 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const getInfoUser = async () => {
             // 1. Intentar obtener los datos del usuario desde sessionStorage
-            const cachedUserData = sessionStorage.getItem('userData');
+            const cachedUserData = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.USER_DATA);
             if (cachedUserData) {
                 const userData = JSON.parse(cachedUserData);
                 setUser(userData);
@@ -32,7 +33,7 @@ export const UserProvider = ({ children }) => {
                 setIsSuperUser(userData.last_name.includes('superuser'));
 
                 // 3. Guardar los datos obtenidos en sessionStorage para futuras cargas
-                sessionStorage.setItem('userData', JSON.stringify(userData));
+                sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.USER_DATA, JSON.stringify(userData));
 
             } catch (error) {
                 setError(error);

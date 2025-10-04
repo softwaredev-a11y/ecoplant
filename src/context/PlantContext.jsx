@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { useUsers } from "@/hooks/useUsers";
 import { ECOPLANT_GROUPS } from "@/utils/constants";
 import plantsApi from "@/services/plants.service";
+import { SESSION_STORAGE_KEYS_TO_USE } from "../utils/constants"
 
 /**
  * Contexto de React para almacenar y proporcionar el listado de Ecoplantas asociadas al usuario.
@@ -39,7 +40,7 @@ export const PlantProvider = ({ children }) => {
       setIsLoading(true);
       try {
         // Intenta obtener las plantas desde la caché de la sesión.
-        const listPlants = sessionStorage.getItem('listPlants');
+        const listPlants = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.LIST_PLANTS);
         if (listPlants) {
           setPlants(JSON.parse(listPlants))
         } else {
@@ -52,7 +53,7 @@ export const PlantProvider = ({ children }) => {
           const plantsData = response.data.data;
           setPlants(plantsData);
           // Guarda los datos en la caché de la sesión para futuras cargas.
-          sessionStorage.setItem('listPlants', JSON.stringify(plantsData));
+          sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.LIST_PLANTS, JSON.stringify(plantsData));
         }
       } catch (error) {
         console.error("Error cargando plantas:", error);

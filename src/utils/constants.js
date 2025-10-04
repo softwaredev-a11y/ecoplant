@@ -140,14 +140,14 @@ export const COMMAND_STATES = {
 /**
  * Centraliza las variables que se guardan por session en la memoria del navegador.
  */
-export const SESSION_STORAGE_KEYS_TO_CLEAR = [
-    'token',
-    'cloudToken',
-    'auth',
-    'listPlants',
-    'admToken',
-    'userData',
-];
+export const SESSION_STORAGE_KEYS_TO_USE = {
+    PEGASUS_TOKEN: 'token',
+    CLOUD_TOKEN: 'cloudToken',
+    AUTH: 'auth',
+    LIST_PLANTS: 'listPlants',
+    ADM_TOKEN: 'admToken',
+    USER_DATA: 'userData',
+}
 
 /**
  * Centraliza cuando el estado está en línea, o es correcto.

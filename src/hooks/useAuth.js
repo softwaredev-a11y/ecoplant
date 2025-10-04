@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import authApi from '@/services/auth.service';
 import axios from 'axios';
 import { clearAllSessionStorage } from "../utils/syrusUtils"
+import { SESSION_STORAGE_KEYS_TO_USE } from "../utils/constants"
 
 /**
 * Hook personalizado para gestionar la autenticación del usuario.
@@ -42,10 +43,10 @@ export const useAuth = () => {
             }
             const cloudData = await responseCloud.json();
             //Si es exitoso, almacena la siguiente información en variables de session.
-            sessionStorage.setItem('token', pegasusToken);
-            sessionStorage.setItem('auth', true)
-            sessionStorage.setItem("cloudToken", cloudData?.token);
-            sessionStorage.setItem("admToken", cloudData?.token_pegasus);
+            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN, pegasusToken);
+            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.AUTH, true)
+            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN, cloudData?.token);
+            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN, cloudData?.token_pegasus);
             //Redirige al dashboard.
             navigate('/dashboard');
         } catch (error) {
@@ -94,8 +95,8 @@ export const useAuth = () => {
     const logoutOnBrowserClose = useCallback(() => {
         const logoutUrl = `${import.meta.env.VITE_API_URL}/logout`;
         const logoutCloud = `${import.meta.env.VITE_API_CLOUD_URL}/auth/logout`
-        const token = sessionStorage.getItem('token');
-        const cloudToken = sessionStorage.getItem('cloudToken');
+        const token = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN);
+        const cloudToken = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.USER_DATA.CLOUD_TOKEN);
         if (token) {
             fetch(logoutUrl, {
                 method: 'GET',

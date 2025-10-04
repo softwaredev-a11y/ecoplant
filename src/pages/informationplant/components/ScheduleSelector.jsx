@@ -9,6 +9,15 @@ import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUsers } from "@/hooks/useUsers";
 import { COMMAND_STATES } from "@/utils/constants";
 
+/**
+ * Componente que le permite seleccionar al usuario horarios de operación de las Ecoplantas.
+ * @param {object} props Objeto con las propiedades 
+ * @param {Boolean} props.isOnline Valor que determina si la planta está con conexión
+ * @param {object} props.plant Objeto con la información de la Ecoplanta seleccionada.
+ * @param {String} props.currentlyValue Valor del horario actual o con respuesta procesada del mensaje del socket. (00:00 am/pm a 00:00 am/pm)
+ * @param {Boolean} props.isManualChangeRef Valor que determina si se está realizando un cambio en parámetros de operación.
+ * @returns {JSX.Element} Componente que le permite al usuario escoger horarios de operación en el calendario.
+ */
 export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyrus4, isManualChangeRef }) {
 
     const [isOpen, setIsOpen] = useState(false);

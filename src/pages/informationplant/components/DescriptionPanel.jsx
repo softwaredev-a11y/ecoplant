@@ -1,10 +1,9 @@
-import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, formatTime, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
-import { formatEcoplantVersion } from '@/utils/syrus4Utils'
+import { useCallback, useMemo } from 'react';
+import { formatTime } from '@/utils/syrusUtils';
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
 import { usePlantRealTimeData } from '@/hooks/usePlantRealTimeData';
-import { ERROR_MESSAGES, COMMAND_STATES } from '@/utils/constants';
-
+import useDataDescriptionPanel from '../../../hooks/useDataDescriptionPanel';
 
 /**
  * Panel que muestra la información descriptiva de la planta.
@@ -20,53 +19,25 @@ import { ERROR_MESSAGES, COMMAND_STATES } from '@/utils/constants';
  */
 function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
-    //Determina si el dispositivo está online
-    const isOnline = infoConnectionDevice?.connection?.online;
-    //Determina el estado de la señal GPS.
-    const getGpsSignalStatus = () => {
-        if (!isOnline) {
-            return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE
-        }
-        if (isSyrus4) {
-            if (isLoadingSyrus4) {
-                return COMMAND_STATES.CONSULTANDO;
-            } if (syrus4Data?.gps === undefined) {
-                return ERROR_MESSAGES.COMMUNICATION_PROBLEMS
-            }
-            return syrus4Data.gps ? "Ok" : "No óptimo";
-        }
-        return infoConnectionDevice?.latest?.loc?.valid ? "Ok" : "No óptimo";
-    };
-    //Determina la versión del scrip
-    const scriptVersion = isSyrus4 ? (isLoadingSyrus4 || !syrus4Data?.apps) ? COMMAND_STATES.CONSULTANDO : formatEcoplantVersion(syrus4Data.apps) : getSoftwareVersion(plant.configuration);
-    const gpsSignalStatus = getGpsSignalStatus();
-    //Obtiene el último proceso que se ejecutó
-    const runningProcessCode = infoConnectionDevice.latest.loc.code;
-    //Genera el texto para el procesos en ejecución
-    const processDisplayText = isOnline ? currentlyProccess || getOperationByStatusCode(runningProcessCode) : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
-    // Determina el texto para "Flujo actual"
-    const getFlowDisplayText = () => {
-        if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
-        if (!isCurrentFlowVisible(runningProcessCode)) return "---";
-        const flowValue = currentlyValue !== "" ? currentlyValue : calculateCurrentFlow(infoConnectionDevice.latest.data.ad.value);
-        return `${flowValue} gpm`;
-    };
+    const { isOnline, ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText } = useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4, currentlyProccess, currentlyValue });
 
-    const descriptionData = [
-        [
-            { label: "Descripción", value: `EcoPlant ${getPlantModel(plant.info.description)}`, item: 'desc' },
-            { label: "Versión del script", value: isOnline ? scriptVersion : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE, item: 'script' },
-        ],
-        [
-            { label: "Estado conectividad celular", value: `${isOnline ? "Ok" : "No Ok (Fuera de línea)"}`, item: 'phone' },
-            { label: "Estado del accesorio expansor", value: `${isOnline ? infoConnectionDevice?.ios_state?.io_exp_state ? "Ok" : "No conectado" : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE}`, item: 'acc_exp' },
-            { label: "Estado de señal GPS", value: gpsSignalStatus, item: 'gps' },
-        ],
-        [
-            { label: "Proceso en ejecución", value: processDisplayText, item: 'process' },
-            { label: "Flujo actual", value: getFlowDisplayText(), item: 'current_flow' },
-        ],
-    ];
+    const descriptionData = useMemo(() => {
+        return [
+            [
+                { label: "Descripción", value: `EcoPlant ${ecoplantModel}`, item: 'desc' },
+                { label: "Versión del script", value: scriptVersion, item: 'script' },
+            ],
+            [
+                { label: "Estado conectividad celular", value: isMobileOnline, item: 'phone' },
+                { label: "Estado del accesorio expansor", value: expansorState, item: 'acc_exp' },
+                { label: "Estado de señal GPS", value: gpsSignalStatus, item: 'gps' },
+            ],
+            [
+                { label: "Proceso en ejecución", value: processDisplayText, item: 'process' },
+                { label: "Flujo actual", value: currentFlowDisplayText, item: 'current_flow' },
+            ],
+        ];
+    }, [ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText])
 
     return (
         <div className="description-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
@@ -108,7 +79,6 @@ function InfoPanel({ itemGroups, isSyrus4 }) {
                             )}
 
                         </div>
-
                     ))}
                 </div>
             ))}
@@ -123,10 +93,10 @@ function InfoPanel({ itemGroups, isSyrus4 }) {
  * @returns {JSX.Element} El componente de la imagen.
  */
 function PlantImage({ plant }) {
-    const handleImageError = (e) => {
+    const handleImageError = useCallback((e) => {
         e.target.onerror = null;
         e.target.src = notAvailableImg;
-    }
+    }, []);
     return (
         <img
             src={`https://rastreo.totaltracking.co/api/images/vehicles/${plant.id}/photo`}

@@ -42,10 +42,10 @@ export const useAccumulatedData = () => {
             //Si no obtuvo respuesta es porque hubo problemas en la comunicación.
             if (!result?.data?.events || result.data.events.length === 0) {
                 const noData = {
-                    filtration: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
-                    rinse: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
-                    invwTime: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
-                    purge: ERROR_MESSAGES.COMMUNICATION_PROBLEMS,
+                    filtration: "---",
+                    rinse: "---",
+                    invwTime: "---",
+                    purge: "---",
                 };
                 setData(noData);
                 return;

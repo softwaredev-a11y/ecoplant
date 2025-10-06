@@ -99,7 +99,7 @@ function PlantImage({ plant }) {
     }, []);
     return (
         <img
-            src={`https://rastreo.totaltracking.co/api/images/vehicles/${plant.id}/photo`}
+            src={`${import.meta.env.VITE_API_URL}/images/vehicles/${plant.id}/photo`}
             alt="Foto de la Ecoplanta." className="w-3/5 max-w-[250px] h-auto block object-contain my-4 mx-auto"
             onError={handleImageError} />
     )

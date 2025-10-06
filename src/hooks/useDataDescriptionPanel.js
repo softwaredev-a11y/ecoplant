@@ -89,5 +89,5 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
         return `${flowValue} gpm`;
     }, [isOnline, currentlyValue, runningProcessCode, lastCurrentFlow])
 
-    return { isOnline, ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText }
+    return { data: { isOnline, ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText } }
 }

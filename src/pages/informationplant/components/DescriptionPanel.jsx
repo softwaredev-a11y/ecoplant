@@ -19,25 +19,25 @@ import useDataDescriptionPanel from '../../../hooks/useDataDescriptionPanel';
  */
 function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
-    const { isOnline, ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText } = useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4, currentlyProccess, currentlyValue });
+    const { data } = useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4, currentlyProccess, currentlyValue });
 
     const descriptionData = useMemo(() => {
         return [
             [
-                { label: "Descripción", value: `EcoPlant ${ecoplantModel}`, item: 'desc' },
-                { label: "Versión del script", value: scriptVersion, item: 'script' },
+                { label: "Descripción", value: `EcoPlant ${data.ecoplantModel}`, item: 'desc' },
+                { label: "Versión del script", value: data.scriptVersion, item: 'script' },
             ],
             [
-                { label: "Estado conectividad celular", value: isMobileOnline, item: 'phone' },
-                { label: "Estado del accesorio expansor", value: expansorState, item: 'acc_exp' },
-                { label: "Estado de señal GPS", value: gpsSignalStatus, item: 'gps' },
+                { label: "Estado conectividad celular", value: data.isMobileOnline, item: 'phone' },
+                { label: "Estado del accesorio expansor", value: data.expansorState, item: 'acc_exp' },
+                { label: "Estado de señal GPS", value: data.gpsSignalStatus, item: 'gps' },
             ],
             [
-                { label: "Proceso en ejecución", value: processDisplayText, item: 'process' },
-                { label: "Flujo actual", value: currentFlowDisplayText, item: 'current_flow' },
+                { label: "Proceso en ejecución", value: data.processDisplayText, item: 'process' },
+                { label: "Flujo actual", value: data.currentFlowDisplayText, item: 'current_flow' },
             ],
         ];
-    }, [ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText])
+    }, [data])
 
     return (
         <div className="description-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
@@ -46,7 +46,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
                 <PlantImage plant={plant} />
             </div>
             <InfoPanel itemGroups={descriptionData} isSyrus4={isSyrus4} />
-            <div className={`flex flex-col items-end p-1.5 ${isOnline ? "" : "hidden"}`}>
+            <div className={`flex flex-col items-end p-1.5 ${data.isOnline ? "" : "hidden"}`}>
                 <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace ${formatTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
             </div>
         </div>
@@ -77,7 +77,6 @@ function InfoPanel({ itemGroups, isSyrus4 }) {
                                     </span>
                                 </>
                             )}
-
                         </div>
                     ))}
                 </div>

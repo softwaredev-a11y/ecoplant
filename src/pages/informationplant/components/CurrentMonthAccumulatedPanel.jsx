@@ -1,4 +1,4 @@
-import { useCurrentMonthAccumulatedData } from "@/hooks/useAccumulatedData";
+import { useCurrentMonthAccumulatedData } from "@/hooks/useCurrentMonthAccumulatedData";
 import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
 import { useMemo } from "react";
 /**

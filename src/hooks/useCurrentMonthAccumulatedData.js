@@ -11,7 +11,7 @@ import { SESSION_STORAGE_KEYS_TO_USE } from "../utils/constants";
  * @param {boolean} isOnline Valor que determina si la planta se encuentra online.
  * @returns {data: object, isLoading: boolean, fetchAndCalculateData: ()}
  */
-export default function useCurrentMonthAccumulatedData(idPlant, mvZeroValue, isOnline) {
+export function useCurrentMonthAccumulatedData(idPlant, mvZeroValue, isOnline) {
     //Hook personalizado para calcular los valores acumulados.
     const { data, isLoading, fetchAndCalculateData } = useAccumulatedData();
     useEffect(() => {

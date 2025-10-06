@@ -1,8 +1,6 @@
-import { useEffect } from "react";
-import { buildDate } from "@/utils/syrusUtils";
-import { useAccumulatedData } from "@/hooks/useAccumulatedData";
+import { useCurrentMonthAccumulatedData } from "@/hooks/useAccumulatedData";
 import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
-
+import { useMemo } from "react";
 /**
  * Componente que muestra los valores acumulados de operación para el mes actual.
  * Obtiene y calcula los datos de filtración, retrolavado, enjuague y purgado.
@@ -14,51 +12,15 @@ import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
  */
 export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     //Hook personalizado para obtener los acumulados
-    const { data, isLoading, fetchAndCalculateData } = useAccumulatedData();
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        if (isOnline && idPlant) {
-            const consult = async () => {
-                try {
-                    await new Promise((resolve, reject) => {
-                        const timeoutId = setTimeout(resolve, 15000);
-                        signal.addEventListener('abort', () => {
-                            clearTimeout(timeoutId);
-                            reject(new DOMException('Aborted', 'AbortError'));
-                        });
-                    });
-
-                    const isAuth = sessionStorage.getItem('auth');
-                    if (isAuth && !signal.aborted) {
-                        const date = new Date();
-                        const beginDate = buildDate(date.getFullYear(), date.getMonth() + 1, 1);
-                        const currentlyDate = buildDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
-                        // Llamamos a la función del hook con las fechas correspondientes
-                        fetchAndCalculateData(idPlant, mvZeroValue, beginDate, currentlyDate);
-                    }
-                } catch (error) {
-                    if (error.name !== 'AbortError') {
-                        console.error("Error en la consulta de acumulados del mes actual:", error);
-                    }
-                }
-            };
-            consult();
-        }
-
-        return () => {
-            controller.abort();
-        };
-    }, [idPlant, mvZeroValue, isOnline, fetchAndCalculateData]);
-
-    const currentlyData = [
-        { id: 0, item: "Acumulado Filtración mes actual", value: data?.filtration },
-        { id: 1, item: "Acumulado Retrolavado mes actual", value: data?.invwTime },
-        { id: 2, item: "Acumulado Enjuague mes actual", value: data?.rinse },
-        { id: 3, item: "Acumulado Purgado mes actual", value: data?.purge }
-    ];
-
+    const { data, isLoading } = useCurrentMonthAccumulatedData(idPlant, mvZeroValue, isOnline);
+    const currentlyData = useMemo(() => {
+        return [
+            { id: 0, item: "Acumulado Filtración mes actual", value: data?.filtration },
+            { id: 1, item: "Acumulado Retrolavado mes actual", value: data?.invwTime },
+            { id: 2, item: "Acumulado Enjuague mes actual", value: data?.rinse },
+            { id: 3, item: "Acumulado Purgado mes actual", value: data?.purge }
+        ];
+    }, [data]);
     return (
         <div className="items-panel flex flex-col gap-8">
             <div className="data-currently-div grid grid-cols-2 items-center border-b border-b-[#ccc] gap-3 p-0.5">

@@ -451,12 +451,13 @@ export function gpmToCubicMetersPerMinute(gpmValue) {
     return gpmValue * 0.00378;
 }
 
+/**
+ * Elimina las variables que se guardan en sesión.
+ * @returns void
+ */
 export function clearAllSessionStorage() {
-    const sessionStorageToClear = [SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN, SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN,
-    SESSION_STORAGE_KEYS_TO_USE.AUTH, SESSION_STORAGE_KEYS_TO_USE.LIST_PLANTS, SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN,
-    SESSION_STORAGE_KEYS_TO_USE.USER_DATA
-    ];
-    sessionStorageToClear.forEach(key => {
+    // Itera sobre todos los valores del objeto de claves y los elimina.
+    Object.values(SESSION_STORAGE_KEYS_TO_USE).forEach(key => {
         sessionStorage.removeItem(key);
     });
 };

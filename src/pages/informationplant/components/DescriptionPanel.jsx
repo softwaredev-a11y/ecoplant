@@ -67,7 +67,7 @@ function InfoPanel({ itemGroups, isSyrus4 }) {
                 <div key={groupIndex} className="flex flex-col gap-1.5 border-b border-b-[#ccc]">
                     {group.map((item, itemIndex) => (
                         <div className="div grid grid-cols-2 mb-0.5 items-center" key={`${groupIndex}-${itemIndex}`}>
-                            {isSyrus4 && item.item === "acc_exp" ? null : (
+                            {isSyrus4 && item.item === "acc_exp" ? null : (//Si el dispositivo es un Syrus 4, el estado del accesorio expansor no debe de mostrarse.
                                 <>
                                     <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base">
                                         {item.label}:

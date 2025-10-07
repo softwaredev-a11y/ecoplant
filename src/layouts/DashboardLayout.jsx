@@ -3,7 +3,7 @@ import logoImage from '@/assets/images/logo.webp';
 import searchIcon from '@/assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getPlantModel } from "@/utils/syrusUtils";
 import { usePlants } from "@/hooks/usePlants";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,7 +11,8 @@ import { useUsers } from "@/hooks/useUsers";
 import { Toaster } from "@/components/ui/sonner"
 import { useLogout } from "@/hooks/useSessionTimeout";
 import { Menu, X } from 'lucide-react';
-import {ERROR_MESSAGES} from '../utils/constants'
+import { ERROR_MESSAGES } from '../utils/constants'
+import { useSearchPlant } from "../hooks/useSearchPlant";
 
 /**
  * Componente principal del layout del Dashboard.
@@ -167,6 +168,12 @@ function InputSearch({ searchTerm, setSearchTerm, numberPlants }) {
  */
 function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
     const { plants, isLoading } = usePlants();
+    const { filteredPlants, numberPlants } = useSearchPlant(plants, searchTerm);
+
+    useEffect(() => {
+        setNumberPlants(numberPlants);
+    }, [numberPlants, setNumberPlants]);
+
     const navigate = useNavigate();
     const handleNavigate = (idPlanta) => {
         navigate(`planta/${idPlanta}`);
@@ -174,18 +181,6 @@ function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
             toggleMenu();
         }
     };
-    const filteredPlants = useMemo(() => {
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
-        return plants.filter((plant) =>
-            String(plant.name ?? '').toLowerCase().includes(lowerCaseSearchTerm) ||
-            String(plant.device ?? '').toLowerCase().includes(lowerCaseSearchTerm) ||
-            String(plant.info?.description ?? '').toLowerCase().includes(lowerCaseSearchTerm)
-        );
-    }, [plants, searchTerm]);
-
-    useEffect(() => {
-        setNumberPlants(filteredPlants.length);
-    }, [filteredPlants.length, setNumberPlants]);
 
     return (
         <div className="menu-items flex-1 flex flex-col p-2 gap-1 overflow-auto min-h-0 max-h-[85%]">

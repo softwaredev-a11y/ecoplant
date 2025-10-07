@@ -4,7 +4,7 @@ import HeaderPanel from "../components/HeaderPanel";
 import CurrentMonthAccumulatedPanel from "../components/CurrentMonthAccumulatedPanel";
 import LastMonthAccumulatedPanel from "../components/LastMonthAccumulatedPanel";
 /**
- * Componente que renderiza los valores acumulados en el mes actual y anterior de la planta.
+ * Componente que renderiza los paneles de valores acumulados en el mes actual y anterior de la planta.
  * @param {object} props - Las propiedades del componente.
  * @param {object} props.plant - Planta seleccionada y a la cual se le va a calcular los valores acumulados.
  * @param {boolean} props.isOnline - Booleano que determina si el dispositivo está online o no.

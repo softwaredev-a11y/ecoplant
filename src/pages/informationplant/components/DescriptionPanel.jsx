@@ -14,11 +14,12 @@ import useDataDescriptionPanel from '../../../hooks/useDataDescriptionPanel';
  * @param {object} props.infoConnectionDevice - Objeto con el estado de conexión del dispositivo.
  * @param {object} props.isSyrus4 - Booleano que determina si el dispositivo es un Syrus 4.
  * @param {object} props.syrus4Data - Objeto con la información de dispositivo Syrus 4.
- * @param {object} props.isLoadingSyrus4 - Booleando que determina si la información del dispositivo Syrus 4 se está consultando.
+ * @param {object} props.isLoadingSyrus4 - Booleano que determina si la información del dispositivo Syrus 4 se está consultando.
  * @returns {JSX.Element} El panel de descripción de la planta.
  */
 function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
+    //Hook personalizado para obtener los datos del panel de descripción.
     const { data } = useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4, currentlyProccess, currentlyValue });
 
     const descriptionData = useMemo(() => {

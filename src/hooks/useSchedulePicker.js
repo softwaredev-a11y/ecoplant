@@ -113,7 +113,6 @@ export function useSchedulePicker(currentlyValue) {
             hoursToSelect = [...hours.slice(startIndex), ...hours.slice(0, endIndex + 1)];
         }
         setSelectedHours(hoursToSelect);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentlyValue]);
 
     useEffect(() => {

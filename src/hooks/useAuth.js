@@ -105,10 +105,10 @@ export const useAuth = () => {
                 },
                 keepalive: true
             });
-            fetch(cloudToken, {
+            fetch(logoutCloud, {
                 method: 'POST',
                 headers: {
-                    'Authentication': `${logoutCloud}`
+                    'Authorization': `${cloudToken}`
                 },
                 keepalive: true
             });

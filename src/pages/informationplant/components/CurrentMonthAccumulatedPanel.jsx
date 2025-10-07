@@ -10,7 +10,7 @@ import { useMemo } from "react";
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
  * @returns {JSX.Element} El panel con los datos acumulados del mes actual.
  */
-export default function CurrentMonthAcummulatedPanel({ idPlant, mvZeroValue, isOnline }) {
+export default function CurrentMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     //Hook personalizado para obtener los acumulados
     const { data, isLoading } = useCurrentMonthAccumulatedData(idPlant, mvZeroValue, isOnline);
     const currentlyData = useMemo(() => {

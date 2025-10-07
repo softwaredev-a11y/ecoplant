@@ -3,6 +3,16 @@ import { usePlants, useConnectionStatus } from "./usePlants";
 import { useSyrus4Data } from './useSyrus4Data';
 import { searchPlant } from '@/utils/syrusUtils';
 
+/**
+ * Hook personalizado que centraliza la lógica para obtener toda la información de una planta específica.
+ * Este hook realiza las siguientes acciones:
+ * 1. Busca la planta en la lista general de plantas.
+ * 2. Obtiene el estado de conexión del dispositivo asociado.
+ * 3. Determina si el dispositivo es un Syrus 4.
+ * 4. Si es un Syrus 4, inicia la obtención de datos específicos para ese modelo.
+ * @param {string|number} idPlanta - El ID de la planta a consultar.
+ * @returns {{ plant: object|null, infoConnectionDevice: object|null, isOnline: boolean,  isSyrus4: boolean, syrus4Data: object, isLoadingSyrus4: boolean, errorConnection: string|null,  loadingPlants: boolean, loadingConnection: boolean }} Un objeto que contiene toda la información consolidada de la planta y los estados de carga/error.
+ */
 export function usePlantInfo(idPlanta) {
     const { plants, isLoading: loadingPlants } = usePlants();
     //Obtiene la planta

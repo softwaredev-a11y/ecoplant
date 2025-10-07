@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { SESSION_STORAGE_KEYS_TO_USE } from '../utils/constants';
 
 /**
  * Componente que actúa como una barrera de protección para rutas privadas.
@@ -8,7 +9,7 @@ import { Navigate, Outlet } from 'react-router-dom'
  * @returns {JSX.Element} Renderiza el contenido de la ruta hija o un componente de redirección.
  */
 const ProtectedRoute = () => {
-    const token = sessionStorage.getItem("token")
+    const token = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN)
     return (
         token ?
             <Outlet /> : <Navigate to="/" replace />

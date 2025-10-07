@@ -126,12 +126,11 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const [timeValue, setTimeValue] = useState("");
     const [timeUnit, setTimeUnit] = useState('none');
     const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4, isManualChangeRef);
-
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
-
     //Consume hook personalizado para determinar si es super usuario o no.
     const { isSuperUser } = useUsers();
+
     //Obtiene los valores que se introduzcan en el input.
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -173,7 +172,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             console.log(`Ocurrió el siguiente error: ${error}`);
         }
     };
-
+    //Formatea el nuevo valor, y lo muestra en pantalla.
     const formattedNewValue = useMemo(() => {
         if (!isOpen || !timeValue) return null;
         if (isAlertOperation) {

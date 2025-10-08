@@ -11,7 +11,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { Toaster } from "@/components/ui/sonner"
 import { useLogout } from "@/hooks/useSessionTimeout";
 import { Menu, X } from 'lucide-react';
-import { ERROR_MESSAGES } from '../constants/constants'
+import { UI_MESSAGES } from '../constants/constants'
 import { useSearchPlant } from "../hooks/useSearchPlant";
 
 /**
@@ -187,8 +187,7 @@ function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
                     <Tooltip key={plant.id}>
                         <TooltipTrigger
                             onClick={() => handleNavigate(plant.id)}
-                            className="break-all text-start cursor-pointer bg-white p-[0.4rem] border-0 border-b border-gray-300 mb-[0.3rem] text-neutral-600 hover:border hover:border-gray-300 hover:bg-gray-300 hover:rounded-sm"
-                        >
+                            className="break-all text-start cursor-pointer bg-white p-[0.4rem] border-0 border-b border-gray-300 mb-[0.3rem] text-neutral-600 hover:border hover:border-gray-300 hover:bg-gray-300 hover:rounded-sm">
                             <strong>{plant.name}</strong> <br />
                             Modelo: {getPlantModel(plant.info.description)} <br />
                             Imei: {plant.device}
@@ -200,7 +199,7 @@ function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
                 ))
             ) : (
                 <p className="text-center text-gray-500 mt-4">
-                    {isLoading ? "Cargando Ecoplantas." : ERROR_MESSAGES.COMMUNICATION_PROBLEMS}
+                    {isLoading ? "Cargando Ecoplantas." : UI_MESSAGES.COMMUNICATION_PROBLEMS}
                 </p>
             )}
         </div>
@@ -233,6 +232,5 @@ function ContentPanel() {
         </div>
     )
 }
-
 
 export default DashboardLayout;

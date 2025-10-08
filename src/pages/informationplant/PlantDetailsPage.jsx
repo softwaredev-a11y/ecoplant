@@ -2,7 +2,7 @@ import DescriptionPanel from './components/DescriptionPanel';
 import OperationsPanel from './components/OperationsPanel';
 import AccumulatedPanel from './components/AccumulatedPanel';
 import { usePlantInfo } from "../../hooks/usePlantInfo";
-import { PlantDetailSocketProvider } from '../../context/PlantDetailSocketContext';
+import { PlantDetailSocketProvider } from '@/context/PlantDetailSocketContext';
 import { useParams } from 'react-router-dom';
 import StatusMessage from '@/components/StatusMessage';
 /**

@@ -1,11 +1,11 @@
-import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SESSION_STORAGE_KEYS_TO_USE } from "../constants/constants";
+import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, UI_MESSAGES, SESSION_STORAGE_KEYS_TO_USE } from "../constants/constants";
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.
  * @returns {String} Modelo de la planta
  */
 export function getPlantModel(text) {
-    if (!text) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+    if (!text) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
     const match = text.match(/\*type:Ecoplant\s*(\d+)/i);
     if (match) {
         return `${parseInt(match[1], 10)}`;
@@ -29,7 +29,7 @@ export function searchPlant(plants, idPlant) {
  * @returns {String} valor de mv zero.
  */
 export function getMvZeroText(descripcion) {
-    if (!descripcion) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+    if (!descripcion) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
     const match = descripcion.match(/mv_zero:(.*?)\nEND_PARAMS/s);
     return match ? match[1] : null;
 }

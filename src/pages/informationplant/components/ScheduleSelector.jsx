@@ -4,7 +4,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Clock } from 'lucide-react';
 import { buildSetOperationHoursCommand, buildSetOperationHoursCommandSyrus4 } from "@/utils/operationHoursUtils";
 import { useSchedulePicker } from "@/hooks/useSchedulePicker";
-import { ERROR_MESSAGES, COMMAND_STATES } from "@/constants/constants";
+import { UI_MESSAGES } from "@/constants/constants";
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUsers } from "@/hooks/useUsers";
 
@@ -24,7 +24,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
     const { rangeStart, rangeEnd, selectedHours, scheduleDescription, handleHourClick, revertToInitialState, selectAll, selectWorkingHours,
         selectNonWorkingHours, hours, startHour, endHour } = useSchedulePicker(currentlyValue);
     const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4);
-    const isButtonDisabled = !isOnline || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS || selectedHours.length <= 1 && (rangeStart == null || rangeEnd == null) || isSending || commandFailed;
+    const isButtonDisabled = !isOnline || currentlyValue === UI_MESSAGES.COMMUNICATION_PROBLEMS || selectedHours.length <= 1 && (rangeStart == null || rangeEnd == null) || isSending || commandFailed;
     const { isSuperUser } = useUsers();
 
     function handleClick() {
@@ -50,7 +50,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
                 <span className=''></span>
                 <div className='flex w-full justify-end'>
                     <span className={` font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm   w-full  max-w-[300px] break-words`}>
-                        {displayValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE || currentlyValue === COMMAND_STATES.CONSULTANDO || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS ? "" : "(GMT-5)"}</span>
+                        {displayValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === UI_MESSAGES.INFORMATION_NOT_AVAILABLE || currentlyValue === UI_MESSAGES.CONSULTANDO || currentlyValue === UI_MESSAGES.COMMUNICATION_PROBLEMS ? "" : "(GMT-5)"}</span>
                     </span>
                 </div>
 

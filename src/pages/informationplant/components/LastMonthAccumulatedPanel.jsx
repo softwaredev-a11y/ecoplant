@@ -2,7 +2,7 @@ import { buildDate } from "@/utils/syrusUtils";
 import { useUsers } from "@/hooks/useUsers";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
 import { useState } from "react";
-import { ERROR_MESSAGES, COMMAND_STATES } from "@/constants/constants";
+import { UI_MESSAGES } from "@/constants/constants";
 
 /**
  * Componente que muestra los valores acumulados de operación para el mes anterior.
@@ -53,8 +53,8 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
                     <button onClick={handleConsultLastMonth}
                         disabled={isLoading || !isOnline || isConsulted}
                         className={`mb-0.5 col-span-1 p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide disabled:cursor-not-allowed`}>
-                        {isLoading ? COMMAND_STATES.CONSULTANDO :
-                            isConsulted ? COMMAND_STATES.CONSULTANDO : "Consultar acumulados mes anterior"}
+                        {isLoading ? UI_MESSAGES.CONSULTANDO :
+                            isConsulted ? UI_MESSAGES.CONSULTANDO : "Consultar acumulados mes anterior"}
                     </button>
                 </div>
             )}
@@ -74,10 +74,10 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
  */
 function DataLastMonth({ item, value, isOnline, isLoading }) {
     const displayValue = () => {
-        if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+        if (!isOnline) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
         // Si el valor es undefined, significa que aún no se ha consultado.
         if (value === undefined) return "\u00A0";
-        if (isLoading) return COMMAND_STATES.CONSULTANDO;
+        if (isLoading) return UI_MESSAGES.CONSULTANDO;
         return value;
     };
     return (

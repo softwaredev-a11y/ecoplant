@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useOperationParameters } from '@/hooks/useOperationParameters';
 import { getEcoplantParams } from '@/utils/syrus4Utils';
 import { getMvZeroText } from '@/utils/syrusUtils';
-import { COMMANDS, ERROR_MESSAGES, COMMAND_STATES } from '@/constants/constants';
+import { COMMANDS, UI_MESSAGES, COMMAND_STATES } from '@/constants/constants';
 
 /**
  * Hook adaptador que unifica la obtención de parámetros de operación para dispositivos
@@ -38,12 +38,12 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             const status = isLoadingSyrus4 ? COMMAND_STATES.LOADING : (syrus4Data?.params ? COMMAND_STATES.SUCCESS : COMMAND_STATES.ERROR);
             const data = status === COMMAND_STATES.SUCCESS ? getEcoplantParams(syrus4Data.params, mvZeroValue) : {};
 
-            const filtracionValue = legacyParams?.filtrado || data?.filtracion || ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
-            const retrolavadoValue = legacyParams?.retrolavado || data?.retrolavado || ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
-            const enjuagueValue = legacyParams?.enjuague || data?.enjuague || ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
-            const alertaValue = legacyParams?.valorAlertaFlujo ? `${legacyParams?.valorAlertaFlujo} gpm` : (data?.alerta ? `${data?.alerta} gpm` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
-            const alarmaValue = legacyParams?.valorAlarmaInsuficiente ? `${legacyParams?.valorAlarmaInsuficiente} gpm` : (data?.alarma ? `${data.alarma} gpm` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
-            const horarioValue = legacyParams?.horario ? `${legacyParams?.horario}` : (data?.horario ? `${data?.horario}` : ERROR_MESSAGES.COMMUNICATION_PROBLEMS);
+            const filtracionValue = legacyParams?.filtrado || data?.filtracion || UI_MESSAGES.COMMUNICATION_PROBLEMS;
+            const retrolavadoValue = legacyParams?.retrolavado || data?.retrolavado || UI_MESSAGES.COMMUNICATION_PROBLEMS;
+            const enjuagueValue = legacyParams?.enjuague || data?.enjuague || UI_MESSAGES.COMMUNICATION_PROBLEMS;
+            const alertaValue = legacyParams?.valorAlertaFlujo ? `${legacyParams?.valorAlertaFlujo} gpm` : (data?.alerta ? `${data?.alerta} gpm` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
+            const alarmaValue = legacyParams?.valorAlarmaInsuficiente ? `${legacyParams?.valorAlarmaInsuficiente} gpm` : (data?.alarma ? `${data.alarma} gpm` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
+            const horarioValue = legacyParams?.horario ? `${legacyParams?.horario}` : (data?.horario ? `${data?.horario}` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
             // Si el estado inicial no es 'success' o 'loading', se re-evalúa.
             // El estado final será 'success' si el objeto 'data' procesado no está vacío,
             // lo que indica que al menos un parámetro se pudo obtener. De lo contrario, es 'error'.

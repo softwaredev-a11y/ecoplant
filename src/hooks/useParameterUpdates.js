@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandExecution } from "./usePlants";
-import { ERROR_MESSAGES, COMMAND_STATES } from "@/constants/constants";
+import { UI_MESSAGES } from "@/constants/constants";
 
 /**
  * Hook personalizado para gestionar el envío de comandos para el cambio de parámetros de 
@@ -66,7 +66,7 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualC
             return () => clearTimeout(errorTimer);
         }
         // Caso 2: El servidor respondió con un nuevo valor exitoso
-        else if (displayValue !== initialValueRef.current && displayValue !== COMMAND_STATES.CONSULTANDO) {
+        else if (displayValue !== initialValueRef.current && displayValue !== UI_MESSAGES.CONSULTANDO) {
             clearTimeout(timeoutRef.current);
             stopCountdown();
             setIsSending(false);
@@ -125,7 +125,7 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualC
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentlyValue, attemptToSend]);
 
-    const display = isSending ? `Cargando nuevo valor (${countdown}s)` : (commandFailed ? ERROR_MESSAGES.COMMUNICATION_PROBLEMS : displayValue);
+    const display = isSending ? `Cargando nuevo valor (${countdown}s)` : (commandFailed ? UI_MESSAGES.COMMUNICATION_PROBLEMS : displayValue);
 
     return { isSending, commandFailed, displayValue: display, executeUpdate };
 }

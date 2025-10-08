@@ -6,7 +6,7 @@ import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from "sonner"
-import { ERROR_MESSAGES, COMMAND_STATES, OPERATION_CODES } from "@/constants/constants";
+import { UI_MESSAGES, COMMAND_STATES, OPERATION_CODES } from "@/constants/constants";
 import { useUsers } from "@/hooks/useUsers";
 import ScheduleSelector from "../components/ScheduleSelector";
 
@@ -25,9 +25,9 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
     const { parameters, mvZeroValue, isManualChangeRef } = useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, isSyrus4, syrus4Data, isLoadingSyrus4);
     //Función que obtiene el valor a mostrar.
     const getDisplayValue = (param) => {
-        if (param.status === 'unavailable') return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
-        if (param.status === COMMAND_STATES.LOADING) return COMMAND_STATES.CONSULTANDO;
-        if (param.status === COMMAND_STATES.ERROR) return ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+        if (param.status === 'unavailable') return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
+        if (param.status === COMMAND_STATES.LOADING) return UI_MESSAGES.CONSULTANDO;
+        if (param.status === COMMAND_STATES.ERROR) return UI_MESSAGES.COMMUNICATION_PROBLEMS;
         return param.value;
     };
 
@@ -126,7 +126,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const [timeUnit, setTimeUnit] = useState('none');
     const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4, isManualChangeRef);
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
-    const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === ERROR_MESSAGES.COMMUNICATION_PROBLEMS;
+    const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === UI_MESSAGES.COMMUNICATION_PROBLEMS;
     //Consume hook personalizado para determinar si es super usuario o no.
     const { isSuperUser } = useUsers();
 

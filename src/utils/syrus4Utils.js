@@ -1,5 +1,5 @@
 import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./syrusUtils";
-import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, ERROR_MESSAGES } from '../constants/constants'
+import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, UI_MESSAGES } from '../constants/constants'
 import { formatOperationHours, getSyrus4OperationHours } from "./operationHoursUtils";
 
 /**
@@ -22,7 +22,7 @@ export function titleCase(str) {
  * @returns {string} Una cadena con el nombre y la versión, o un mensaje de error si no se encuentra.
  */
 export function formatEcoplantVersion(listInstances) {
-    if (listInstances === null || listInstances === undefined) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+    if (listInstances === null || listInstances === undefined) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
     const ecoplantInstance = listInstances.find(instance =>
         instance && typeof instance.app_name === 'string' && instance.app_name.includes('ecoplant')
     );

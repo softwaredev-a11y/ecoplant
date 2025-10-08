@@ -123,9 +123,10 @@ export const MAX_VALUE_OPERATIONS = {
 /**
  * Centraliza los valores de error en la aplicación.
  */
-export const ERROR_MESSAGES = {
+export const UI_MESSAGES = {
     COMMUNICATION_PROBLEMS: "Problemas de comunicación. Intente más tarde",
     INFORMATION_NOT_AVAILABLE: "Información no disponible",
+    CONSULTANDO: "Consultando"
 }
 
 /**
@@ -135,7 +136,6 @@ export const COMMAND_STATES = {
     LOADING: "loading",
     ERROR: "error",
     SUCCESS: "success",
-    CONSULTANDO: "Consultando"
 }
 /**
  * Centraliza las claves utilizadas para guardar o eliminar datos del `sessionStorage` del navegador.

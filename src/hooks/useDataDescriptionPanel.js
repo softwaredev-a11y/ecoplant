@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { COMMAND_STATES, ERROR_MESSAGES, STATUS } from "@/constants/constants"
+import { UI_MESSAGES, STATUS } from "@/constants/constants"
 import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
 import { usePlantRealTimeData } from './usePlantRealTimeData';
@@ -41,9 +41,9 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
         return isOnline
             ? isSyrus4
                 ? (isLoadingSyrus4 || !syrus4Data?.apps)
-                    ? COMMAND_STATES.CONSULTANDO : formatEcoplantVersion(syrus4Data.apps)
+                    ? UI_MESSAGES.CONSULTANDO : formatEcoplantVersion(syrus4Data.apps)
                 : getSoftwareVersion(plant.configuration)
-            : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+            : UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
     }, [plant.configuration, isSyrus4, isLoadingSyrus4, syrus4Data?.apps, isOnline]);
 
     //Determina el estado de la conectividad del celular
@@ -56,19 +56,19 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
     const expansorState = useMemo(() => {
         return isOnline ?
             infoConnectionDevice?.ios_state?.io_exp_state ?
-                STATUS.OK : "No conectado" : ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+                STATUS.OK : "No conectado" : UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
     }, [isOnline, infoConnectionDevice?.ios_state?.io_exp_state])
 
     //Determina el estado de la señal del gps.
     const gpsSignalStatus = useMemo(() => {
         if (!isOnline) {
-            return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE
+            return UI_MESSAGES.INFORMATION_NOT_AVAILABLE
         }
         if (isSyrus4) {
             if (isLoadingSyrus4) {
-                return COMMAND_STATES.CONSULTANDO;
+                return UI_MESSAGES.CONSULTANDO;
             } if (syrus4Data?.gps === undefined) {
-                return ERROR_MESSAGES.COMMUNICATION_PROBLEMS
+                return UI_MESSAGES.COMMUNICATION_PROBLEMS
             }
             return syrus4Data.gps ? STATUS.OK : "No óptimo";
         }
@@ -79,12 +79,12 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
     const processDisplayText = useMemo(() => {
         return isOnline ?
             currentlyProccess || getOperationByStatusCode(runningProcessCode) :
-            ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+            UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
     }, [isOnline, currentlyProccess, runningProcessCode])
 
     // Determina el texto para "Flujo actual"
     const currentFlowDisplayText = useMemo(() => {
-        if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
+        if (!isOnline) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
         if (!isCurrentFlowVisible(runningProcessCode)) return "---";
         const flowValue = currentlyValue !== "" ? currentlyValue : calculateCurrentFlow(lastCurrentFlow);
         return `${flowValue} gpm`;

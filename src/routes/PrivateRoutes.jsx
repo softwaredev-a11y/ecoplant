@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardIndexPage from "@/pages/dashboard/DashboardIndexPage";
-import PlantDetailsPage from "@/pages/informationplant/PlantDetailsPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { PlantProvider } from "@/context/PlantContext";
 import { UserProvider } from "@/context/UserInfoContext";
 import ProtectedRoute from "./ProtectedRoute";
+import { lazy, Suspense } from 'react';
+import StatusMessage from '@/components/StatusMessage';
 
 /**
  * Componente de layout que envuelve las rutas protegidas con los proveedores de contexto necesarios.
@@ -19,6 +20,7 @@ const ProtectedProvidersLayout = () => (
     </PlantProvider>
   </UserProvider>
 );
+const PlantDetailsPage = lazy(() => import('../pages/informationplant/PlantDetailsPage'));
 
 /**
  * Define y gestiona las rutas privadas de la aplicación, accesibles solo para usuarios autenticados.
@@ -38,7 +40,13 @@ function PrivateRoutes() {
             {/* Ruta de índice que se muestra en la raíz del dashboard. */}
             <Route index element={<DashboardIndexPage />} />
             {/* Ruta para ver los detalles de una planta específica. */}
-            <Route path="planta/:idPlanta" element={<PlantDetailsPage />} />
+            <Route path="planta/:idPlanta" element={
+              <Suspense fallback={
+                <StatusMessage message={"Cargando información de la planta, espere por favor."} />
+              }>
+                <PlantDetailsPage />
+              </Suspense>
+            } />
             {/* Ruta comodín para cualquier sub-ruta no encontrada dentro del dashboard. */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>

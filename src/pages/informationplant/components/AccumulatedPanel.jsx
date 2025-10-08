@@ -10,8 +10,8 @@ import LastMonthAccumulatedPanel from "../components/LastMonthAccumulatedPanel";
  * @param {boolean} props.isOnline - Booleano que determina si el dispositivo está online o no.
  * @returns {JSX.Element} El elemento JSX que contiene los paneles de acumulados.
  */
-function AcummulatedPanel({ plant, isOnline }) {
-    const mvZeroValue = useMemo(() => getMvZeroText(plant.info.description), [plant.info.description]);
+function AccumulatedPanel({ plant, isOnline }) {
+    const mvZeroValue = useMemo(() => getMvZeroText(plant?.info?.description), [plant?.info?.description]);
     return (
         <div className="months-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
             <HeaderPanel title={"Acumulados del mes actual y mes anterior"} />
@@ -23,4 +23,4 @@ function AcummulatedPanel({ plant, isOnline }) {
     )
 }
 
-export default AcummulatedPanel;
+export default AccumulatedPanel;

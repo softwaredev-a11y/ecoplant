@@ -1,8 +1,5 @@
 /**
- * Envía un mensaje de log al servicio de Cliq.
- * Esta función es "fire-and-forget", lo que significa que no bloquea la ejecución
- * para esperar una respuesta, pero sí captura y maneja silenciosamente
- * cualquier error que pueda ocurrir durante el envío.
+ * Envía un mensaje de log al canal de Cliq (#Ecoplant-Logs).
  *
  * @param {string} message - El mensaje a enviar.
  */

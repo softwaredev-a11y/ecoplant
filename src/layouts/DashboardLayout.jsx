@@ -11,8 +11,8 @@ import { useUsers } from "@/hooks/useUsers";
 import { Toaster } from "@/components/ui/sonner"
 import { useLogout } from "@/hooks/useSessionTimeout";
 import { Menu, X } from 'lucide-react';
-import { UI_MESSAGES } from '../constants/constants'
-import { useSearchPlant } from "../hooks/useSearchPlant";
+import { UI_MESSAGES } from '@/constants/constants'
+import { useSearchPlant } from "@/hooks/useSearchPlant";
 
 /**
  * Componente principal del layout del Dashboard.

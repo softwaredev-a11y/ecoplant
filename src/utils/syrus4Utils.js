@@ -1,5 +1,5 @@
 import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./syrusUtils";
-import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, UI_MESSAGES } from '../constants/constants'
+import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, UI_MESSAGES } from '@/constants/constants'
 import { formatOperationHours, getSyrus4OperationHours } from "./operationHoursUtils";
 
 /**

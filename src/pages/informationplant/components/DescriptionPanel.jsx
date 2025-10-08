@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { formatTime } from '@/utils/syrusUtils';
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
-import useDataDescriptionPanel from '../../../hooks/useDataDescriptionPanel';
+import useDataDescriptionPanel from '@/hooks/useDataDescriptionPanel';
 
 /**
  * Panel que muestra la información descriptiva de la planta.

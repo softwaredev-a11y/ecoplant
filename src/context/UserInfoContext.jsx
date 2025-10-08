@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { SESSION_STORAGE_KEYS_TO_USE } from '../constants/constants';
+import { SESSION_STORAGE_KEYS_TO_USE } from '@/constants/constants';
 import usersApi from "@/services/users.service";
 
 export const UserContext = createContext();

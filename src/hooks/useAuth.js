@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useCallback, useState } from 'react';
 import authApi from '@/services/auth.service';
 import axios from 'axios';
-import { clearAllSessionStorage } from "../utils/syrusUtils"
+import { clearAllSessionStorage } from "@/utils/syrusUtils"
 import { SESSION_STORAGE_KEYS_TO_USE } from '@/constants/constants';
-import { sendLogToCliq } from '../services/cliq.service';
+import { sendLogToCliq } from '@/services/cliq.service';
 
 /**
 * Hook personalizado para gestionar la autenticación del usuario.

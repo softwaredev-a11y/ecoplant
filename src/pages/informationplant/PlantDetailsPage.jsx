@@ -1,6 +1,6 @@
 import DescriptionPanel from './components/DescriptionPanel';
 import OperationsPanel from './components/OperationsPanel';
-import AcummulatedPanel from './components/AccumulatedPanel';
+import AccumulatedPanel from './components/AccumulatedPanel';
 import { usePlantInfo } from "../../hooks/usePlantInfo";
 import { PlantDetailSocketProvider } from '../../context/PlantDetailSocketContext';
 import { useParams } from 'react-router-dom';
@@ -27,7 +27,7 @@ function PlantDetailsPage() {
                         <div className="info-containers gap-4 grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(450px,1fr))]">
                             <DescriptionPanel plant={plant} infoConnectionDevice={infoConnectionDevice} isSyrus4={isSyrus4} syrus4Data={syrus4Data} isLoadingSyrus4={isLoadingSyrus4} />
                             <OperationsPanel plant={plant} isOnline={isOnline} isLoadingStatus={loadingConnection} isSyrus4={isSyrus4} syrus4Data={syrus4Data} isLoadingSyrus4={isLoadingSyrus4} />
-                            <AcummulatedPanel plant={plant} isOnline={isOnline} />
+                            <AccumulatedPanel plant={plant} isOnline={isOnline} />
                         </div>
                     </>
                 )}

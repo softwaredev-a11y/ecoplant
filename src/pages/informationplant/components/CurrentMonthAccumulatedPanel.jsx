@@ -43,7 +43,7 @@ function DataCurrently({ currentlyData, isOnline, isLoading }) {
     const displayValue = () => {
         if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
         if (isLoading) return COMMAND_STATES.CONSULTANDO;
-        return currentlyData.value || COMMAND_STATES.CONSULTANDO;
+        return currentlyData.value ?? "---";
     };
     return (
         <>

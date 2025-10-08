@@ -4,6 +4,7 @@ import authApi from '@/services/auth.service';
 import axios from 'axios';
 import { clearAllSessionStorage } from "../utils/syrusUtils"
 import { SESSION_STORAGE_KEYS_TO_USE } from '@/constants/constants';
+import { sendLogToCliq } from '../services/cliq.service';
 
 /**
 * Hook personalizado para gestionar la autenticación del usuario.
@@ -55,6 +56,8 @@ export const useAuth = () => {
              * Validación que elimina el token de sesión de Pegasus en caso de que no se pueda
              * ingresar a cloud.
              */
+            const errorMessage = `Error al iniciar sesión.\nOcurrió el siguiente error: ${error.message}\nEl correo del usuario es: ${credentials.username}`;
+            await sendLogToCliq(errorMessage);
             if (pegasusToken) {
                 try {
                     await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {

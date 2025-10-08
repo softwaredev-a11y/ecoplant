@@ -1,5 +1,5 @@
 import { replaceAt, fillLeftText } from "./syrusUtils";
-import { SYRUS4_SET_PARAMETER_KEYS, SYRUS_FOUR_COMMANDS, SYRUS3_MESSAGE_HEADERS } from "./constants";
+import { SYRUS4_SET_PARAMETER_KEYS, SYRUS_FOUR_COMMANDS, SYRUS3_MESSAGE_HEADERS } from "../constants/constants";
 import { formatHour12, toGMT0, convertTo24h, toGMT5 } from "./timeUtils"
 
 /**

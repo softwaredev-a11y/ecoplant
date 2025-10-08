@@ -1,13 +1,12 @@
 import { useState, useMemo } from 'react';
 import HeaderPanel from './HeaderPanel';
 import { formatTime, buildSetterCommand } from '@/utils/syrusUtils';
-import { OPERATION_CODES } from '@/utils/constants';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from "sonner"
-import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES, OPERATION_CODES } from "@/constants/constants";
 import { useUsers } from "@/hooks/useUsers";
 import ScheduleSelector from "../components/ScheduleSelector";
 

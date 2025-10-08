@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { COMMAND_STATES, ERROR_MESSAGES, STATUS } from "../utils/constants"
 import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
+import { usePlantRealTimeData } from './usePlantRealTimeData';
 
 /**
  * Hook que centraliza la lógica para calcular los valores a mostrar en el DescriptionPanel.
@@ -11,11 +12,11 @@ import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateC
  * @param {boolean} params.isSyrus4 - Booleano que determina si el dispositivo es un Syrus 4.
  * @param {object} params.syrus4Data - Objeto con la información de dispositivo Syrus 4.
  * @param {boolean} params.isLoadingSyrus4 - Booleando que determina si la información del dispositivo Syrus 4 se está consultando.
- * @param {string} params.currentlyProccess - El proceso que se está ejecutando actualmente.
- * @param {string|number} params.currentlyValue - El valor del flujo actual.
  */
-export default function useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4, currentlyProccess, currentlyValue }) {
+export default function useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     //Determina si la planta se encuentra online.
+    const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
+
     const isOnline = useMemo(() => {
         return infoConnectionDevice?.connection?.online;
     }, [infoConnectionDevice?.connection?.online])
@@ -89,5 +90,5 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
         return `${flowValue} gpm`;
     }, [isOnline, currentlyValue, runningProcessCode, lastCurrentFlow])
 
-    return { data: { isOnline, ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText } }
+    return { data: { isOnline, ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText }, elapsed, begin }
 }

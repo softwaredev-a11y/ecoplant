@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react';
 import { formatTime } from '@/utils/syrusUtils';
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
-import { usePlantRealTimeData } from '@/hooks/usePlantRealTimeData';
 import useDataDescriptionPanel from '../../../hooks/useDataDescriptionPanel';
 
 /**
@@ -18,9 +17,8 @@ import useDataDescriptionPanel from '../../../hooks/useDataDescriptionPanel';
  * @returns {JSX.Element} El panel de descripción de la planta.
  */
 function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
-    const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
     //Hook personalizado para obtener los datos del panel de descripción.
-    const { data } = useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4, currentlyProccess, currentlyValue });
+    const { data, elapsed, begin } = useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 });
 
     const descriptionData = useMemo(() => {
         return [

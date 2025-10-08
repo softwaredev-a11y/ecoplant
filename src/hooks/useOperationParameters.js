@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
-import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET, COMMAND_STATES } from '@/utils/constants';
+import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET, COMMAND_STATES, SYRUS3_MESSAGE_HEADERS } from '@/constants/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
 import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours, getSyrus4OperationHours } from '@/utils/operationHoursUtils';
-import { SYRUS3_MESSAGE_HEADERS } from '@/utils/constants';
 
 /**
  * Hook para gestionar los parámetros de operación.

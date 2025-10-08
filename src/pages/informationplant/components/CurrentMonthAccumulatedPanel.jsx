@@ -1,5 +1,5 @@
 import { useCurrentMonthAccumulatedData } from "@/hooks/useCurrentMonthAccumulatedData";
-import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES } from "@/constants/constants";
 import { useMemo } from "react";
 /**
  * Componente que muestra los valores acumulados de operación para el mes actual.
@@ -43,7 +43,7 @@ function DataCurrently({ currentlyData, isOnline, isLoading }) {
     const displayValue = () => {
         if (!isOnline) return ERROR_MESSAGES.INFORMATION_NOT_AVAILABLE;
         if (isLoading) return COMMAND_STATES.CONSULTANDO;
-        return currentlyData.value ?? "---";
+        return currentlyData.value ?? COMMAND_STATES.CONSULTANDO;
     };
     return (
         <>

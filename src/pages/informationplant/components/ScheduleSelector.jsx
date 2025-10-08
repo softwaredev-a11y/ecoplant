@@ -4,10 +4,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Clock } from 'lucide-react';
 import { buildSetOperationHoursCommand, buildSetOperationHoursCommandSyrus4 } from "@/utils/operationHoursUtils";
 import { useSchedulePicker } from "@/hooks/useSchedulePicker";
-import { ERROR_MESSAGES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES } from "@/constants/constants";
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUsers } from "@/hooks/useUsers";
-import { COMMAND_STATES } from "@/utils/constants";
 
 /**
  * Componente que le permite seleccionar al usuario horarios de operación de las Ecoplantas.

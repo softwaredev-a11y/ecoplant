@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandExecution } from "./usePlants";
-import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES } from "@/constants/constants";
 
 /**
  * Hook personalizado para gestionar el envío de comandos para el cambio de parámetros de 

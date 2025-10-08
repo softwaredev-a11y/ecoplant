@@ -1,4 +1,4 @@
-import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SESSION_STORAGE_KEYS_TO_USE } from "./constants";
+import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, ERROR_MESSAGES, SESSION_STORAGE_KEYS_TO_USE } from "../constants/constants";
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.

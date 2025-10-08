@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { SESSION_STORAGE_KEYS_TO_USE } from '../utils/constants';
+import { SESSION_STORAGE_KEYS_TO_USE } from '../constants/constants';
 
 /**
  * Componente que actúa como una barrera de protección para rutas privadas.

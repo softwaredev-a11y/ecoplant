@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueInvWTime, gpmToCubicMetersPerMinute } from "@/utils/syrusUtils";
-import { OPERATION_CODES, ERROR_MESSAGES } from '@/utils/constants';
+import { OPERATION_CODES, ERROR_MESSAGES } from '@/constants/constants'
 
 /**
 * Hook personalizado para gestionar la consulta de valores acumulados de la Ecoplanta.

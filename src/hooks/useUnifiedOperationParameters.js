@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useOperationParameters } from '@/hooks/useOperationParameters';
 import { getEcoplantParams } from '@/utils/syrus4Utils';
 import { getMvZeroText } from '@/utils/syrusUtils';
-import { COMMANDS, ERROR_MESSAGES, COMMAND_STATES } from '@/utils/constants';
+import { COMMANDS, ERROR_MESSAGES, COMMAND_STATES } from '@/constants/constants';
 
 /**
  * Hook adaptador que unifica la obtención de parámetros de operación para dispositivos

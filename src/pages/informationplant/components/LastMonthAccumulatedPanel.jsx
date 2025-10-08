@@ -2,7 +2,7 @@ import { buildDate } from "@/utils/syrusUtils";
 import { useUsers } from "@/hooks/useUsers";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
 import { useState } from "react";
-import { ERROR_MESSAGES, COMMAND_STATES } from "@/utils/constants";
+import { ERROR_MESSAGES, COMMAND_STATES } from "@/constants/constants";
 
 /**
  * Componente que muestra los valores acumulados de operación para el mes anterior.

@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import authApi from '@/services/auth.service';
 import axios from 'axios';
 import { clearAllSessionStorage } from "../utils/syrusUtils"
-import { SESSION_STORAGE_KEYS_TO_USE } from '../constants/constants';
+import { SESSION_STORAGE_KEYS_TO_USE } from '@/constants/constants';
 
 /**
 * Hook personalizado para gestionar la autenticación del usuario.

@@ -1,8 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useUsers } from "@/hooks/useUsers";
-import { ECOPLANT_GROUPS } from "@/utils/constants";
 import plantsApi from "@/services/plants.service";
-import { SESSION_STORAGE_KEYS_TO_USE } from "../utils/constants"
+import { SESSION_STORAGE_KEYS_TO_USE, ECOPLANT_GROUPS } from "../constants/constants"
 
 /**
  * Contexto de React para almacenar y proporcionar el listado de Ecoplantas asociadas al usuario.

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { buildDate } from "@/utils/syrusUtils";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
-import { SESSION_STORAGE_KEYS_TO_USE } from "../constants/constants";
+import { SESSION_STORAGE_KEYS_TO_USE } from "@/constants/constants";
 
 /**
  * Hook que centraliza la lógica para calcular los valores a mostrar en el panel de Acumulados actuales.

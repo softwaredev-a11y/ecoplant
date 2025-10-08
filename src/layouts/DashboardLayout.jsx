@@ -11,7 +11,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { Toaster } from "@/components/ui/sonner"
 import { useLogout } from "@/hooks/useSessionTimeout";
 import { Menu, X } from 'lucide-react';
-import { ERROR_MESSAGES } from '../utils/constants'
+import { ERROR_MESSAGES } from '../constants/constants'
 import { useSearchPlant } from "../hooks/useSearchPlant";
 
 /**

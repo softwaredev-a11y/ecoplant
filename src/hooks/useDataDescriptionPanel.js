@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { COMMAND_STATES, ERROR_MESSAGES, STATUS } from "../utils/constants"
+import { COMMAND_STATES, ERROR_MESSAGES, STATUS } from "@/constants/constants"
 import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
 import { usePlantRealTimeData } from './usePlantRealTimeData';

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { SESSION_STORAGE_KEYS_TO_USE } from "../constants/constants";
+import { SESSION_STORAGE_KEYS_TO_USE } from "@/constants/constants";
 
 /**
  * Hook personalizado para gestionar el ciclo de vida de la sesión del usuario.

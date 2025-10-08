@@ -67,9 +67,7 @@ function Header({ toggleMenu }) {
             </div>
 
             {/* Contenedor de botones */}
-            <div className="righ-options flex overflow-x-auto 
-                      w-full justify-center 
-                      lg:w-auto lg:justify-start">
+            <div className="righ-options flex overflow-x-auto  w-full justify-center  lg:w-auto lg:justify-start">
                 <button disabled={!isSuperUser} className="py-1.5 px-3 border-0 bg-white rounded text-sm md:text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Historial de accesos</button>
                 <button disabled={!isSuperUser} className="py-1.5 px-3 border-0 bg-white rounded text-sm md:text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Diagnóstico</button>
                 <button disabled={!isSuperUser} className="py-1.5 px-3 border-0 bg-white rounded text-sm md:text-base cursor-pointer font-bold text-neutral-600 hover:border hover:border-gray-300 hover:rounded-md disabled:cursor-not-allowed">Control</button>

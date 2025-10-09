@@ -2,7 +2,7 @@ import Logo from "@/components/Logo";
 import logoImage from '@/assets/images/logo.webp';
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getPlantModel } from "@/utils/syrusUtils";
 import { usePlants } from "@/hooks/usePlants";
 import { useAuth } from "@/hooks/useAuth";
@@ -103,8 +103,16 @@ function MainLayout({ isOpen, toggleMenu }) {
  * @returns {JSX.Element}
  */
 function PanelLeft({ isOpen, toggleMenu }) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [numberPlants, setNumberPlants] = useState(0);
+    const { plants, isLoading } = usePlants();
+    const [searchTerm, setSearchTerm] = useState("");
+    const { filteredPlants, numberPlants } = useSearchPlant(plants, searchTerm);
+
+    const navigate = useNavigate();
+    const handleNavigate = (idPlanta) => {
+        navigate(`planta/${idPlanta}`);
+        if (isOpen) toggleMenu();
+    };
+
     return (
         <div
             className={`panel-left-container bg-white flex flex-col min-h-0 transition-transform duration-300 ease-in-out
@@ -123,8 +131,20 @@ function PanelLeft({ isOpen, toggleMenu }) {
                     <X color="#005596" />
                 </button>
             </div>
-            <InputSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} numberPlants={numberPlants} />
-            <PanelLeftItems searchTerm={searchTerm} toggleMenu={toggleMenu} isOpen={isOpen} setNumberPlants={setNumberPlants} />
+            <div className="search-container flex justify-between items-center p-2">
+                <Search color="#4B5563" />
+                <input type="search"
+                    name="searchTerm"
+                    id="searchTerm"
+                    value={searchTerm}
+                    placeholder={numberPlants === 0 ? `Buscar Ecoplanta` : numberPlants === 1 ? `Buscar ${numberPlants} Ecoplanta` : `Buscar ${numberPlants} Ecoplantas`}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-[90%] h-10 border-0 p-[0.2rem] border-b border-gray-300 mb-[0.3rem] font-normal text-gray-600 focus:outline-none focus:border-b focus:border-gray-300"
+                />
+            </div>
+            <PanelLeftItems
+                isLoading={isLoading} filteredPlants={filteredPlants} searchTerm={searchTerm} handleNavigate={handleNavigate}
+            />
             <FilterBar />
         </div>
     );
@@ -132,53 +152,15 @@ function PanelLeft({ isOpen, toggleMenu }) {
 
 /**
  * Componente de búsqueda para el panel izquierdo.
- * @param {object} props - Propiedades del componente.
- * @param {string} props.searchTerm - El término de búsqueda actual.
- * @param {(value: string) => void} props.setSearchTerm - Función para actualizar el término de búsqueda.
- * @param {number} props.numberPlants - El número de plantas que se están mostrando.
- * @returns {JSX.Element}
- */
-function InputSearch({ searchTerm, setSearchTerm, numberPlants }) {
-    return (
-        <div className="search-container flex justify-between items-center p-2">
-            <Search color="#4B5563"/>
-            <input type="search"
-                name="searchTerm"
-                id="searchTerm"
-                value={searchTerm}
-                placeholder={numberPlants === 0 ? `Buscar Ecoplanta` : numberPlants === 1 ? `Buscar ${numberPlants} Ecoplanta` : `Buscar ${numberPlants} Ecoplantas`}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-[90%] h-10 border-0 p-[0.2rem] border-b border-gray-300 mb-[0.3rem] font-normal text-gray-600 focus:outline-none focus:border-b focus:border-gray-300"
-            />
-        </div>
-    )
-}
-
-/**
  * Renderiza la lista de items (plantas) en el panel izquierdo.
  * @param {object} props - Propiedades del componente.
+ * @param {boolean} props.isLoading - Estado que indica si las plantas se están cargando.
+ * @param {Array} props.filteredPlants - La lista de plantas ya filtrada.
  * @param {string} props.searchTerm - Término de búsqueda para filtrar las plantas.
- * @param {() => void} props.toggleMenu - Función para cerrar el menú al navegar (en móvil).
- * @param {boolean} props.isOpen - Estado que indica si el panel está abierto.
- * @param {(count: number) => void} props.setNumberPlants - Función para actualizar el contador de plantas mostradas.
+ * @param {(id: number) => void} props.handleNavigate - Función para navegar a la página de detalles de la planta.
  * @returns {JSX.Element}
  */
-function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
-    const { plants, isLoading } = usePlants();
-    const { filteredPlants, numberPlants } = useSearchPlant(plants, searchTerm);
-
-    useEffect(() => {
-        setNumberPlants(numberPlants);
-    }, [numberPlants, setNumberPlants]);
-
-    const navigate = useNavigate();
-    const handleNavigate = (idPlanta) => {
-        navigate(`planta/${idPlanta}`);
-        if (isOpen) {
-            toggleMenu();
-        }
-    };
-
+function PanelLeftItems({ isLoading, filteredPlants, searchTerm, handleNavigate }) {
     return (
         <div className="menu-items flex-1 flex flex-col p-2 gap-1 overflow-auto min-h-0 max-h-[85%]">
             {filteredPlants.length > 0 ? (

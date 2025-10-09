@@ -126,7 +126,8 @@ export const MAX_VALUE_OPERATIONS = {
 export const UI_MESSAGES = {
     COMMUNICATION_PROBLEMS: "Problemas de comunicación. Intente más tarde",
     INFORMATION_NOT_AVAILABLE: "Información no disponible",
-    CONSULTANDO: "Consultando"
+    CONSULTANDO: "Consultando",
+    CONSULTADO: "Datos consultados"
 }
 
 /**

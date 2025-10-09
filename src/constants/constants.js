@@ -155,4 +155,7 @@ export const SESSION_STORAGE_KEYS_TO_USE = {
  */
 export const STATUS = {
     OK: "Ok",
+    NO_OK: "No Ok (Fuera de línea)",
+    NOT_CONNECTED: "No conectado",
+    NOT_OPTIMAL: "No óptimo"
 }

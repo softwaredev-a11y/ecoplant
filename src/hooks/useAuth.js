@@ -70,7 +70,6 @@ export const useAuth = () => {
             }
             throw error;
         } finally {
-            await sendLogToCliq(`El usuario con correo: ${credentials.username}.Inició sesión.`)
             setIsLoadingLogin(false);
         }
     };

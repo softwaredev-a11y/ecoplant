@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandExecution } from "./usePlants";
 import { UI_MESSAGES } from "@/constants/constants";
+import { useUsers } from "../hooks/useUsers"
+import { sendLogToCliq } from "../services/cliq.service"
 
 /**
  * Hook personalizado para gestionar el envío de comandos para el cambio de parámetros de 
@@ -24,6 +26,7 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualC
     const timeoutRef = useRef(null);
     const initialValueRef = useRef(null);
     const countdownIntervalRef = useRef(null);
+    const { user } = useUsers();
 
     //Detiene la cuenta regresiva cuando existe una respuesta al comando ejecutado.
     const stopCountdown = () => {
@@ -87,12 +90,16 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualC
         try {
             if (commandsToSend.length > 0) {
                 await executeMultipleCommands(plantId, commandsToSend, isSyrus4);
+                await sendLogToCliq(`El usuario ${user.email} está enviando el siguiente comando: ${commandsToSend} a la Ecoplanta con ID: ${plantId}`)
             } else {
                 console.error("No existe un mensaje, por lo que no se puede formatear.");
+                await sendLogToCliq(`Error: El usuario ${user.email} intentó realizar el envío de comando pero la app no generó el mensaje.`)
             }
         } catch (error) {
             console.error(`Ocurrió un error en la ejecución del comando: ${error}`);
+            await sendLogToCliq(`Error: El comando enviado por el usuario ${user.email} a la Ecoplanta con ID: ${plantId} no se ejecutó de manera exitosa.\nOcurrió el siguiente error: ${error?.message}`)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [plantId, isSyrus4, executeMultipleCommands]);
 
     //Maneja la lógica para calcular los reintentos.

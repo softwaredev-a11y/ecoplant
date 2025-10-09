@@ -20,6 +20,7 @@ const ProtectedProvidersLayout = () => (
     </PlantProvider>
   </UserProvider>
 );
+//Inicialización Lazy para evitar cargar toda la aplicación cuando se abre.
 const PlantDetailsPage = lazy(() => import('../pages/informationplant/PlantDetailsPage'));
 
 /**

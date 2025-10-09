@@ -140,8 +140,8 @@ function _extractOperationHour(message, code) {
 export function getSyrus4OperationHours(message) {
     if (!message) return null;
 
-    const startTimeRaw = _extractOperationHour(message, "start_time");
-    const endTimeRaw = _extractOperationHour(message, "end_time");
+    const startTimeRaw = _extractOperationHour(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_START_TIME);
+    const endTimeRaw = _extractOperationHour(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_END_TIME);
     if (!startTimeRaw || !endTimeRaw) return null;
 
     const startHour24 = convertTo24h(startTimeRaw);

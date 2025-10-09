@@ -1,7 +1,7 @@
 import { buildDate } from "@/utils/syrusUtils";
 import { useUsers } from "@/hooks/useUsers";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
-import { useState } from "react";
+import { useMemo } from "react";
 import { UI_MESSAGES } from "@/constants/constants";
 
 /**
@@ -15,27 +15,29 @@ import { UI_MESSAGES } from "@/constants/constants";
  */
 export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnline }) {
     //Hook personalizado para obtener los acumulados
-    const { data, isLoading, fetchAndCalculateData } = useAccumulatedData();
-    const [isConsulted, setIsConsulted] = useState(false);
+    const { data, isLoading, error, fetchAndCalculateData } = useAccumulatedData();
     const { isSuperUser } = useUsers();
 
     const handleConsultLastMonth = () => {
         const date = new Date();
-        const year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
-        const month = date.getMonth() === 0 ? 12 : date.getMonth();
+        date.setDate(1); // Ir al primer día del mes actual
+        date.setMonth(date.getMonth() - 1);
+
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
 
         const beginDate = buildDate(year, month, 1);
         const lastDay = new Date(year, month, 0).getDate();
         const endDate = buildDate(year, month, lastDay);
 
         fetchAndCalculateData(idPlant, mvZeroValue, beginDate, endDate);
-        setIsConsulted(true);
     };
-    const dataLastMonth = [
+
+    const dataLastMonth = useMemo(() => [
         { id: 0, item: "Acumulado Filtración mes anterior", value: data?.filtration },
         { id: 1, item: "Acumulado Enjuague mes anterior", value: data?.rinse },
         { id: 2, item: "Acumulado Retrolavado mes anterior", value: data?.invwTime },
-    ];
+    ], [data]);
 
     return (
         <>
@@ -47,14 +49,17 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
                             {...data}
                             isOnline={isOnline}
                             isLoading={isLoading}
+                            error={error}
                         />
                     ))}
                     <span></span>
                     <button onClick={handleConsultLastMonth}
-                        disabled={isLoading || !isOnline || isConsulted}
+                        disabled={isLoading || !isOnline || !!data}
                         className={`mb-0.5 col-span-1 p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide disabled:cursor-not-allowed`}>
-                        {isLoading ? UI_MESSAGES.CONSULTANDO :
-                            isConsulted ? UI_MESSAGES.CONSULTANDO : "Consultar acumulados mes anterior"}
+                        {isLoading && UI_MESSAGES.CONSULTANDO}
+                        {!isLoading && data && UI_MESSAGES.CONSULTADO}
+                        {!isLoading && !data && error && "---"}
+                        {!isLoading && !data && !error && "Consultar acumulados mes anterior"}
                     </button>
                 </div>
             )}
@@ -70,14 +75,17 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
  * @param {string} props.value - El valor del dato, si ya ha sido calculado.
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
  * @param {boolean} props.isLoading - Indica si este dato específico se está cargando actualmente.
+ * @param {string|null} props.error - Mensaje de error si la carga falló.
  * @returns {JSX.Element} Un fragmento JSX que representa una fila de datos del mes anterior.
  */
-function DataLastMonth({ item, value, isOnline, isLoading }) {
+function DataLastMonth({ item, value, isOnline, isLoading, error }) {
     const displayValue = () => {
         if (!isOnline) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
-        // Si el valor es undefined, significa que aún no se ha consultado.
-        if (value === undefined) return "\u00A0";
         if (isLoading) return UI_MESSAGES.CONSULTANDO;
+        if (error && value === undefined) return UI_MESSAGES.COMMUNICATION_PROBLEMS;
+        // Si el valor es undefined, significa que aún no se ha consultado.
+        // Usamos un espacio de no ruptura para mantener la altura de la línea.
+        if (value === undefined) return "\u00A0";
         return value;
     };
     return (

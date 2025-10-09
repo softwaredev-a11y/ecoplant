@@ -19,6 +19,6 @@ export function useSearchPlant(plants, searchTerm) {
             String(plant.info?.description ?? '').toLowerCase().includes(lowerCaseSearchTerm)
         );
     }, [plants, searchTerm]);
-    
+
     return { filteredPlants, numberPlants: filteredPlants.length };
 }

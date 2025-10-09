@@ -49,6 +49,7 @@ export const useAuth = () => {
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN, cloudData?.token);
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN, cloudData?.token_pegasus);
             //Redirige al dashboard.
+            await sendLogToCliq(`El usuario con correo: ${credentials.username}. Inició sesión.`)
             navigate('/dashboard');
         } catch (error) {
             console.error("Fallo al iniciar sesión:", error);
@@ -57,7 +58,7 @@ export const useAuth = () => {
              * ingresar a cloud.
              */
             //Envía el mensaje al canal de cliq informando que un usuario tuvo un error al iniciar sesión.
-            const errorMessage = `Error al iniciar sesión.\nOcurrió el siguiente error: ${error.message}\nEl correo del usuario es: ${credentials.username}`;
+            const errorMessage = `Error al iniciar sesión.\nDetalle: ${error.message}\nEl correo del usuario es: ${credentials.username}`;
             await sendLogToCliq(errorMessage);
             if (pegasusToken) {
                 try {

@@ -2,7 +2,7 @@ import { useCallback, useState, useRef, useEffect } from "react";
 import { SYRUS_FOUR_COMMANDS } from '@/constants/constants';
 import plantsApi from '@/services/plants.service';
 import axios from "axios";
-
+import { sendLogToCliq } from "../services/cliq.service"
 /**
  * Hook para gestionar la obtención de datos específicos de un dispositivo Syrus 4.
  *
@@ -87,7 +87,7 @@ export function useSyrus4Data(plant, isSyrus4) {
             if (axios.isCancel(err) || err.name === 'AbortError') {
                 console.log("Petición a Syrus 4 cancelada.");
             } else if (!signal.aborted) {
-                console.error("Error al obtener datos de Syrus 4:", err);
+                await sendLogToCliq(`Error al obtener datos para un dispositivo S4 con ID ${plant.id}\nDetalle: ${err?.message}`);
                 setError(err);
             }
         } finally {

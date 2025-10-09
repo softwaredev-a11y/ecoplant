@@ -31,69 +31,40 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
         return param.value;
     };
 
+    // Props comunes para todos los componentes `Operations`, para evitar repetirlas en cada instancia.
+    const commonProps = { isOnline, mvZeroValue, plant, isSyrus4, isManualChangeRef };
+
+    // Se define una configuración de operaciones en un array.
+    // Esto hace que el componente sea más declarativo y fácil de mantener.
+    // Si se necesita añadir o quitar una operación, solo se modifica este array.
+    const operationGroups = [
+        [
+            { codeOperation: OPERATION_CODES.FILTRATION, typeOperation: "Filtración", currentlyValue: getDisplayValue(parameters.filtracion), buttonOperation: "Cambiar filtración" },
+            { codeOperation: OPERATION_CODES.INVW_TIME, typeOperation: "Retrolavado", currentlyValue: getDisplayValue(parameters.retrolavado), buttonOperation: "Cambiar retrolavado" },
+            { codeOperation: OPERATION_CODES.RINSE, typeOperation: "Enjuague", currentlyValue: getDisplayValue(parameters.enjuague), buttonOperation: "Cambiar enjuague" },
+        ],
+        [
+            { codeOperation: OPERATION_CODES.FLOW_ALERT, typeOperation: "Alerta de flujo disminuyendo", currentlyValue: getDisplayValue(parameters.valorAlertaFlujo), buttonOperation: "Cambiar umbral (gpm)" },
+            { codeOperation: OPERATION_CODES.INSUFFICIENT_FLOW_ALARM, typeOperation: "Alarma por flujo insuficiente", currentlyValue: getDisplayValue(parameters.valorAlarmaInsuficiente), buttonOperation: "Cambiar umbral (gpm)" },
+        ]
+    ];
+
     return (
         <div className="operations-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
             <HeaderPanel title={"Párametros de operación"} />
             <div className="flex flex-col p-1.5 gap-4">
-                <div className="border-b border-b-[#ccc]">
-                    <Operations
-                        isOnline={isOnline}
-                        codeOperation={OPERATION_CODES.FILTRATION}
-                        typeOperation="Filtración"
-                        currentlyValue={getDisplayValue(parameters.filtracion)}
-                        buttonOperation="Cambiar filtración"
-                        mvZeroValue={mvZeroValue}
-                        plant={plant}
-                        isSyrus4={isSyrus4}
-                        isManualChangeRef={isManualChangeRef}
-                    />
-                    <Operations
-                        isOnline={isOnline}
-                        codeOperation={OPERATION_CODES.INVW_TIME}
-                        typeOperation="Retrolavado"
-                        currentlyValue={getDisplayValue(parameters.retrolavado)}
-                        buttonOperation="Cambiar retrolavado"
-                        mvZeroValue={mvZeroValue}
-                        plant={plant}
-                        isSyrus4={isSyrus4}
-                        isManualChangeRef={isManualChangeRef}
-                    />
-                    <Operations
-                        isOnline={isOnline}
-                        codeOperation={OPERATION_CODES.RINSE}
-                        typeOperation="Enjuague"
-                        currentlyValue={getDisplayValue(parameters.enjuague)}
-                        buttonOperation="Cambiar enjuague"
-                        mvZeroValue={mvZeroValue}
-                        plant={plant}
-                        isSyrus4={isSyrus4}
-                        isManualChangeRef={isManualChangeRef}
-                    />
-                </div>
-                <div className="border-b border-b-[#ccc]">
-                    <Operations
-                        isOnline={isOnline}
-                        codeOperation={OPERATION_CODES.FLOW_ALERT}
-                        typeOperation="Alerta de flujo disminuyendo"
-                        currentlyValue={getDisplayValue(parameters.valorAlertaFlujo)}
-                        buttonOperation="Cambiar umbral (gpm)"
-                        mvZeroValue={mvZeroValue}
-                        plant={plant}
-                        isSyrus4={isSyrus4}
-                        isManualChangeRef={isManualChangeRef}
-                    />
-                    <Operations
-                        isOnline={isOnline}
-                        codeOperation={OPERATION_CODES.INSUFFICIENT_FLOW_ALARM}
-                        typeOperation="Alarma por flujo insuficiente"
-                        currentlyValue={getDisplayValue(parameters.valorAlarmaInsuficiente)}
-                        buttonOperation="Cambiar umbral (gpm)"
-                        mvZeroValue={mvZeroValue}
-                        plant={plant}
-                        isSyrus4={isSyrus4}
-                        isManualChangeRef={isManualChangeRef}
-                    />
-                </div>
+                {/* Se itera sobre los grupos de operaciones para renderizarlos dinámicamente. */}
+                {operationGroups.map((group, index) => (
+                    <div key={index} className="border-b border-b-[#ccc]">
+                        {group.map(op => (
+                            <Operations
+                                key={op.codeOperation}
+                                {...commonProps}
+                                {...op}
+                            />
+                        ))}
+                    </div>
+                ))}
                 <div className="border-b border-b-[#ccc]">
                     <ScheduleSelector
                         isOnline={isOnline}

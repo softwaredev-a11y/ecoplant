@@ -35,8 +35,11 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
                 { label: "Proceso en ejecución", value: data.processDisplayText, item: 'process' },
                 { label: "Flujo actual", value: data.currentFlowDisplayText, item: 'current_flow' },
             ],
-        ];
-    }, [data])
+        ].map(group => 
+            // Filtra el item 'acc_exp' si es un Syrus 4
+            isSyrus4 ? group.filter(item => item.item !== 'acc_exp') : group
+        );
+    }, [data, isSyrus4])
 
     return (
         <div className="description-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
@@ -44,7 +47,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
             <div>
                 <PlantImage plant={plant} />
             </div>
-            <InfoPanel itemGroups={descriptionData} isSyrus4={isSyrus4} />
+            <InfoRow itemGroups={descriptionData} />
             <div className={`flex flex-col items-end p-1.5 ${data.isOnline ? "" : "hidden"}`}>
                 <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace ${formatTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
             </div>
@@ -58,24 +61,20 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
  * @param {Array<Array<{label: string, value: string|number}>>} props.itemGroups - Grupos de items a mostrar.
  * @returns {JSX.Element|null} El componente que muestra la información o null si no hay datos.
  */
-function InfoPanel({ itemGroups, isSyrus4 }) {
+function InfoRow({ itemGroups }) {
     if (!itemGroups || itemGroups.length === 0) return null;
     return (
         <div className="items-panel flex flex-col p-1.5 gap-4">
             {itemGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="flex flex-col gap-1.5 border-b border-b-[#ccc]">
                     {group.map((item, itemIndex) => (
-                        <div className="div grid grid-cols-2 mb-0.5 items-center" key={`${groupIndex}-${itemIndex}`}>
-                            {isSyrus4 && item.item === "acc_exp" ? null : (//Si el dispositivo es un Syrus 4, el estado del accesorio expansor no debe de mostrarse.
-                                <>
-                                    <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base">
-                                        {item.label}:
-                                    </span>
-                                    <span className="font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm align-middle">
-                                        {item.value}
-                                    </span>
-                                </>
-                            )}
+                        <div className="div grid grid-cols-2 mb-0.5 items-center" key={`${groupIndex}-${itemIndex}`}>                           
+                            <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base">
+                                {item.label}:
+                            </span>
+                            <span className="font-semibold text-gray-600  text-sm md:text-base lg:text-base p-0.5 bg-gray-200 rounded-sm align-middle">
+                                {item.value}
+                            </span>
                         </div>
                     ))}
                 </div>

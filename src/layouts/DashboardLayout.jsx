@@ -199,7 +199,9 @@ function PanelLeftItems({ searchTerm, toggleMenu, isOpen, setNumberPlants }) {
                 ))
             ) : (
                 <p className="text-center text-gray-500 mt-4">
-                    {isLoading ? "Cargando Ecoplantas." : UI_MESSAGES.COMMUNICATION_PROBLEMS}
+                    {isLoading ? "Cargando Ecoplantas."
+                        : searchTerm.trim() != "" ?
+                            "No se encontraron resultados." : UI_MESSAGES.COMMUNICATION_PROBLEMS}
                 </p>
             )}
         </div>

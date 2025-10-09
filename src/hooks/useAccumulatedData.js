@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueInvWTime, gpmToCubicMetersPerMinute } from "@/utils/syrusUtils";
 import { OPERATION_CODES, UI_MESSAGES } from '@/constants/constants'
+import { sendLogToCliq } from '@/services/cliq.service';
 
 /**
 * Hook personalizado para gestionar la consulta de valores acumulados de la Ecoplanta.
@@ -90,8 +91,8 @@ export const useAccumulatedData = () => {
             });
 
         } catch (err) {
-            console.error("Error al calcular datos acumulados:", err);
             setError("Error al calcular los datos acumulados.");
+            await sendLogToCliq(`Error al consultar RawData para la Ecoplanta con ID: ${idPlant}.\nDetalle: ${err?.message}`);
             setData({ filtration: "Ocurrió un error. Intente más tarde.", rinse: "Ocurrió un error. Intente más tarde.", invwTime: "Ocurrió un error. Intente más tarde.", purge: "Ocurrió un error. Intente más tarde." });
         } finally {
             setIsLoading(false);

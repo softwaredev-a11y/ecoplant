@@ -25,7 +25,7 @@ export default function CurrentMonthAccumulatedPanel({ idPlant, mvZeroValue, isO
         <div className="items-panel flex flex-col gap-8">
             <div className="data-currently-div grid grid-cols-2 items-center border-b border-b-[#ccc] gap-3 p-0.5">
                 {currentlyData.map(data => (
-                    <DataCurrently key={data.id} currentlyData={data} isOnline={isOnline} isLoading={isLoading} />
+                    <RowDataCurrently key={data.id} currentlyData={data} isOnline={isOnline} isLoading={isLoading} />
                 ))}
             </div>
         </div>
@@ -39,7 +39,7 @@ export default function CurrentMonthAccumulatedPanel({ idPlant, mvZeroValue, isO
  * @param {boolean} props.isOnline - Indica si la planta está conectada.
  * @returns {JSX.Element} Un fragmento JSX que representa una fila de datos.
  */
-function DataCurrently({ currentlyData, isOnline, isLoading }) {
+function RowDataCurrently({ currentlyData, isOnline, isLoading }) {
     const displayValue = () => {
         if (!isOnline) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
         if (isLoading) return UI_MESSAGES.CONSULTANDO;

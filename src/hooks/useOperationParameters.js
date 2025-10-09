@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useCommandExecution, usePlantDetailSocket } from '@/hooks/usePlants';
 import { processSocketMessage, getMvZeroText } from '@/utils/syrusUtils';
-import { COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET, COMMAND_STATES, SYRUS3_MESSAGE_HEADERS } from '@/constants/constants';
+import { SYRUS3_COMMANDS, SOCKET_KEYS, HEADER_MESSAGES_SOCKET, COMMAND_STATES, SYRUS3_MESSAGE_HEADERS } from '@/constants/constants';
 import { proccessSyrus4SocketMessage } from '@/utils/syrus4Utils';
 import { isScheduleMessage, extractScheduleMessageHeader, generateOperationHours, getSyrus4OperationHours } from '@/utils/operationHoursUtils';
 
@@ -56,7 +56,7 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
         }
         if (hasRunRef.current) return;
         hasRunRef.current = true;
-        const commands = Object.values(COMMANDS);
+        const commands = Object.values(SYRUS3_COMMANDS);
         setCommandStatus(Object.fromEntries(commands.map(c => [c, COMMAND_STATES.LOADING])));
         //Ejecuta los comandos que tienen cómo estado de carga: Loading.
         executeMultipleCommands(plant.id, commands);
@@ -96,9 +96,9 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
                 const header = extractScheduleMessageHeader(message);
                 const newParts = { ...scheduleParts, [header]: message };
                 setScheduleParts(newParts);
-                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT001)) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_00]: COMMAND_STATES.SUCCESS }));
-                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT011)) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_01]: COMMAND_STATES.SUCCESS }));
-                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT021)) setCommandStatus(prev => ({ ...prev, [COMMANDS.TIME_02]: COMMAND_STATES.SUCCESS }));
+                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT001)) setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.TIME_00]: COMMAND_STATES.SUCCESS }));
+                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT011)) setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.TIME_01]: COMMAND_STATES.SUCCESS }));
+                if (header.includes(SYRUS3_MESSAGE_HEADERS.RES_CMD_QGT021)) setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.TIME_02]: COMMAND_STATES.SUCCESS }));
                 if (Object.keys(newParts).length === 3) {
                     const finalSchedule = generateOperationHours(newParts);
                     setHorario(finalSchedule);
@@ -116,27 +116,27 @@ export function useOperationParameters(plant, isOnline, isLoadingStatus, isSyrus
         switch (result.key) {
             case SOCKET_KEYS.FILTRATION:
                 setFiltrado(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.FILTRATION]: COMMAND_STATES.SUCCESS }));
+                setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.FILTRATION]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("filtrado", message);
                 break;
             case SOCKET_KEYS.INVW_TIME:
                 setRetrolavado(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.INVW_TIME]: COMMAND_STATES.SUCCESS }));
+                setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.INVW_TIME]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("retrolavado", message);
                 break;
             case SOCKET_KEYS.RINSE:
                 setEnjuague(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.RINSE]: COMMAND_STATES.SUCCESS }));
+                setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.RINSE]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("enjuague", message);
                 break;
             case SOCKET_KEYS.FLOW_ALERT:
                 setValorAlertaFlujo(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.FLOW_ALERT]: COMMAND_STATES.SUCCESS }));
+                setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.FLOW_ALERT]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("alertaflujo", message);
                 break;
             case SOCKET_KEYS.INSUFFICIENT_FLOW_ALARM:
                 setValorAlarmaInsuficiente(result.value);
-                setCommandStatus(prev => ({ ...prev, [COMMANDS.INSUFFICIENT_FLOW_ALARM]: COMMAND_STATES.SUCCESS }));
+                setCommandStatus(prev => ({ ...prev, [SYRUS3_COMMANDS.INSUFFICIENT_FLOW_ALARM]: COMMAND_STATES.SUCCESS }));
                 if (!message.includes(HEADER_MESSAGES_SOCKET.ERROR)) sessionStorage.setItem("alarmainsuficiente", message);
                 break;
             default:

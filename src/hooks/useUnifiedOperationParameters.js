@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useOperationParameters } from '@/hooks/useOperationParameters';
 import { getEcoplantParams } from '@/utils/syrus4Utils';
 import { getMvZeroText } from '@/utils/syrusUtils';
-import { COMMANDS, UI_MESSAGES, COMMAND_STATES } from '@/constants/constants';
+import { SYRUS3_COMMANDS, UI_MESSAGES, COMMAND_STATES } from '@/constants/constants';
 
 /**
  * Hook adaptador que unifica la obtención de parámetros de operación para dispositivos
@@ -59,9 +59,9 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             };
         } else {
             const scheduleStatuses = [
-                legacyCommandStatus[COMMANDS.TIME_00],
-                legacyCommandStatus[COMMANDS.TIME_01],
-                legacyCommandStatus[COMMANDS.TIME_02]
+                legacyCommandStatus[SYRUS3_COMMANDS.TIME_00],
+                legacyCommandStatus[SYRUS3_COMMANDS.TIME_01],
+                legacyCommandStatus[SYRUS3_COMMANDS.TIME_02]
             ];
             let finalScheduleStatus = COMMAND_STATES.LOADING;
             if (scheduleStatuses.every(s => s === COMMAND_STATES.SUCCESS) && legacyParams?.horario) {
@@ -71,11 +71,11 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             }
 
             return {
-                filtracion: { value: legacyParams?.filtrado, status: legacyCommandStatus[COMMANDS.FILTRATION] || COMMAND_STATES.LOADING },
-                retrolavado: { value: legacyParams?.retrolavado, status: legacyCommandStatus[COMMANDS.INVW_TIME] || COMMAND_STATES.LOADING },
-                enjuague: { value: legacyParams?.enjuague, status: legacyCommandStatus[COMMANDS.RINSE] || COMMAND_STATES.LOADING },
-                valorAlertaFlujo: { value: legacyParams?.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : '', status: legacyCommandStatus[COMMANDS.FLOW_ALERT] || COMMAND_STATES.LOADING },
-                valorAlarmaInsuficiente: { value: legacyParams?.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : '', status: legacyCommandStatus[COMMANDS.INSUFFICIENT_FLOW_ALARM] || COMMAND_STATES.LOADING },
+                filtracion: { value: legacyParams?.filtrado, status: legacyCommandStatus[SYRUS3_COMMANDS.FILTRATION] || COMMAND_STATES.LOADING },
+                retrolavado: { value: legacyParams?.retrolavado, status: legacyCommandStatus[SYRUS3_COMMANDS.INVW_TIME] || COMMAND_STATES.LOADING },
+                enjuague: { value: legacyParams?.enjuague, status: legacyCommandStatus[SYRUS3_COMMANDS.RINSE] || COMMAND_STATES.LOADING },
+                valorAlertaFlujo: { value: legacyParams?.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : '', status: legacyCommandStatus[SYRUS3_COMMANDS.FLOW_ALERT] || COMMAND_STATES.LOADING },
+                valorAlarmaInsuficiente: { value: legacyParams?.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : '', status: legacyCommandStatus[SYRUS3_COMMANDS.INSUFFICIENT_FLOW_ALARM] || COMMAND_STATES.LOADING },
                 horario: { value: legacyParams?.horario, status: finalScheduleStatus }
             };
         }

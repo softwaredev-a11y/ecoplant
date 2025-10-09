@@ -2,7 +2,7 @@
  * Comandos para consultar los valores de filtración, retrolavado, enjuague, alerta y alarma 
  * en dispositivos inferiores a syrus 4.
  */
-export const COMMANDS = {
+export const SYRUS3_COMMANDS = {
     FILTRATION: "QED06",
     INVW_TIME: "QED14",
     RINSE: "QED34",

@@ -3,7 +3,7 @@ import { PlantContext } from "@/context/PlantContext";
 import { PlantDetailSocketContext } from "@/context/PlantDetailSocketContext";
 import plants from '@/services/plants.service'
 import axios from "axios";
-
+import { sendLogToCliq } from "@/services/cliq.service"
 /**
  * Hook personalizado para acceder a la información de las plantas desde `PlantContext`.
  * Proporciona la lista de plantas y el estado de carga.
@@ -27,7 +27,7 @@ export const usePlants = () => {
 export const usePlantDetailSocket = () => {
   const context = useContext(PlantDetailSocketContext);
   if (!context) {
-    throw new Error("usePlants debe usarse dentro de un PlantProvider");
+    throw new Error("usePlantDetailSocket debe usarse dentro de un PlantDetailSocketProvider");
   }
   return context;
 };
@@ -61,6 +61,7 @@ export const useConnectionStatus = (imei) => {
       } catch (err) {
         if (!axios.isCancel(err) && err.name !== 'AbortError') {
           setError("Error al obtener el estado de conexión...");
+          await sendLogToCliq(`Ocurrió un error al obtener el estado de conexión de la Ecoplanta con ${imei}.\nDetalle: ${err?.message}`);
           setInfoConnectionDevice(null);
           console.error(err);
         }

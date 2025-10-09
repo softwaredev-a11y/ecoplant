@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { buildDate } from "@/utils/syrusUtils";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
 import { SESSION_STORAGE_KEYS_TO_USE } from "@/constants/constants";
-import { sendLogToCliq } from "../services/cliq.service";
 
 /**
  * Hook que centraliza la lógica para calcular los valores a mostrar en el panel de Acumulados actuales.
@@ -41,7 +40,6 @@ export function useCurrentMonthAccumulatedData(idPlant, mvZeroValue, isOnline) {
                 } catch (error) {
                     if (error.name !== 'AbortError') {
                         console.error("Error en la consulta de acumulados del mes actual:", error);
-                        await sendLogToCliq(`Error: No fue posible realizar la consulta de RawData para la Ecoplanta con ID: ${idPlant}.\nOcurrió el siguiente error: ${error?.message}`);
                     }
                 }
             };

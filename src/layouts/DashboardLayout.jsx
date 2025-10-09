@@ -1,6 +1,5 @@
 import Logo from "@/components/Logo";
 import logoImage from '@/assets/images/logo.webp';
-import searchIcon from '@/assets/icons/search.svg'
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState, useEffect } from "react";
@@ -10,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUsers } from "@/hooks/useUsers";
 import { Toaster } from "@/components/ui/sonner"
 import { useLogout } from "@/hooks/useSessionTimeout";
-import { Menu, X } from 'lucide-react';
+import { Menu, Search, X } from 'lucide-react';
 import { UI_MESSAGES } from '@/constants/constants'
 import { useSearchPlant } from "@/hooks/useSearchPlant";
 
@@ -142,7 +141,7 @@ function PanelLeft({ isOpen, toggleMenu }) {
 function InputSearch({ searchTerm, setSearchTerm, numberPlants }) {
     return (
         <div className="search-container flex justify-between items-center p-2">
-            <img src={searchIcon} alt="Ícono de búsqueda" className="max-w-[30px]" />
+            <Search color="#4B5563"/>
             <input type="search"
                 name="searchTerm"
                 id="searchTerm"

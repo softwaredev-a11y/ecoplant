@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { useUsers } from "@/hooks/useUsers";
 import plantsApi from "@/services/plants.service";
 import { SESSION_STORAGE_KEYS_TO_USE, ECOPLANT_GROUPS } from "@/constants/constants"
-
+import { sendLogToCliq } from "../services/cliq.service";
 /**
  * Contexto de React para almacenar y proporcionar el listado de Ecoplantas asociadas al usuario.
  * @type {React.Context<{plants: Array<object>, isLoading: boolean}>}
@@ -55,7 +55,7 @@ export const PlantProvider = ({ children }) => {
           sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.LIST_PLANTS, JSON.stringify(plantsData));
         }
       } catch (error) {
-        console.error("Error cargando plantas:", error);
+        await sendLogToCliq(`Error al obtener el listado de plantas.\nDetalle: ${error?.message}`)
       } finally {
         setIsLoading(false);
       }

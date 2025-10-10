@@ -18,12 +18,12 @@ import { useUsers } from "@/hooks/useUsers";
  * 
  * @returns {JSX.Element} Componente que le permite al usuario escoger horarios de operación en el calendario.
  */
-export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyrus4, isManualChangeRef }) {
+export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyrus4, isManualChangeRef, typeOperation }) {
 
     const [isOpen, setIsOpen] = useState(false);
     const { rangeStart, rangeEnd, selectedHours, scheduleDescription, handleHourClick, revertToInitialState, selectAll, selectWorkingHours,
         selectNonWorkingHours, hours, startHour, endHour } = useSchedulePicker(currentlyValue);
-    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4);
+    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4, isManualChangeRef, typeOperation);
     const isButtonDisabled = !isOnline || currentlyValue === UI_MESSAGES.COMMUNICATION_PROBLEMS || selectedHours.length <= 1 && (rangeStart == null || rangeEnd == null) || isSending || commandFailed;
     const { isSuperUser } = useUsers();
 

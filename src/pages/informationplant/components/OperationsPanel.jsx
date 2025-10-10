@@ -72,6 +72,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                         plant={plant}
                         isSyrus4={isSyrus4}
                         isManualChangeRef={isManualChangeRef}
+                        typeOperation="Cambio de horario"
                     />
                 </div>
             </div>
@@ -95,7 +96,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const [isOpen, setIsOpen] = useState(false);
     const [timeValue, setTimeValue] = useState("");
     const [timeUnit, setTimeUnit] = useState('none');
-    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4, isManualChangeRef);
+    const { isSending, commandFailed, displayValue, executeUpdate } = useParameterUpdater(plant.id, currentlyValue, isSyrus4, isManualChangeRef, typeOperation);
     const isAlertOperation = codeOperation === OPERATION_CODES.INSUFFICIENT_FLOW_ALARM || codeOperation === OPERATION_CODES.FLOW_ALERT;
     const isButtonDisabled = !isOnline || commandFailed || isSending || !timeValue || (!isAlertOperation && timeUnit === 'none') || currentlyValue === UI_MESSAGES.COMMUNICATION_PROBLEMS;
     //Consume hook personalizado para determinar si es super usuario o no.

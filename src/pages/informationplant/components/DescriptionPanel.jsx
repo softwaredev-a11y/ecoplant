@@ -45,7 +45,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
         <div className="description-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
             <HeaderPanel title={"Descripción"} />
             <div>
-                <PlantImage plant={plant} />
+                <PlantImage plant={plant?.id} />
             </div>
             <InfoRow itemGroups={descriptionData} />
             <div className={`flex flex-col items-end p-1.5 ${data.isOnline ? "" : "hidden"}`}>
@@ -86,17 +86,17 @@ function InfoRow({ itemGroups }) {
 /**
  * Muestra la imagen de la planta con un fallback en caso de error.
  * @param {object} props - Propiedades del componente.
- * @param {object} props.plant - Objeto de la planta que contiene el ID para la URL de la imagen.
+ * @param {object} props.idPlant - ID de la planta.
  * @returns {JSX.Element} El componente de la imagen.
  */
-function PlantImage({ plant }) {
+function PlantImage({ idPlant }) {
     const handleImageError = useCallback((e) => {
         e.target.onerror = null;
         e.target.src = notAvailableImg;
     }, []);
     return (
         <img
-            src={`${import.meta.env.VITE_API_URL}/images/vehicles/${plant.id}/photo`}
+            src={`${import.meta.env.VITE_API_URL}/images/vehicles/${idPlant}/photo`}
             alt="Foto de la Ecoplanta." className="w-3/5 max-w-[250px] h-auto block object-contain my-4 mx-auto"
             onError={handleImageError} />
     )

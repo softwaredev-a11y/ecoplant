@@ -16,8 +16,8 @@ function AccumulatedPanel({ plant, isOnline }) {
         <div className="months-container flex flex-col border border-[#ccc] mb-4 p-0 overflow-y-auto">
             <HeaderPanel title={"Acumulados del mes actual y mes anterior"} />
             <div className="items-panel flex flex-col p-1.5 gap-4">
-                <CurrentMonthAccumulatedPanel idPlant={plant.id} mvZeroValue={mvZeroValue} isOnline={isOnline} />
-                <LastMonthAccumulatedPanel idPlant={plant.id} mvZeroValue={mvZeroValue} isOnline={isOnline} />
+                <CurrentMonthAccumulatedPanel idPlant={plant?.id} mvZeroValue={mvZeroValue} isOnline={isOnline} />
+                <LastMonthAccumulatedPanel idPlant={plant?.id} mvZeroValue={mvZeroValue} isOnline={isOnline} />
             </div>
         </div>
     )

@@ -4,7 +4,7 @@ import authApi from '@/services/auth.service';
 import axios from 'axios';
 import { clearAllSessionStorage } from "@/utils/syrusUtils"
 import { SESSION_STORAGE_KEYS_TO_USE } from '@/constants/constants';
-import { sendLogToCliq } from '@/services/cliq.service';
+import { log } from "@/services/logging.service";
 
 /**
 * Hook personalizado para gestionar la autenticación del usuario.
@@ -49,12 +49,11 @@ export const useAuth = () => {
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN, cloudData?.token);
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN, cloudData?.token_pegasus);
             //Redirige al dashboard.
-            await sendLogToCliq(`El usuario con correo: ${credentials.username}. Inició sesión.`)
+            await log('LOGIN_SUCCESS', { user: credentials.username });
             navigate('/dashboard');
         } catch (error) {
             //Envía el mensaje al canal de cliq informando que un usuario tuvo un error al iniciar sesión.
-            const errorMessage = `Error al iniciar sesión.\nDetalle: ${error.message}\nEl correo del usuario es: ${credentials.username}`;
-            await sendLogToCliq(errorMessage);
+            await log('LOGIN_ERROR', { user: credentials.username, message: error?.message });
             if (pegasusToken) {
                 try {
                     await axios.get(`${import.meta.env.VITE_API_URL}/logout`, {

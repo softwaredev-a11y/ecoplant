@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandExecution } from "./usePlants";
 import { UI_MESSAGES } from "@/constants/constants";
 import { useUsers } from "../hooks/useUsers"
-import { sendLogToCliq } from "../services/cliq.service"
+import { log } from "@/services/logging.service";
 
 /**
  * Hook personalizado para gestionar el envío de comandos para el cambio de parámetros de 
@@ -90,12 +90,12 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualC
         try {
             if (commandsToSend.length > 0) {
                 await executeMultipleCommands(plantId, commandsToSend, isSyrus4);
-                await sendLogToCliq(`El usuario ${user.email} realizó el cambio de ${typeOperation} a la Ecoplanta con ID: ${plantId}.\nLa aplicación envió el siguiente comando: ${commandMessage}`)
+                await log('SEND_SETTER_COMMAND_SUCCESS', { user: user.email, plantId, typeOperation });
             } else {
-                await sendLogToCliq(`Ocurrió un error cuando el usuario ${user.email} intentó realizar el envío de comando pero la app no generó el mensaje.`)
+                await log('BUILD_SETTER_COMMAND_ERROR', { user: user.email, plantId });
             }
         } catch (error) {
-            await sendLogToCliq(`Ocurrió un error cuando el usuario ${user.email} envió un comando a la Ecoplanta con ID:${plantId}.\nDetalle: ${error?.message}`)
+            await log('CHANGE_OPERATION_VALUE_ERROR', { user: user.email, plantId, message: error?.message });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [plantId, isSyrus4, executeMultipleCommands]);

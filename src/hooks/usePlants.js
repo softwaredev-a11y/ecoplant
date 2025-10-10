@@ -2,8 +2,8 @@ import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { PlantContext } from "@/context/PlantContext";
 import { PlantDetailSocketContext } from "@/context/PlantDetailSocketContext";
 import plants from '@/services/plants.service'
-import axios from "axios";
-import { sendLogToCliq } from "@/services/cliq.service"
+import axios from "axios";;
+import { log } from "@/services/logging.service";
 /**
  * Hook personalizado para acceder a la información de las plantas desde `PlantContext`.
  * Proporciona la lista de plantas y el estado de carga.
@@ -61,9 +61,8 @@ export const useConnectionStatus = (imei) => {
       } catch (err) {
         if (!axios.isCancel(err) && err.name !== 'AbortError') {
           setError("Error al obtener el estado de conexión...");
-          await sendLogToCliq(`Ocurrió un error al obtener el estado de conexión de la Ecoplanta con ${imei}.\nDetalle: ${err?.message}`);
+          await log('CHECK_CONNECTION_STATUS_ERROR', { idPlant: imei, message: err?.message });
           setInfoConnectionDevice(null);
-          console.error(err);
         }
       } finally {
         if (!signal.aborted) {
@@ -129,11 +128,12 @@ export const useCommandExecution = () => {
         }
       }
       if (!signal.aborted) setExecutedCids(cids);
+      await log('SEND_COMMAND_SUCCESS', { idPlant: idDevice });
       return cids;
     } catch (err) {
       if (!axios.isCancel(err) && err.name !== 'AbortError') {
-        setError("Error al ejecutar los comandos.");
-        await sendLogToCliq(`Ocurrió un error al ejecutar comandos en la planta con ID: ${idDevice}.\nDetalle: ${err?.message || err}`);
+        setError("Error al ejecutar los comandos.", err ?? err.message);
+        await log('SEND_COMMAND_ERROR', { idPlant: idDevice, message: err?.message });
       }
       return [];
     } finally {
@@ -180,7 +180,7 @@ export const useRawDataConsult = () => {
     } catch (err) {
       if (!axios.isCancel(err) && err.name !== 'AbortError') {
         setError('Error al consultar el RawData.');
-        await sendLogToCliq(`Ocurrió un error al consultar RAWDATA en la planta con ID: ${idPlant}\nDetalles: ${err?.message || err}`)
+        await log('CONSULT_RAW_DATA_ERROR', { idPlant, message: err?.message });
       }
       return [];
     } finally {

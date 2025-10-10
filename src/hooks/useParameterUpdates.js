@@ -13,7 +13,7 @@ import { sendLogToCliq } from "../services/cliq.service"
  * @returns {isSending: boolean, commandFailed: boolean, 
  * displayValue: string, executeUpdate: (commandMessage: string) => void}
  */
-export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualChangeRef) {
+export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualChangeRef, typeOperation) {
     //Llama al hook que permite realizar el envio de múltiplés comandos.
     const { executeMultipleCommands } = useCommandExecution();
 
@@ -90,14 +90,12 @@ export function useParameterUpdater(plantId, currentlyValue, isSyrus4, isManualC
         try {
             if (commandsToSend.length > 0) {
                 await executeMultipleCommands(plantId, commandsToSend, isSyrus4);
-                await sendLogToCliq(`El usuario ${user.email} está enviando el siguiente comando: ${commandsToSend} a la Ecoplanta con ID: ${plantId}`)
+                await sendLogToCliq(`El usuario ${user.email} realizó el cambio de ${typeOperation} a la Ecoplanta con ID: ${plantId}.\nLa aplicación envió el siguiente comando: ${commandMessage}`)
             } else {
-                console.error("No existe un mensaje, por lo que no se puede formatear.");
-                await sendLogToCliq(`Error: El usuario ${user.email} intentó realizar el envío de comando pero la app no generó el mensaje.`)
+                await sendLogToCliq(`Ocurrió un error cuando el usuario ${user.email} intentó realizar el envío de comando pero la app no generó el mensaje.`)
             }
         } catch (error) {
-            console.error(`Ocurrió un error en la ejecución del comando: ${error}`);
-            await sendLogToCliq(`Error: El comando enviado por el usuario ${user.email} a la Ecoplanta con ID: ${plantId} no se ejecutó de manera exitosa.\nOcurrió el siguiente error: ${error?.message}`)
+            await sendLogToCliq(`Ocurrió un error cuando el usuario ${user.email} envió un comando a la Ecoplanta con ID:${plantId}.\nDetalle: ${error?.message}`)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [plantId, isSyrus4, executeMultipleCommands]);

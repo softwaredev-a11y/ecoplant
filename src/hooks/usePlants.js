@@ -133,7 +133,7 @@ export const useCommandExecution = () => {
     } catch (err) {
       if (!axios.isCancel(err) && err.name !== 'AbortError') {
         setError("Error al ejecutar los comandos.");
-        console.error(err);
+        await sendLogToCliq(`Ocurrió un error al ejecutar comandos en la planta con ID: ${idDevice}.\nDetalle: ${err?.message || err}`);
       }
       return [];
     } finally {
@@ -180,7 +180,7 @@ export const useRawDataConsult = () => {
     } catch (err) {
       if (!axios.isCancel(err) && err.name !== 'AbortError') {
         setError('Error al consultar el RawData.');
-        console.error(err);
+        await sendLogToCliq(`Ocurrió un error al consultar RAWDATA en la planta con ID: ${idPlant}\nDetalles: ${err?.message || err}`)
       }
       return [];
     } finally {

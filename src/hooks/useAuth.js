@@ -52,11 +52,6 @@ export const useAuth = () => {
             await sendLogToCliq(`El usuario con correo: ${credentials.username}. Inició sesión.`)
             navigate('/dashboard');
         } catch (error) {
-            console.error("Fallo al iniciar sesión:", error);
-            /**
-             * Validación que elimina el token de sesión de Pegasus en caso de que no se pueda
-             * ingresar a cloud.
-             */
             //Envía el mensaje al canal de cliq informando que un usuario tuvo un error al iniciar sesión.
             const errorMessage = `Error al iniciar sesión.\nDetalle: ${error.message}\nEl correo del usuario es: ${credentials.username}`;
             await sendLogToCliq(errorMessage);

@@ -14,7 +14,7 @@ import { usePlantRealTimeData } from './usePlantRealTimeData';
  * @param {boolean} params.isLoadingSyrus4 - Booleando que determina si la información del dispositivo Syrus 4 se está consultando.
  */
 export default function useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
-    //Determina si la planta se encuentra online.
+    //Hook para obtener los valores de proceso y flujo actual
     const { currentlyProccess, currentlyValue, elapsed, begin } = usePlantRealTimeData();
 
     const isOnline = useMemo(() => {

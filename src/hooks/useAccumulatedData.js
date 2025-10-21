@@ -33,20 +33,14 @@ export const useAccumulatedData = () => {
 
         try {
             //Los códigos correspondientes a las operaciones que se van a consultar.
-            const operationCodes = [
-                OPERATION_CODES.FILTRATION,
-                OPERATION_CODES.INVW_TIME,
-                OPERATION_CODES.RINSE
-            ];
+            const operationCodes = [OPERATION_CODES.FILTRATION, OPERATION_CODES.INVW_TIME, OPERATION_CODES.RINSE];
             //Se realiza la consulta y se obtiene la promesa.
             const result = await rawDataConsult(beginDate, endDate, idPlant, operationCodes);
             //Si no obtuvo respuesta es porque hubo problemas en la comunicación.
             if (!result?.data?.events || result.data.events.length === 0) {
                 const noData = {
-                    filtration: "---",
-                    rinse: "---",
-                    invwTime: "---",
-                    purge: "---",
+                    filtration: UI_MESSAGES.DATA_NOT_FOUND, rinse: UI_MESSAGES.DATA_NOT_FOUND,
+                    invwTime: UI_MESSAGES.DATA_NOT_FOUND, purge: UI_MESSAGES.DATA_NOT_FOUND
                 };
                 setData(noData);
                 return;
@@ -93,7 +87,7 @@ export const useAccumulatedData = () => {
         } catch (err) {
             setError("Error al calcular los datos acumulados.");
             await log('CALCULATE_ACCUMULATED_ERROR', { idPlant, message: err?.message || err });
-            setData({ filtration: "Ocurrió un error. Intente más tarde.", rinse: "Ocurrió un error. Intente más tarde.", invwTime: "Ocurrió un error. Intente más tarde.", purge: "Ocurrió un error. Intente más tarde." });
+            setData({ filtration: UI_MESSAGES.ERROR_OCCURRED, rinse: UI_MESSAGES.ERROR_OCCURRED, invwTime: UI_MESSAGES.ERROR_OCCURRED, purge: UI_MESSAGES.ERROR_OCCURRED });
         } finally {
             setIsLoading(false);
         }

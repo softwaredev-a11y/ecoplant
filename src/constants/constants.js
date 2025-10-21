@@ -127,7 +127,10 @@ export const UI_MESSAGES = {
     COMMUNICATION_PROBLEMS: "Problemas de comunicación. Intente más tarde",
     INFORMATION_NOT_AVAILABLE: "Información no disponible",
     CONSULTANDO: "Consultando",
-    CONSULTADO: "Datos consultados"
+    CONSULTADO: "Datos consultados",
+    ERROR_OCCURRED: "Ocurrió un error. Intente más tarde.",
+    DATA_NOT_FOUND: "---",
+    LOADING_INFO_ECOPLANT: "Cargando información de la Ecoplanta. Espere por favor."
 }
 
 /**

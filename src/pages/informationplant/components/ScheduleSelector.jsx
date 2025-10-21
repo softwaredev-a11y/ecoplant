@@ -7,6 +7,7 @@ import { useSchedulePicker } from "@/hooks/useSchedulePicker";
 import { UI_MESSAGES } from "@/constants/constants";
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUsers } from "@/hooks/useUsers";
+import { toast } from "sonner"
 
 /**
  * Componente que le permite seleccionar al usuario horarios de operación de las Ecoplantas.
@@ -32,7 +33,9 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
         try {
             let commands = isSyrus4 ? [buildSetOperationHoursCommandSyrus4(rangeStart, rangeEnd)] : buildSetOperationHoursCommand(rangeStart, rangeEnd);
             if (!commands || commands.length === 0 || commands.includes("")) {
-                console.log("No fue posible enviar el comando. Intente nuevamente.")
+                toast.error("Error", {
+                    description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
+                });
                 return;
             }
             if (isManualChangeRef) {
@@ -40,7 +43,10 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
             }
             executeUpdate(commands);
         } catch (error) {
-            console.log(`Ocurrió el siguiente error: ${error}`);
+            toast.error("Error", {
+                description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
+            });
+            console.log(`Error ${error}`)
         }
     };
     return (

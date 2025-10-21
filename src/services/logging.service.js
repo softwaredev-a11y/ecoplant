@@ -17,7 +17,7 @@ const LOG_TEMPLATES = {
     SEND_COMMAND_SUCCESS: 'code: AC05\naction: send_command\nuser: N/A\nidPlant: {idPlant}\nmessage: Command sending successful',
     SEND_COMMAND_ERROR: 'code: ER06\naction: send_command(s)\nuser: N/A\nidPlant: {idPlant}\nmessage: {message}',
     // Parameters
-    SEND_SETTER_COMMAND_SUCCESS: 'code: AC04\naction: send_setter_command\nuser: {user}\nidPlant: {plantId}\nmessage: {typeOperation} cambiada con exito',
+    SEND_SETTER_COMMAND_SUCCESS: 'code: AC04\naction: send_setter_command\nuser: {user}\nidPlant: {plantId}\nmessage: {typeOperation} cambiado(a) con exito',
     BUILD_SETTER_COMMAND_ERROR: 'code: ER04\naction: build_setter_command\nuser: {user}\nidPlant: {plantId}\nmessage: No fue posible construir el comando.',
     CHANGE_OPERATION_VALUE_ERROR: 'code: ER05\naction: change_operation_value\nuser: {user}\nidPlant: {plantId}\nmessage: {message}',
     // Accumulated Data

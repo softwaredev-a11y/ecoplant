@@ -51,11 +51,7 @@ function FormLogin() {
         try {
             await login(dataForm);
         } catch (err) {
-            if (err.response?.status === 401) {
-                setError('Email y/o contraseña incorrectos.');
-            } else {
-                setError('Ocurrió un error inesperado. Intente nuevamente más tarde.')
-            }
+            err.response?.status === 401 ? setError('Email y/o contraseña incorrectos.') : setError('Ocurrió un error inesperado. Intente nuevamente más tarde.')
         }
     }
     return (
@@ -65,32 +61,17 @@ function FormLogin() {
                 <span className="font-bold text-gray-600 text-2xl">Iniciar sesión</span>
                 <span className="text-gray-600 text-sm sm:text-md">Bienvenido. Ingrese a su cuenta</span>
             </div>
-
             {/* Formulario */}
             <form onSubmit={authUser} className="flex flex-col gap-6 flex-1">
                 <label htmlFor="username-input" className="font-semibold flex flex-col gap-1.5 text-sm text-gray-600">
                     Email
-                    <input
-                        required
-                        type="email"
-                        id="username-input"
-                        name="username"
-                        value={dataForm.username}
-                        onChange={handleChange}
-                        className="font-normal border border-gray-300 rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-gray-600"
-                    />
+                    <input required type="email" id="username-input" name="username" value={dataForm.username} onChange={handleChange}
+                        className="font-normal border border-gray-300 rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-gray-600" />
                 </label>
                 <label htmlFor="password-input" className="font-semibold flex flex-col gap-1.5 text-sm text-gray-600">
                     Contraseña
-                    <input
-                        required
-                        type="password"
-                        id="password-input"
-                        name="password"
-                        value={dataForm.password}
-                        onChange={handleChange}
-                        className="font-normal border border-gray-300 rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-gray-600"
-                    />
+                    <input required type="password" id="password-input" name="password" value={dataForm.password} onChange={handleChange}
+                        className="font-normal border border-gray-300 rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-gray-600" />
                 </label>
                 {/* Muestra el componente de error si existe un mensaje en el estado 'error' */}
                 {error && <Error errorMessage={error} />}

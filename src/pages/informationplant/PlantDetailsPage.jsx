@@ -1,10 +1,11 @@
+import { useParams } from 'react-router-dom';
+import { usePlantInfo } from "@/hooks/usePlantInfo";
+import { PlantDetailSocketProvider } from '@/context/PlantDetailSocketContext';
+import { UI_MESSAGES } from '@/constants/constants';
+import StatusMessage from '@/components/StatusMessage';
 import DescriptionPanel from './components/DescriptionPanel';
 import OperationsPanel from './components/OperationsPanel';
 import AccumulatedPanel from './components/AccumulatedPanel';
-import { usePlantInfo } from "@/hooks/usePlantInfo";
-import { PlantDetailSocketProvider } from '@/context/PlantDetailSocketContext';
-import { useParams } from 'react-router-dom';
-import StatusMessage from '@/components/StatusMessage';
 /**
  * Página que muestra los detalles de una planta específica.
  * Obtiene la información de la planta, su estado de conexión y renderiza los paneles
@@ -20,9 +21,9 @@ function PlantDetailsPage() {
         <PlantDetailSocketProvider plantId={isOnline ? plant?.id : null} isOnline={isOnline}>
             <div className="info-container flex flex-col p-4 overflow-y-auto">
                 {loadingPlants || loadingConnection ? (
-                    <StatusMessage message={"Cargando información de la planta, espere por favor."} />
+                    <StatusMessage message={UI_MESSAGES.LOADING_INFO_ECOPLANT} />
                 ) : !plant || errorConnection || !infoConnectionDevice ? (
-                    <StatusMessage message={"Ocurrió un error. Recargue la página e intente nuevamente."} />
+                    <StatusMessage message={UI_MESSAGES.ERROR_OCCURRED} />
                 ) : (
                     <>
                         <h3 className="text-neutral-600 font-bold mb-2 text-2xl">{plant.name}</h3>

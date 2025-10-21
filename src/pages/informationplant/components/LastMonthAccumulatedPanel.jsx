@@ -44,21 +44,14 @@ export default function LastMonthAccumulatedPanel({ idPlant, mvZeroValue, isOnli
             {isSuperUser && (
                 <div className="data-last-month grid grid-cols-2 items-center mb-0.5 gap-1.5 p-0.5 border-b border-b-[#ccc]">
                     {dataLastMonth.map((data) => (
-                        <DataLastMonth
-                            key={data.id}
-                            {...data}
-                            isOnline={isOnline}
-                            isLoading={isLoading}
-                            error={error}
-                        />
+                        <DataLastMonth key={data.id}  {...data} isOnline={isOnline} isLoading={isLoading} error={error} />
                     ))}
-                    <span></span>
                     <button onClick={handleConsultLastMonth}
                         disabled={isLoading || !isOnline || !!data}
                         className={`mb-0.5 col-span-1 p-0.5 border-0 bg-[#005596] rounded-sm text-sm md:text-base lg:text-base cursor-pointer font-medium text-white hover:bg-[#0076D1] tracking-wide disabled:cursor-not-allowed`}>
                         {isLoading && UI_MESSAGES.CONSULTANDO}
                         {!isLoading && data && UI_MESSAGES.CONSULTADO}
-                        {!isLoading && !data && error && "---"}
+                        {!isLoading && !data && error && UI_MESSAGES.DATA_NOT_FOUND}
                         {!isLoading && !data && !error && "Consultar acumulados mes anterior"}
                     </button>
                 </div>

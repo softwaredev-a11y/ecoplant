@@ -32,7 +32,6 @@ export const PlantProvider = ({ children }) => {
    */
   useEffect(() => {
     if (isLoadingUser) return;
-
     // Intenta obtener las plantas desde la caché de la sesión primero.
     const cachedPlants = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.LIST_PLANTS);
     if (cachedPlants) {
@@ -45,14 +44,13 @@ export const PlantProvider = ({ children }) => {
       try {
         // Si no está en caché, realiza la llamada a la API.
         const params = isSuperUser
-          //? { groups: [ECOPLANT_GROUPS.SUPER_USERS_GROUP, ECOPLANT_GROUPS.DEVELOP_GROUP] } // Parámetros para superusuario. Quitar en producción.
+          //? { groups: [ECOPLANT_GROUPS.SUPER_USERS_GROUP, ECOPLANT_GROUPS.DEVELOP_GROUP] }//Quitar en producción.
           ? { groups: ECOPLANT_GROUPS.SUPER_USERS_GROUP } // Parámetros para superusuario.
           : {}; // Sin parámetros para usuario normal.
         const response = await plantsApi.getPlants(params);
         const plantsData = response.data.data;
         setPlants(plantsData);
         // Guarda los datos en la caché de la sesión para futuras cargas.
-        await log('LIST_PLANTS_SUCCESS');
         sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.LIST_PLANTS, JSON.stringify(plantsData));
       } catch (error) {
         await log('LIST_PLANTS_ERROR', { message: error?.message });
@@ -60,10 +58,8 @@ export const PlantProvider = ({ children }) => {
         setIsLoading(false);
       }
     };
-
     getPlants();
   }, [isSuperUser, isLoadingUser]);
-
   // Proporciona el estado de las plantas y el estado de carga a los componentes hijos.
   return (
     <PlantContext.Provider value={{ plants, isLoading }}>

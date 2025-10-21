@@ -116,10 +116,8 @@ function PanelLeft({ isOpen, toggleMenu }) {
     return (
         <div
             className={`panel-left-container bg-white flex flex-col min-h-0 transition-transform duration-300 ease-in-out
-        {/* Posicionamiento y visibilidad para móvil/tablet */}
         w-[95vw] max-w-[95vw] px-2 py-5 fixed top-0 left-0 h-full
         md:w-[80vw] md:max-w-[320px] md:min-w-[180px]
-        {/* Posicionamiento y visibilidad para desktop */}
         lg:static lg:w-[34%] lg:max-w-[260px] lg:px-1 lg:py-0 lg:h-auto
         xl:w-[400px] xl:max-w-[400px]
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}

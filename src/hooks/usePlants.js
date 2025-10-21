@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { PlantContext } from "@/context/PlantContext";
 import { PlantDetailSocketContext } from "@/context/PlantDetailSocketContext";
-import plants from '@/services/plants.service'
-import axios from "axios";;
 import { log } from "@/services/logging.service";
+import plants from '@/services/plants.service'
+import axios from "axios";
 /**
  * Hook personalizado para acceder a la información de las plantas desde `PlantContext`.
  * Proporciona la lista de plantas y el estado de carga.
@@ -128,7 +128,6 @@ export const useCommandExecution = () => {
         }
       }
       if (!signal.aborted) setExecutedCids(cids);
-      await log('SEND_COMMAND_SUCCESS', { idPlant: idDevice });
       return cids;
     } catch (err) {
       if (!axios.isCancel(err) && err.name !== 'AbortError') {

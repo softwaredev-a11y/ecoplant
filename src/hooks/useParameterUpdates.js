@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useCommandExecution } from "./usePlants";
 import { UI_MESSAGES } from "@/constants/constants";
-import { useUsers } from "../hooks/useUsers"
+import { useUsers } from "@/hooks/useUsers"
 import { log } from "@/services/logging.service";
 
 /**

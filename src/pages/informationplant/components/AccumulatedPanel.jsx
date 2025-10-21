@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { getMvZeroText } from "@/utils/syrusUtils";
-import HeaderPanel from "../components/HeaderPanel";
-import CurrentMonthAccumulatedPanel from "../components/CurrentMonthAccumulatedPanel";
-import LastMonthAccumulatedPanel from "../components/LastMonthAccumulatedPanel";
+import HeaderPanel from "./HeaderPanel";
+import CurrentMonthAccumulatedPanel from "./CurrentMonthAccumulatedPanel";
+import LastMonthAccumulatedPanel from "./LastMonthAccumulatedPanel";
 /**
  * Componente que renderiza los paneles de valores acumulados en el mes actual y anterior de la planta.
  * @param {object} props - Las propiedades del componente.

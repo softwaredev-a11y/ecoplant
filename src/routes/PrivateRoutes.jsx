@@ -1,12 +1,13 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { PlantProvider } from "@/context/PlantContext";
+import { UserProvider } from "@/context/UserInfoContext";
+import { UI_MESSAGES } from "@/constants/constants";
+import StatusMessage from '@/components/StatusMessage';
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardIndexPage from "@/pages/dashboard/DashboardIndexPage";
 import NotFoundPage from "@/pages/NotFoundPage";
-import { PlantProvider } from "@/context/PlantContext";
-import { UserProvider } from "@/context/UserInfoContext";
 import ProtectedRoute from "./ProtectedRoute";
-import { lazy, Suspense } from 'react';
-import StatusMessage from '@/components/StatusMessage';
 
 /**
  * Componente de layout que envuelve las rutas protegidas con los proveedores de contexto necesarios.
@@ -43,7 +44,7 @@ function PrivateRoutes() {
             {/* Ruta para ver los detalles de una planta específica. */}
             <Route path="planta/:idPlanta" element={
               <Suspense fallback={
-                <StatusMessage message={"Cargando información de la planta, espere por favor."} />
+                <StatusMessage message={UI_MESSAGES.LOADING_INFO_ECOPLANT} />
               }>
                 <PlantDetailsPage />
               </Suspense>

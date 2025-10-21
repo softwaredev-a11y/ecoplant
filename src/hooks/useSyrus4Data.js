@@ -1,7 +1,7 @@
-import { useCallback, useState, useRef, useEffect } from "react";
-import { SYRUS_FOUR_COMMANDS } from '@/constants/constants';
 import plantsApi from '@/services/plants.service';
 import axios from "axios";
+import { useCallback, useState, useRef, useEffect } from "react";
+import { SYRUS_FOUR_COMMANDS } from '@/constants/constants';
 import { log } from "@/services/logging.service";
 /**
  * Hook para gestionar la obtención de datos específicos de un dispositivo Syrus 4.

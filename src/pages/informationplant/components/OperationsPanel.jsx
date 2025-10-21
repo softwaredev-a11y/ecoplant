@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import HeaderPanel from './HeaderPanel';
 import { formatTime, buildSetterCommand } from '@/utils/syrusUtils';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
@@ -8,7 +7,8 @@ import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from "sonner"
 import { UI_MESSAGES, COMMAND_STATES, OPERATION_CODES } from "@/constants/constants";
 import { useUsers } from "@/hooks/useUsers";
-import ScheduleSelector from "../components/ScheduleSelector";
+import HeaderPanel from './HeaderPanel';
+import ScheduleSelector from "./ScheduleSelector";
 
 /**
  * Componente que muestra la información de los parámetros de operación.
@@ -57,11 +57,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
                 {operationGroups.map((group, index) => (
                     <div key={index} className="border-b border-b-[#ccc]">
                         {group.map(op => (
-                            <Operations
-                                key={op.codeOperation}
-                                {...commonProps}
-                                {...op}
-                            />
+                            <Operations key={op.codeOperation} {...commonProps} {...op} />
                         ))}
                     </div>
                 ))}
@@ -128,7 +124,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             let commandMessage = isSyrus4 ? buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : buildSetterCommand(codeOperation, timeValue, timeUnit, mvZeroValue);
             if (commandMessage === "") {
                 toast.error("Error", {
-                    description: "El valor ingresado está fuera de rango.",
+                    description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
                 });
                 setTimeValue("");
                 setTimeUnit("none");
@@ -138,7 +134,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
         } catch (error) {
             toast.error("Error", {
-                description: "No fue posible realizar la operación. Intente nuevamente.",
+                description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
             });
             console.log(`Ocurrió el siguiente error: ${error}`);
         }

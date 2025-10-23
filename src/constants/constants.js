@@ -130,7 +130,11 @@ export const UI_MESSAGES = {
     CONSULTADO: "Datos consultados",
     ERROR_OCCURRED: "Ocurrió un error. Intente más tarde.",
     DATA_NOT_FOUND: "---",
-    LOADING_INFO_ECOPLANT: "Cargando información de la Ecoplanta. Espere por favor."
+    LOADING_INFO_ECOPLANT: "Cargando información de la Ecoplanta. Espere por favor.",
+    LOADING_ECOPLANT_LIST: "Cargando Ecoplantas.",
+    NO_RESULTS_FOUND: "No se encontraron resultados.",
+    VALUE_OUT_OF_RANGE: "Valor fuera de rango.",
+    OPERATION_NOT_POSIBLE: "No es posible realizar la operación en estos momentos. Intente más tarde."
 }
 
 /**
@@ -162,3 +166,12 @@ export const STATUS = {
     NOT_CONNECTED: "No conectado",
     NOT_OPTIMAL: "No óptimo"
 }
+
+/**
+ * Centraliza las unidades de medida
+ */
+export const UNITS_MEASUREMENT = {
+    CUBIC_METERS: 'm³/min',
+    GALLONS: 'gal',
+    GALLONS_PER_MINUTE: 'gpm'
+} 

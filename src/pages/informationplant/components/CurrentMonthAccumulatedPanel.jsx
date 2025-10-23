@@ -1,6 +1,6 @@
+import { useMemo } from "react";
 import { useCurrentMonthAccumulatedData } from "@/hooks/useCurrentMonthAccumulatedData";
 import { UI_MESSAGES } from "@/constants/constants";
-import { useMemo } from "react";
 /**
  * Componente que muestra los valores acumulados de operación para el mes actual.
  * Obtiene y calcula los datos de filtración, retrolavado, enjuague y purgado.

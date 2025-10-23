@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRawDataConsult } from '@/hooks/usePlants';
 import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueInvWTime, gpmToCubicMetersPerMinute } from "@/utils/syrusUtils";
-import { OPERATION_CODES, UI_MESSAGES } from '@/constants/constants'
+import { OPERATION_CODES, UI_MESSAGES, UNITS_MEASUREMENT } from '@/constants/constants'
 import { log } from "@/services/logging.service";
 
 /**
@@ -78,10 +78,10 @@ export const useAccumulatedData = () => {
             const multiplyPurge = gpmToCubicMetersPerMinute(totalPurge);
 
             setData({
-                filtration: isNaN(filtrationValue) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : ` ${thousandsSeparator(Math.round(filtrationValue))} gal`,
-                rinse: isNaN(rinseValue) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(rinseValue))} gal`,
-                invwTime: isNaN(invwTimeValue) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(invwTimeValue))} gal`,
-                purge: isNaN(totalPurge) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(totalPurge))} gal (${multiplyPurge.toFixed(2)} m³/min)`
+                filtration: isNaN(filtrationValue) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : ` ${thousandsSeparator(Math.round(filtrationValue))} ${UNITS_MEASUREMENT.GALLONS}`,
+                rinse: isNaN(rinseValue) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(rinseValue))} ${UNITS_MEASUREMENT.GALLONS}`,
+                invwTime: isNaN(invwTimeValue) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(invwTimeValue))} ${UNITS_MEASUREMENT.GALLONS}`,
+                purge: isNaN(totalPurge) ? UI_MESSAGES.INFORMATION_NOT_AVAILABLE : `${thousandsSeparator(Math.round(totalPurge))} ${UNITS_MEASUREMENT.GALLONS} (${multiplyPurge.toFixed(2)}  ${UNITS_MEASUREMENT.CUBIC_METERS})`
             });
 
         } catch (err) {

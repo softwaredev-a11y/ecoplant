@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { UI_MESSAGES, STATUS } from "@/constants/constants"
+import { UI_MESSAGES, STATUS, UNITS_MEASUREMENT } from "@/constants/constants"
 import { formatEcoplantVersion } from '@/utils/syrus4Utils'
 import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
 import { usePlantRealTimeData } from './usePlantRealTimeData';
@@ -85,9 +85,9 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
     // Determina el texto para "Flujo actual"
     const currentFlowDisplayText = useMemo(() => {
         if (!isOnline) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
-        if (!isCurrentFlowVisible(runningProcessCode)) return "---";
+        if (!isCurrentFlowVisible(runningProcessCode)) return UI_MESSAGES.DATA_NOT_FOUND;
         const flowValue = currentlyValue !== "" ? currentlyValue : calculateCurrentFlow(lastCurrentFlow);
-        return `${flowValue} gpm`;
+        return `${flowValue} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}`;
     }, [isOnline, currentlyValue, runningProcessCode, lastCurrentFlow])
 
     return { data: { isOnline, ecoplantModel, scriptVersion, isMobileOnline, expansorState, gpsSignalStatus, processDisplayText, currentFlowDisplayText }, elapsed, begin }

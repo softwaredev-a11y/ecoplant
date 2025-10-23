@@ -13,8 +13,8 @@ import AccumulatedPanel from './components/AccumulatedPanel';
  * @returns {JSX.Element}
  */
 function PlantDetailsPage() {
-    const { idPlanta } = useParams();
-    const { plant, infoConnectionDevice, isOnline, isSyrus4, syrus4Data, isLoadingSyrus4, errorConnection, loadingPlants, loadingConnection } = usePlantInfo(idPlanta);
+    const { plantId } = useParams();
+    const { plant, infoConnectionDevice, isOnline, isSyrus4, syrus4Data, isLoadingSyrus4, errorConnection, loadingPlants, loadingConnection } = usePlantInfo(plantId);
     // Agrupa las props que se repiten en varios componentes para mayor claridad.
     const commonPanelProps = { plant, isSyrus4, syrus4Data, isLoadingSyrus4 };
     return (

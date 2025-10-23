@@ -178,9 +178,9 @@ function PanelLeftItems({ isLoading, filteredPlants, searchTerm, handleNavigate 
                 ))
             ) : (
                 <p className="text-center text-gray-500 mt-4">
-                    {isLoading ? "Cargando Ecoplantas."
+                    {isLoading ? UI_MESSAGES.LOADING_ECOPLANT_LIST
                         : searchTerm.trim() != "" ?
-                            "No se encontraron resultados." : UI_MESSAGES.COMMUNICATION_PROBLEMS}
+                            UI_MESSAGES.NO_RESULTS_FOUND : UI_MESSAGES.COMMUNICATION_PROBLEMS}
                 </p>
             )}
         </div>

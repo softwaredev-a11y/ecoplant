@@ -51,7 +51,7 @@ function FormLogin() {
         try {
             await login(dataForm);
         } catch (err) {
-            err.response?.status === 401 ? setError('Email y/o contraseña incorrectos.') : setError('Ocurrió un error inesperado. Intente nuevamente más tarde.')
+            err?.response?.status === 401 ? setError('Email y/o contraseña incorrectos.') : setError('Ocurrió un error inesperado. Intente nuevamente más tarde.')
         }
     }
     return (

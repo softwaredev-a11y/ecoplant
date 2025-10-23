@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useOperationParameters } from '@/hooks/useOperationParameters';
 import { getEcoplantParams } from '@/utils/syrus4Utils';
 import { getMvZeroText } from '@/utils/syrusUtils';
-import { SYRUS3_COMMANDS, UI_MESSAGES, COMMAND_STATES } from '@/constants/constants';
+import { SYRUS3_COMMANDS, UI_MESSAGES, COMMAND_STATES, UNITS_MEASUREMENT } from '@/constants/constants';
 
 /**
  * Hook adaptador que unifica la obtención de parámetros de operación para dispositivos
@@ -41,8 +41,8 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
             const filtracionValue = legacyParams?.filtrado || data?.filtracion || UI_MESSAGES.COMMUNICATION_PROBLEMS;
             const retrolavadoValue = legacyParams?.retrolavado || data?.retrolavado || UI_MESSAGES.COMMUNICATION_PROBLEMS;
             const enjuagueValue = legacyParams?.enjuague || data?.enjuague || UI_MESSAGES.COMMUNICATION_PROBLEMS;
-            const alertaValue = legacyParams?.valorAlertaFlujo ? `${legacyParams?.valorAlertaFlujo} gpm` : (data?.alerta ? `${data?.alerta} gpm` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
-            const alarmaValue = legacyParams?.valorAlarmaInsuficiente ? `${legacyParams?.valorAlarmaInsuficiente} gpm` : (data?.alarma ? `${data.alarma} gpm` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
+            const alertaValue = legacyParams?.valorAlertaFlujo ? `${legacyParams?.valorAlertaFlujo} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}` : (data?.alerta ? `${data?.alerta} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
+            const alarmaValue = legacyParams?.valorAlarmaInsuficiente ? `${legacyParams?.valorAlarmaInsuficiente} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}` : (data?.alarma ? `${data.alarma} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
             const horarioValue = legacyParams?.horario ? `${legacyParams?.horario}` : (data?.horario ? `${data?.horario}` : UI_MESSAGES.COMMUNICATION_PROBLEMS);
             // Si el estado inicial no es 'success' o 'loading', se re-evalúa.
             // El estado final será 'success' si el objeto 'data' procesado no está vacío,
@@ -74,8 +74,8 @@ export function useUnifiedOperationParameters(plant, isOnline, isLoadingStatus, 
                 filtracion: { value: legacyParams?.filtrado, status: legacyCommandStatus[SYRUS3_COMMANDS.FILTRATION] || COMMAND_STATES.LOADING },
                 retrolavado: { value: legacyParams?.retrolavado, status: legacyCommandStatus[SYRUS3_COMMANDS.INVW_TIME] || COMMAND_STATES.LOADING },
                 enjuague: { value: legacyParams?.enjuague, status: legacyCommandStatus[SYRUS3_COMMANDS.RINSE] || COMMAND_STATES.LOADING },
-                valorAlertaFlujo: { value: legacyParams?.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} gpm` : '', status: legacyCommandStatus[SYRUS3_COMMANDS.FLOW_ALERT] || COMMAND_STATES.LOADING },
-                valorAlarmaInsuficiente: { value: legacyParams?.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} gpm` : '', status: legacyCommandStatus[SYRUS3_COMMANDS.INSUFFICIENT_FLOW_ALARM] || COMMAND_STATES.LOADING },
+                valorAlertaFlujo: { value: legacyParams?.valorAlertaFlujo ? `${legacyParams.valorAlertaFlujo} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}` : '', status: legacyCommandStatus[SYRUS3_COMMANDS.FLOW_ALERT] || COMMAND_STATES.LOADING },
+                valorAlarmaInsuficiente: { value: legacyParams?.valorAlarmaInsuficiente ? `${legacyParams.valorAlarmaInsuficiente} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}` : '', status: legacyCommandStatus[SYRUS3_COMMANDS.INSUFFICIENT_FLOW_ALARM] || COMMAND_STATES.LOADING },
                 horario: { value: legacyParams?.horario, status: finalScheduleStatus }
             };
         }

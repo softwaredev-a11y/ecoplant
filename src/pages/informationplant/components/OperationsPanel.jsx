@@ -5,7 +5,7 @@ import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
 import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
 import { toast } from "sonner"
-import { UI_MESSAGES, COMMAND_STATES, OPERATION_CODES } from "@/constants/constants";
+import { UI_MESSAGES, COMMAND_STATES, OPERATION_CODES, UNITS_MEASUREMENT } from "@/constants/constants";
 import { useUsers } from "@/hooks/useUsers";
 import HeaderPanel from './HeaderPanel';
 import ScheduleSelector from "./ScheduleSelector";
@@ -124,7 +124,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             let commandMessage = isSyrus4 ? buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZeroValue) : buildSetterCommand(codeOperation, timeValue, timeUnit, mvZeroValue);
             if (commandMessage === "") {
                 toast.error("Error", {
-                    description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
+                    description: `${UI_MESSAGES.VALUE_OUT_OF_RANGE}`,
                 });
                 setTimeValue("");
                 setTimeUnit("none");
@@ -134,7 +134,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
         } catch (error) {
             toast.error("Error", {
-                description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
+                description: `${UI_MESSAGES.OPERATION_NOT_POSIBLE}`,
             });
             console.log(`Ocurrió el siguiente error: ${error}`);
         }
@@ -143,7 +143,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
     const formattedNewValue = useMemo(() => {
         if (!isOpen || !timeValue) return null;
         if (isAlertOperation) {
-            return `${timeValue} gpm`;
+            return `${timeValue} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}`;
         }
         if (timeUnit !== 'none') {
             return formatTime(timeUnit, timeValue);

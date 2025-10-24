@@ -62,7 +62,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
 
                 <Accordion type="single" collapsible className={"col-span-3"}>
                     <AccordionItem value="item-1">
-                        <AccordionTrigger className="flex justify-center text-gray-600 font-semibold mr-1.5 break-words text-sm text-center">Establecer nuevo horario</AccordionTrigger>
+                        <AccordionTrigger className="flex justify-center text-gray-600 font-semibold mr-1.5 break-words text-sm text-center">{isSuperUser ? 'Establecer nuevo horario' : 'Ver horario'}</AccordionTrigger>
                         <AccordionContent>
                             <div className="flex justify-between">
                                 <Clock color="#718096" />

@@ -1,4 +1,4 @@
-import { sendLogToCliq } from '@/services/cliq.service';
+import  logsToCliq  from './cliq.service';
 
 /**
  * @typedef {'LOGIN_SUCCESS' | 'LOGIN_ERROR' | 'LIST_PLANTS_SUCCESS' | 'LIST_PLANTS_ERROR' | 'CALCULATE_ACCUMULATED_ERROR' | 'BUILD_SETTER_COMMAND_ERROR' | 'CHANGE_OPERATION_VALUE_ERROR' | 'SEND_COMMAND_ERROR' | 'CHECK_CONNECTION_STATUS_ERROR' | 'CONSULT_RAW_DATA_ERROR' | 'CONSULT_SYRUS_4_DATA_ERROR' | 'SEND_SETTER_COMMAND_SUCCESS' | 'SEND_COMMAND_SUCCESS'} LogType
@@ -45,7 +45,7 @@ export const log = async (type, data = {}) => {
     }
 
     try {
-        await sendLogToCliq(messageTemplate);
+        await logsToCliq.sendLogToCliq(messageTemplate);
     } catch (error) {
         console.error(`[Logging Service] Error al enviar el log a Cliq:`, error);
     }

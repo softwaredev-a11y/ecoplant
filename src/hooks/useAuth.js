@@ -31,15 +31,8 @@ export const useAuth = () => {
             //Envía la información del usuario (email, passowrd)
             setIsLoadingLogin(true);
             const { data } = await authApi.login(credentials);
-            // Construye la URL de forma dinámica para que funcione en desarrollo y producción.
-            // En producción, BASE_URL será '/apps/ecoplant/'.
-            const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-            const apiUrl = `${baseUrl}api/cloud_login.php`.replace('//', '/');
-            const responseCloud = await fetch(apiUrl, { method: 'POST' });
-            if (!responseCloud.ok) {
-                throw new Error(`El proxy de Cloud falló con estado: ${responseCloud.status}`);
-            }
-            const cloudData = await responseCloud.json();
+            const responseCloud = await authApi.cloudLogin();
+            const cloudData =  responseCloud;
             //Si es exitoso, almacena la siguiente información en variables de session.
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN, data.auth);
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.AUTH, true)

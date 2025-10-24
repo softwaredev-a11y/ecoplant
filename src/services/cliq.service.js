@@ -3,15 +3,15 @@
  *
  * @param {string} message - El mensaje a enviar.
  */
-export async function sendLogToCliq(message) {
-    const cliqApiUrl = `${import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`}api/cliq-login.php`.replace('//', '/');
-    try {
-        await fetch(cliqApiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: message }),
-        });
-    } catch (error) {
-        console.error("Error al enviar el log a Cliq:", error);
-    }
+import  {apiProxyInstance}  from "./axiosInstance";
+
+const logsToCliq = {
+    /**
+     * Envía el mensaje de log al proxy que se comunica con Cliq.
+     * @param {string} message - El mensaje de log formateado.
+     */
+    sendLogToCliq: (message) => apiProxyInstance.post("/api/cliq_login.php", { message })
+ 
 }
+
+export default logsToCliq;

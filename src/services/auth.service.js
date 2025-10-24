@@ -1,4 +1,4 @@
-import { apiPegasusInstance, apiCloudInstance } from "./axiosInstance";
+import { apiPegasusInstance, apiCloudInstance, apiProxyInstance } from "./axiosInstance";
 
 /**
  * Objeto que agrupa las llamadas a la API relacionadas con la autenticación.
@@ -8,7 +8,7 @@ import { apiPegasusInstance, apiCloudInstance } from "./axiosInstance";
 const authApi = {
     /**
      * Realiza una petición POST para iniciar sesión.
-     * @param {object} data - Los datos para el inicio de sesión, generalmente { username, password }.
+     * @param {object} data - Los datos para el inicio de sesión { username, password }.
      * @returns {Promise} Una promesa que resuelve con la respuesta de la API.
      */
     login: (data) => apiPegasusInstance.post("/login", data),
@@ -19,10 +19,9 @@ const authApi = {
     logout: () => apiPegasusInstance.get('/logout'),
     /**
      * Realiza una petición POST para iniciar sesión.
-     * @param {object} data - Los datos para el inicio de sesión, generalmente { email, password }.
      * @returns {Promise} Una promesa que resuelve con la respuesta de la API.
      */
-    cloudLogin: (data) => apiCloudInstance.post("/auth/login", data),
+    cloudLogin: () => apiProxyInstance.post("/api/cloud_login.php"),
     /**
      * Realiza petición POST para cerrar la sesión
      *  @returns {Promise} Una promesa que resuelve con la respuesta de la API.

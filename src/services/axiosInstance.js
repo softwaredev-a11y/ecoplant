@@ -69,4 +69,10 @@ const apiPegasusAdminsInstance = createApiInstance(
     "admToken",
     "authenticate"
 );
-export { apiPegasusInstance, apiCloudInstance, apiPegasusAdminsInstance };
+
+const apiProxyInstance = createApiInstance(
+    import.meta.env.BASE_URL || import.meta.env.VITE_APP_URL, 
+    null 
+);
+
+export { apiPegasusInstance, apiCloudInstance, apiPegasusAdminsInstance, apiProxyInstance };

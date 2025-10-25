@@ -71,7 +71,7 @@ const apiPegasusAdminsInstance = createApiInstance(
 );
 
 const apiProxyInstance = createApiInstance(
-    import.meta.env.BASE_URL || import.meta.env.VITE_APP_URL, 
+    `${import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`}`.replace('//', '/'),
     null 
 );
 

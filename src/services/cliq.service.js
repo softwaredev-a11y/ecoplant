@@ -3,15 +3,15 @@
  *
  * @param {string} message - El mensaje a enviar.
  */
-import  {apiProxyInstance}  from "./axiosInstance";
+import { apiProxyInstance } from "./axiosInstance";
 
 const logsToCliq = {
     /**
      * Envía el mensaje de log al proxy que se comunica con Cliq.
      * @param {string} message - El mensaje de log formateado.
      */
-    sendLogToCliq: (message) => apiProxyInstance.post("/api/cliq_login.php", { message })
- 
+    sendLogToCliq: (message) => apiProxyInstance.post("/api/cliq-login.php", { text: message })
+
 }
 
 export default logsToCliq;

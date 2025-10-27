@@ -1,4 +1,4 @@
-import  logsToCliq  from './cliq.service';
+import logsToCliq from './cliq.service';
 
 /**
  * @typedef {'LOGIN_SUCCESS' | 'LOGIN_ERROR' | 'LIST_PLANTS_SUCCESS' | 'LIST_PLANTS_ERROR' | 'CALCULATE_ACCUMULATED_ERROR' | 'BUILD_SETTER_COMMAND_ERROR' | 'CHANGE_OPERATION_VALUE_ERROR' | 'SEND_COMMAND_ERROR' | 'CHECK_CONNECTION_STATUS_ERROR' | 'CONSULT_RAW_DATA_ERROR' | 'CONSULT_SYRUS_4_DATA_ERROR' | 'SEND_SETTER_COMMAND_SUCCESS' | 'SEND_COMMAND_SUCCESS'} LogType
@@ -33,21 +33,13 @@ const LOG_TEMPLATES = {
  */
 export const log = async (type, data = {}) => {
     let messageTemplate = LOG_TEMPLATES[type];
-
     if (!messageTemplate) {
         console.error(`[Logging Service] Plantilla de log no encontrada para el tipo: '${type}'`);
         return;
     }
-
     // Rellena la plantilla con los datos proporcionados
     for (const key in data) {
         messageTemplate = messageTemplate.replace(new RegExp(`{${key}}`, 'g'), data[key] ?? 'N/A');
     }
-
-    try {
-        await logsToCliq.sendLogToCliq(messageTemplate);
-    } catch (error) {
-        console.error(`[Logging Service] Error al enviar el log a Cliq:`, error);
-    }
+    await logsToCliq.sendLogToCliq(messageTemplate);
 };
-

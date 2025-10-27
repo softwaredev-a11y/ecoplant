@@ -26,7 +26,29 @@ const authApi = {
      * Realiza petición POST para cerrar la sesión
      *  @returns {Promise} Una promesa que resuelve con la respuesta de la API.
      */
-    cloudLogout: () => apiCloudInstance.post("/auth/logout")
+    cloudLogout: () => apiCloudInstance.post("/auth/logout"),
+    /**
+     * Realiza petición post para cerrar la sesión de Pegasus incluso si se cierra el navegador.
+     * @param {string} pegasusToken 
+     */
+    logoutPegasusFetch: (pegasusToken) => {
+        fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+            method: 'GET',
+            headers: { 'authenticate': `${pegasusToken}`, accept: "application/json" },
+            keepalive: true
+        });
+    },
+    /**
+     * Realiza petición post para cerrar la sesión del cloud incluso si se cierra el navegador.
+     * @param {string} cloudToken 
+     */
+    logoutCloudFetch: (cloudToken) => {
+        fetch(`${import.meta.env.VITE_API_CLOUD_URL}/auth/logout`, {
+            method: 'POST',
+            headers: { 'Authorization': `${cloudToken}`, accept: "application/json" },
+            keepalive: true
+        });
+    }
 };
 
 export default authApi;

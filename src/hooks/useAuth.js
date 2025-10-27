@@ -73,25 +73,11 @@ export const useAuth = () => {
      * Elimina el token cuando se cierra la ventana del navegador.
      */
     const logoutOnBrowserClose = useCallback(() => {
-        const logoutUrl = `${import.meta.env.VITE_API_URL}/logout`;
-        const logoutCloud = `${import.meta.env.VITE_API_CLOUD_URL}/auth/logout`
-        const token = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN);
+        const pegasusToken = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN);
         const cloudToken = sessionStorage.getItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN);
-        if (token) {
-            fetch(logoutUrl, {
-                method: 'GET',
-                headers: {
-                    'authenticate': `${token}`
-                },
-                keepalive: true
-            });
-            fetch(logoutCloud, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `${cloudToken}`
-                },
-                keepalive: true
-            });
+        if (pegasusToken) {
+            authApi.logoutPegasusFetch(pegasusToken);
+            authApi.logoutCloudFetch(cloudToken);
         }
     }, []);
     return { isLoadingLogin, login, logout, logoutOnBrowserClose };

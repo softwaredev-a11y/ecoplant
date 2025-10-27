@@ -52,27 +52,28 @@ function createApiInstance(baseURL, tokenKey, authHeader = "Authorization") {
 }
 
 // Instancias específicas
+//Se utiliza para conectarse a las APIS de Pegasus con las credenciales del usuario
 const apiPegasusInstance = createApiInstance(
     import.meta.env.VITE_API_URL,
     "token",
     "authenticate"
 );
-
+//Se utiliza para conectarse a las APIS de CLOUD con las crendenciales del usuario
 const apiCloudInstance = createApiInstance(
     import.meta.env.VITE_API_CLOUD_URL,
     "cloudToken",
     "Authentication"
 );
-
+//Se utiliza para conectarse a las APIS de Pegasus, con un token de usuario administrador.
 const apiPegasusAdminsInstance = createApiInstance(
     import.meta.env.VITE_API_URL,
     "admToken",
     "authenticate"
 );
-
+//Se utiliza para conectarse al hosting de la empresa, y traer la información.
 const apiProxyInstance = createApiInstance(
     `${import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`}`.replace('//', '/'),
-    null 
+    null
 );
 
 export { apiPegasusInstance, apiCloudInstance, apiPegasusAdminsInstance, apiProxyInstance };

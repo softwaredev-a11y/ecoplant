@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Logo from "@/components/Logo";
 import Error from "@/components/ErrorMessage";
 import logoImage from '@/assets/images/logo.webp';
+import { UI_MESSAGES } from "../../constants/constants";
 
 /**
  * Componente de la página de inicio de sesión.
@@ -51,7 +52,9 @@ function FormLogin() {
         try {
             await login(dataForm);
         } catch (err) {
-            err?.response?.status === 401 ? setError('Email y/o contraseña incorrectos.') : setError('Ocurrió un error inesperado. Intente nuevamente más tarde.')
+            err?.response?.status === 401 ?
+                setError(UI_MESSAGES.INVALID_CREDENTIALS) :
+                setError(UI_MESSAGES.ERROR_OCCURRED)
         }
     }
     return (

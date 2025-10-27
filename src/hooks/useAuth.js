@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useState } from 'react';
-import { clearAllSessionStorage } from "@/utils/syrusUtils"
-import { SESSION_STORAGE_KEYS_TO_USE } from '@/constants/constants';
+import { clearAllSessionStorage } from "@/utils/syrus"
+import { SESSION_STORAGE_KEYS_TO_USE, APP_ROUTES } from '@/constants/constants';
 import { log } from "@/services/logging.service";
 import authApi from '@/services/auth.service';
 
@@ -39,8 +39,7 @@ export const useAuth = () => {
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN, cloudData?.token);
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN, cloudData?.token_pegasus);
             //Redirige al dashboard.
-            await log('LOGIN_SUCCESS', { user: credentials.username });
-            navigate('/dashboard');
+            navigate(APP_ROUTES.DASHBOARD);
         } catch (error) {
             //Envía el mensaje al canal de cliq informando que un usuario tuvo un error al iniciar sesión.
             await log('LOGIN_ERROR', { user: credentials.username, message: error?.message });
@@ -66,7 +65,7 @@ export const useAuth = () => {
             //Elimina información almacenada en variables de session.
             clearAllSessionStorage();
             //Redirige a la página de inicio/login
-            navigate('/');
+            navigate(APP_ROUTES.DASHBOARD.LOGIN);
         }
     };
     /**

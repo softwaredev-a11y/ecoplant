@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { UI_MESSAGES, STATUS, UNITS_MEASUREMENT } from "@/constants/constants"
-import { formatEcoplantVersion } from '@/utils/syrus4Utils'
-import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrusUtils';
+import { formatEcoplantVersion } from '@/utils/syrus4'
+import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrus';
 import { usePlantRealTimeData } from './usePlantRealTimeData';
 
 /**

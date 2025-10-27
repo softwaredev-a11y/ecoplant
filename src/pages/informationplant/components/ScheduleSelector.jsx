@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Clock } from 'lucide-react';
-import { buildSetOperationHoursCommand, buildSetOperationHoursCommandSyrus4 } from "@/utils/operationHoursUtils";
+import { buildSetOperationHoursCommand, buildSetOperationHoursCommandSyrus4 } from "@/utils/operationHours";
 import { useSchedulePicker } from "@/hooks/useSchedulePicker";
 import { UI_MESSAGES } from "@/constants/constants";
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';

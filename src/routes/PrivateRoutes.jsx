@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { PlantProvider } from "@/context/PlantContext";
 import { UserProvider } from "@/context/UserInfoContext";
-import { UI_MESSAGES } from "@/constants/constants";
+import { UI_MESSAGES, APP_ROUTES } from "@/constants/constants";
 import StatusMessage from '@/components/StatusMessage';
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardIndexPage from "@/pages/dashboard/DashboardIndexPage";
@@ -38,7 +38,7 @@ function PrivateRoutes() {
         {/* Envuelve el layout del dashboard y sus sub-rutas con los proveedores de contexto. */}
         <Route element={<ProtectedProvidersLayout />}>
           {/* Ruta principal del dashboard que utiliza DashboardLayout. */}
-          <Route path="/" element={<DashboardLayout />}>
+          <Route path={APP_ROUTES.LOGIN} element={<DashboardLayout />}>
             {/* Ruta de índice que se muestra en la raíz del dashboard. */}
             <Route index element={<DashboardIndexPage />} />
             {/* Ruta para ver los detalles de una planta específica. */}
@@ -55,7 +55,7 @@ function PrivateRoutes() {
         </Route>
       </Route>
       {/* Redirige cualquier otra ruta privada no coincidente al dashboard principal. */}
-      <Route path="*" element={<Navigate to="/dashboard" />} />
+      <Route path="*" element={<Navigate to={APP_ROUTES.DASHBOARD} />} />
     </Routes>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { buildDate } from "@/utils/syrusUtils";
+import { buildDate } from "@/utils/string";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
 import { SESSION_STORAGE_KEYS_TO_USE } from "@/constants/constants";
 

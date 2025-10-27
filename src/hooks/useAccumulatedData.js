@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRawDataConsult } from '@/hooks/usePlants';
-import { thousandsSeparator, calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueInvWTime, gpmToCubicMetersPerMinute } from "@/utils/syrusUtils";
+import { calculateAccumulatedValueFiltration, calculateAccumulatedValueRinse, calculateAccumulatedValueInvWTime, gpmToCubicMetersPerMinute } from "@/utils/syrus";
+import { thousandsSeparator } from '@/utils/string';
 import { OPERATION_CODES, UI_MESSAGES, UNITS_MEASUREMENT } from '@/constants/constants'
 import { log } from "@/services/logging.service";
 

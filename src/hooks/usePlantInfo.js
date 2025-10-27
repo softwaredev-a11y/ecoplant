@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { usePlants, useConnectionStatus } from "./usePlants";
 import { useSyrus4Data } from './useSyrus4Data';
-import { searchPlant } from '@/utils/syrusUtils';
+import { searchPlant } from '@/utils/syrus';
 
 /**
  * Hook personalizado que centraliza la lógica para obtener toda la información de una planta específica.

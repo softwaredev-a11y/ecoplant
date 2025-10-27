@@ -175,4 +175,12 @@ export const UNITS_MEASUREMENT = {
     CUBIC_METERS: 'm³/min',
     GALLONS: 'gal',
     GALLONS_PER_MINUTE: 'gpm'
-} 
+}
+
+/**
+ * Centraliza las rutas de la aplicación
+ */
+export const APP_ROUTES = {
+    LOGIN: '/',
+    DASHBOARD: '/dashboard'
+}

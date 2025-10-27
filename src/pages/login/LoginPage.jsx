@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { UI_MESSAGES } from "@/constants/constants";
 import Logo from "@/components/Logo";
 import Error from "@/components/ErrorMessage";
 import logoImage from '@/assets/images/logo.webp';
-import { UI_MESSAGES } from "../../constants/constants";
 
 /**
  * Componente de la página de inicio de sesión.

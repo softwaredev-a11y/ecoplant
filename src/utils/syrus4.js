@@ -1,6 +1,7 @@
-import { convertVoltageToGpm, formatTime, convertGpmToVoltage, getTimeInSeconds } from "./syrusUtils";
+import { convertVoltageToGpm, convertGpmToVoltage,  } from "./syrus";
+import { getTime, getFormattedTime } from "./time";
 import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, UI_MESSAGES } from '@/constants/constants'
-import { formatOperationHours, getSyrus4OperationHours } from "./operationHoursUtils";
+import { formatOperationHours, getSyrus4OperationHours } from "./operationHours";
 
 /**
  * Convierte en mayúscula la primera letra, y aquellas que estén después de un espacio de una oración.
@@ -50,9 +51,9 @@ export function getEcoplantParams(response, mvZeroValue) {
     const endTime = getValueParam('END_HOURS', response);
 
     return {
-        filtracion: filtrationValue ? formatTime('segundos', parseInt(filtrationValue, 10)) : '',
-        retrolavado: invWashingValue ? formatTime('segundos', parseInt(invWashingValue, 10)) : '',
-        enjuague: rinseValue ? formatTime('segundos', parseInt(rinseValue, 10)) : '',
+        filtracion: filtrationValue ? getFormattedTime('segundos', parseInt(filtrationValue, 10)) : '',
+        retrolavado: invWashingValue ? getFormattedTime('segundos', parseInt(invWashingValue, 10)) : '',
+        enjuague: rinseValue ? getFormattedTime('segundos', parseInt(rinseValue, 10)) : '',
         alerta: adcWarningValue ? convertVoltageToGpm(adcWarningValue, mvZeroValue) : '',
         alarma: adcAlarmValue ? convertVoltageToGpm(adcAlarmValue, mvZeroValue) : '',
         horario: startTime && endTime ? formatOperationHours(startTime, endTime) : '',
@@ -96,7 +97,7 @@ export function buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZ
     if (config.isAlert) {
         convertedValue = convertGpmToVoltage(timeValue, mvZeroValue);
     } else {
-        convertedValue = getTimeInSeconds(timeUnit, timeValue);
+        convertedValue = getTime(timeUnit, timeValue);
     }
     if (convertedValue > config.maxValue) return "";
     const command = `${SYRUS_FOUR_COMMANDS.SET_ECOPLANT_PARAM} "{"${typeOperation}":${convertedValue}}"`;
@@ -139,7 +140,7 @@ export function proccessSyrus4SocketMessage(message, mvZeroValue) {
  * @returns {string|null} El tiempo de filtración formateado (ej. "10 minutos y 30 segundos") o `null`.
  */
 export function getFiltrationValueFromMessage(message) {
-    return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL, parseInt));
+    return getFormattedTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL, parseInt));
 }
 
 /**
@@ -148,7 +149,7 @@ export function getFiltrationValueFromMessage(message) {
  * @returns {string|null} El tiempo de retrolavado formateado o `null`.
  */
 export function getInvWTimeValueFromMessage(message) {
-    return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B, parseInt));
+    return getFormattedTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B, parseInt));
 }
 
 /**
@@ -157,7 +158,7 @@ export function getInvWTimeValueFromMessage(message) {
  * @returns {string|null} El tiempo de enjuague formateado o `null`.
  */
 export function getRinseValueFromMessage(message) {
-    return formatTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R, parseInt));
+    return getFormattedTime('segundos', _extractValueByCode(message, SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R, parseInt));
 }
 
 /**

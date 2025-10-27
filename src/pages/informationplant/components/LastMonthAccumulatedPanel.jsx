@@ -1,7 +1,7 @@
-import { buildDate } from "@/utils/syrusUtils";
+import { useMemo } from "react";
+import { buildDate } from "@/utils/string";
 import { useUsers } from "@/hooks/useUsers";
 import { useAccumulatedData } from "@/hooks/useAccumulatedData";
-import { useMemo } from "react";
 import { UI_MESSAGES } from "@/constants/constants";
 
 /**

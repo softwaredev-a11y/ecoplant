@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
-import { formatTime, buildSetterCommand } from '@/utils/syrusUtils';
+import { buildSetterCommand } from '@/utils/syrus';
+import { getFormattedTime } from '@/utils/time'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useParameterUpdater } from '@/hooks/useParameterUpdates';
 import { useUnifiedOperationParameters } from '@/hooks/useUnifiedOperationParameters';
-import { buildSetterCommandSyrus4 } from '@/utils/syrus4Utils';
+import { buildSetterCommandSyrus4 } from '@/utils/syrus4';
 import { toast } from "sonner"
 import { UI_MESSAGES, COMMAND_STATES, OPERATION_CODES, UNITS_MEASUREMENT } from "@/constants/constants";
 import { useUsers } from "@/hooks/useUsers";
@@ -145,7 +146,7 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
             return `${timeValue} ${UNITS_MEASUREMENT.GALLONS_PER_MINUTE}`;
         }
         if (timeUnit !== 'none') {
-            return formatTime(timeUnit, timeValue);
+            return getFormattedTime(timeUnit, timeValue);
         }
         return null;
     }, [isOpen, timeValue, timeUnit, isAlertOperation]);

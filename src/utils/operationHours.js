@@ -1,6 +1,6 @@
-import { replaceAt, fillLeftText } from "./syrusUtils";
 import { SYRUS4_SET_PARAMETER_KEYS, SYRUS_FOUR_COMMANDS, SYRUS3_MESSAGE_HEADERS } from "@/constants/constants";
-import { formatHour12, toGMT0, convertTo24h, toGMT5 } from "./timeUtils"
+import { replaceAt, fillLeftText } from "./string";
+import { formatHour12, toGMT0, convertTo24h, toGMT5 } from "./time"
 
 /**
  * Procesa el mensaje de socket de un Syrus para obtener y formatear el horario de operación.

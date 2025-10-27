@@ -3,7 +3,7 @@ import logoImage from '@/assets/images/logo.webp';
 import { Outlet, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState } from "react";
-import { getPlantModel } from "@/utils/syrusUtils";
+import { getPlantModel } from "@/utils/syrus";
 import { usePlants } from "@/hooks/usePlants";
 import { useAuth } from "@/hooks/useAuth";
 import { useUsers } from "@/hooks/useUsers";

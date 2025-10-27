@@ -1,3 +1,4 @@
+import {clearAllSessionStorage} from '@/utils/syrus'
 import axios from "axios";
 
 /**
@@ -33,12 +34,9 @@ function createApiInstance(baseURL, tokenKey, authHeader = "Authorization") {
     instance.interceptors.response.use(
         (response) => response,
         (error) => {
-            if (error.response) {
-                console.error(
-                    "Error de respuesta del servidor:",
-                    error.response.status,
-                    error.response.data
-                );
+            if (error.response && error.response.status === 401) {
+                clearAllSessionStorage();
+                window.location.href = '/';
             } else if (error.request) {
                 console.error("No se recibió respuesta del servidor:", error.request);
             } else {
@@ -50,6 +48,7 @@ function createApiInstance(baseURL, tokenKey, authHeader = "Authorization") {
 
     return instance;
 }
+
 
 // Instancias específicas
 //Se utiliza para conectarse a las APIS de Pegasus con las credenciales del usuario

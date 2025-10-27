@@ -1,4 +1,7 @@
 import { SYRUS3_MESSAGE_HEADERS, MAX_VALUE_OPERATIONS, OPERATION_CODES, HEADER_MESSAGES_SOCKET, UI_MESSAGES, SESSION_STORAGE_KEYS_TO_USE } from "@/constants/constants";
+import { getFormattedTime, getTime } from "./time";
+import { fillLeftText, replaceAt } from "./string";
+
 /**
  * Obtiene el modelo de la planta.
  * @param {String} text Cadena de texto que viene de consultar la api.
@@ -35,50 +38,6 @@ export function getMvZeroText(descripcion) {
 }
 
 /**
- * Función para formatear el tiempo en una cadena de texto.
- * @param {String} unitTime Unidad de tiempo (horas, segundos, minutos)
- * @param {int} time Cantidad de tiempo 
- * @returns {String} Tiempo formateado, ejemplo: 1 segundo, 10 minutos, 1 minutos, 12 horas, etc.
- */
-
-export function formatTime(unitTime, time) {
-    let totalSeconds = getTimeInSeconds(unitTime, time);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = Math.floor(totalSeconds % 60);
-    const parts = [];
-    if (hours > 0) parts.push(`${hours} ${hours === 1 ? "hora" : "horas"}`);
-    if (minutes > 0) parts.push(`${minutes} ${minutes === 1 ? "minuto" : "minutos"}`);
-    if (seconds > 0 || parts.length === 0) parts.push(`${seconds} ${seconds === 1 ? "segundo" : "segundos"}`);
-    return parts.length > 1
-        ? parts.slice(0, -1).join(" ") + " y " + parts.slice(-1)
-        : parts[0];
-}
-/**
- * Función para obtener el tiempo en segundos.
- * @param {String} unitTime Unidad de tiempo (horas, segundos, minutos)
- * @param {int} time Cantidad de tiempo 
- * @returns {int} Tiempo convertido en segundos.
- */
-export function getTimeInSeconds(unitTime, time) {
-    let totalSeconds = 0;
-    switch (unitTime.toLowerCase()) {
-        case "segundos":
-            totalSeconds = time;
-            break;
-        case "minutos":
-            totalSeconds = time * 60;
-            break;
-        case "horas":
-            totalSeconds = time * 3600;
-            break;
-        default:
-            throw new Error("Unidad no válida. Usa 'segundos', 'minutos' o 'horas'.");
-    }
-    return totalSeconds;
-}
-
-/**
  * Obtiene la versión de software a partir de la configuración del dispositivo. Solamente funciona para dispositivos anteriores a syrus4.
  * @param {String} configuration Configuración del dispositivo.
  * @returns {String} Versión del software.
@@ -86,28 +45,6 @@ export function getTimeInSeconds(unitTime, time) {
 export function getSoftwareVersion(configuration) {
     const mapConfigurations = { "p458": "1.2", "q111": "1.3", "q149": "1.4", "q537": "2.0", "r058": "3.0 1Horario", "r347": "1.0 AguaFria" };
     return mapConfigurations[configuration] || "0.0";
-}
-
-/**
- * Contruye una fecha con el siguiente formato: YYYY-MM-DD
- * @param {String} year año de la fecha a formatear
- * @param {String} month  mes de la fecha a formatear
- * @param {String} day día de la fecha a formatear
- * @returns {String} Fecha formateada.
- */
-export function buildDate(year, month, day) {
-    return `${year}-${fillLeftText(month, 2)}-${fillLeftText(day, 2)}`;
-}
-
-/**
- * Pone n carácteres a la izquierda de un número
- * @param {int} num  Número a modificar
- * @param {int} padlen Cantidad total de números/caracteres que va a tener.
- * @param {char} padchar Caracter que se va a poner a la izquierda, por defecto está en 0.
- * @returns {String} Número formateado con 0 al izquierda.
- */
-export function fillLeftText(num, padlen, padchar = '0') {
-    return String(num).padStart(padlen, padchar);
 }
 
 /**
@@ -250,9 +187,9 @@ export function processSocketMessage(message, mvZeroValue) {
         return null;
     }
     const operationHandlers = {
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL]: { key: 'filtrado', calculate: (msg) => formatTime('segundos', getFiltrationValueFromMessage(msg)) },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B]: { key: 'retrolavado', calculate: (msg) => formatTime('segundos', getInvWTimeValueFromMessage(msg)) },
-        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R]: { key: 'enjuague', calculate: (msg) => formatTime('segundos', getRinseValueFromMessage(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_FIL]: { key: 'filtrado', calculate: (msg) => getFormattedTime('segundos', getFiltrationValueFromMessage(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_B]: { key: 'retrolavado', calculate: (msg) => getFormattedTime('segundos', getInvWTimeValueFromMessage(msg)) },
+        [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_R]: { key: 'enjuague', calculate: (msg) => getFormattedTime('segundos', getRinseValueFromMessage(msg)) },
         [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALERT]: { key: 'valorAlertaFlujo', calculate: (msg) => getFlowAlertValueFromMessage(msg, mvZeroValue) },
         [SYRUS3_MESSAGE_HEADERS.RES_CMD_QED_F_ALARM]: { key: 'valorAlarmaInsuficiente', calculate: (msg) => getInsufficientAlarmValueFromMessage(msg, mvZeroValue) },
     };
@@ -327,17 +264,6 @@ export function getFlowCurrentValue(message) {
 }
 
 /**
- * Separa un número en miles.
- * @param {int} num 
- * @returns número formateado con separador de miles.
- */
-export function thousandsSeparator(num) {
-    var num_parts = num.toString().split(".");
-    num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    return num_parts.join(".");
-}
-
-/**
  * Calcula el valor de la filtración.
  * @param {float} caudalValue 
  * @param {float} countFiltered 
@@ -345,7 +271,6 @@ export function thousandsSeparator(num) {
  */
 export function calculateAccumulatedValueFiltration(caudalValue, countFiltered) {
     return (caudalValue * countFiltered * 2);
-
 }
 
 /**
@@ -354,8 +279,8 @@ export function calculateAccumulatedValueFiltration(caudalValue, countFiltered) 
  * @param {float} countFiltered 
  * @returns  {float}  valor del enjuague.
  */
-export function calculateAccumulatedValueRinse(caudalValue, countFiltered) {
-    return caudalValue * countFiltered * 2;
+export function calculateAccumulatedValueRinse(caudalValue, countRinse) {
+    return caudalValue * countRinse * 2;
 }
 
 /**
@@ -366,18 +291,6 @@ export function calculateAccumulatedValueRinse(caudalValue, countFiltered) {
  */
 export function calculateAccumulatedValueInvWTime(caudalValue, countInvWTime) {
     return caudalValue * countInvWTime * 3;
-}
-
-/**
- * Modifica un carácter con índice especifico en un string.
- * @param {String} str Cadena a modificar
- * @param {int} index índice del carácter que se va a modificar.
- * @param {String} replacement Cáracter que se va a poner en la cadena.
- * @returns {String} cadena de texto con el nuevo caracter.
- */
-export function replaceAt(str, index, replacement) {
-    if (index < 0 || index >= str.length) return str; // índice inválido
-    return str.slice(0, index) + replacement + str.slice(index + 1);
 }
 
 /**
@@ -430,7 +343,7 @@ export function buildSetterCommand(codeOperation, value, unitValue, mvZero) {
     if (config.isAlert) {
         convertedValue = convertGpmToVoltage(value, mvZero);
     } else {
-        convertedValue = getTimeInSeconds(unitValue, value);
+        convertedValue = getTime(unitValue, value);
     }
 
     if (convertedValue > config.maxValue) return "";

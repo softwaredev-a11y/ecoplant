@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { formatTime } from '@/utils/syrusUtils';
+import { getFormattedTime } from '@/utils/time';
 import notAvailableImg from '@/assets/images/image-not-available.webp'
 import HeaderPanel from './HeaderPanel';
 import useDataDescriptionPanel from '@/hooks/useDataDescriptionPanel';
@@ -49,7 +49,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
             </div>
             <InfoRow itemGroups={descriptionData} />
             <div className={`flex flex-col items-end p-1.5 ${data.isOnline ? "" : "hidden"}`}>
-                <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace ${formatTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
+                <span className="font-ligth text-gray-600  text-sm p-0.5  align-middle text-right">{` ${begin ? `Última actualización, hace ${getFormattedTime("segundos", elapsed)}` : "Esperando evento..."}`}</span>
             </div>
         </div>
     );

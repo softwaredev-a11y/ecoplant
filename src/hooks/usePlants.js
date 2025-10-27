@@ -167,7 +167,6 @@ export const useRawDataConsult = () => {
     abortControllerRef.current?.abort();
     const controller = new AbortController();
     abortControllerRef.current = controller;
-
     try {
       setIsLoading(true);
       setError(null);

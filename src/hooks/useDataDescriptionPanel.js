@@ -1,8 +1,9 @@
 import { useMemo } from "react";
-import { UI_MESSAGES, STATUS, UNITS_MEASUREMENT } from "@/constants/constants"
 import { formatEcoplantVersion } from '@/utils/syrus4'
-import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrus';
 import { usePlantRealTimeData } from './usePlantRealTimeData';
+import { UI_MESSAGES, STATUS, UNITS_MEASUREMENT } from "@/constants/constants"
+import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateCurrentFlow, isCurrentFlowVisible } from '@/utils/syrus';
+
 
 /**
  * Hook que centraliza la lógica para calcular los valores a mostrar en el DescriptionPanel.

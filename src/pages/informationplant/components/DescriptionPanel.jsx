@@ -1,9 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { getFormattedTime } from '@/utils/time';
 import notAvailableImg from '@/assets/images/image-not-available.webp'
-import HeaderPanel from './HeaderPanel';
 import useDataDescriptionPanel from '@/hooks/useDataDescriptionPanel';
-
+import HeaderPanel from './HeaderPanel';
 /**
  * Panel que muestra la información descriptiva de la planta.
  * Incluye la imagen, detalles del modelo, estado de conexión y el proceso actual en ejecución.

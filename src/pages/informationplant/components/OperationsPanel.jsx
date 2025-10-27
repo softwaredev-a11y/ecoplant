@@ -134,9 +134,8 @@ function Operations({ codeOperation, typeOperation, currentlyValue, buttonOperat
 
         } catch (error) {
             toast.error("Error", {
-                description: `${UI_MESSAGES.OPERATION_NOT_POSIBLE}`,
+                description: `${UI_MESSAGES.OPERATION_NOT_POSIBLE}. ${error}`,
             });
-            console.log(`Ocurrió el siguiente error: ${error}`);
         }
     };
     //Formatea el nuevo valor, y lo muestra en pantalla.

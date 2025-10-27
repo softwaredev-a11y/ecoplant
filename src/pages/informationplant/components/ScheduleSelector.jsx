@@ -34,7 +34,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
             let commands = isSyrus4 ? [buildSetOperationHoursCommandSyrus4(rangeStart, rangeEnd)] : buildSetOperationHoursCommand(rangeStart, rangeEnd);
             if (!commands || commands.length === 0 || commands.includes("")) {
                 toast.error("Error", {
-                    description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
+                    description: `${UI_MESSAGES.OPERATION_NOT_POSIBLE}`,
                 });
                 return;
             }
@@ -44,7 +44,7 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
             executeUpdate(commands);
         } catch (error) {
             toast.error("Error", {
-                description: "No es posible realizar la operación en estos momentos. Intente más tarde.",
+                description: `${UI_MESSAGES.OPERATION_NOT_POSIBLE}`,
             });
             console.log(`Error ${error}`)
         }
@@ -59,7 +59,6 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
                         {displayValue} <span className='text-xs text-gray-600 font-normal'>{currentlyValue === UI_MESSAGES.INFORMATION_NOT_AVAILABLE || currentlyValue === UI_MESSAGES.CONSULTANDO || currentlyValue === UI_MESSAGES.COMMUNICATION_PROBLEMS ? "" : "(GMT-5)"}</span>
                     </span>
                 </div>
-
                 <Accordion type="single" collapsible className={"col-span-3"}>
                     <AccordionItem value="item-1">
                         <AccordionTrigger className="flex justify-center text-gray-600 font-semibold mr-1.5 break-words text-sm text-center">{isSuperUser ? 'Establecer nuevo horario' : 'Ver horario'}</AccordionTrigger>
@@ -111,7 +110,6 @@ export default function SchedulePicker({ isOnline, plant, currentlyValue, isSyru
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-
             </div>
         </div>
     );

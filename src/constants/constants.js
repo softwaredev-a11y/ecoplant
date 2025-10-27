@@ -128,13 +128,14 @@ export const UI_MESSAGES = {
     INFORMATION_NOT_AVAILABLE: "Información no disponible",
     CONSULTANDO: "Consultando",
     CONSULTADO: "Datos consultados",
-    ERROR_OCCURRED: "Ocurrió un error. Intente más tarde.",
+    ERROR_OCCURRED: "Ocurrió un error inesperado. Intente más tarde.",
     DATA_NOT_FOUND: "---",
     LOADING_INFO_ECOPLANT: "Cargando información de la Ecoplanta. Espere por favor.",
     LOADING_ECOPLANT_LIST: "Cargando Ecoplantas.",
     NO_RESULTS_FOUND: "No se encontraron resultados.",
     VALUE_OUT_OF_RANGE: "Valor fuera de rango.",
-    OPERATION_NOT_POSIBLE: "No es posible realizar la operación en estos momentos. Intente más tarde."
+    OPERATION_NOT_POSIBLE: "No es posible realizar la operación en estos momentos. Intente más tarde.",
+    INVALID_CREDENTIALS: "Email y/o contraseña incorrectos.",
 }
 
 /**

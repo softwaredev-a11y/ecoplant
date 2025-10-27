@@ -23,7 +23,7 @@ export const UserProvider = ({ children }) => {
                 setUser(userData);
                 setIsSuperUser(userData.last_name.includes('superuser'));
                 setLoading(false);
-                return; // Si los datos están en caché, no hacemos la llamada a la API
+                return;
             }
             // 2. Si no hay datos en caché, hacer la llamada a la API
             try {
@@ -31,7 +31,6 @@ export const UserProvider = ({ children }) => {
                 const userData = response.data;
                 setUser(userData);
                 setIsSuperUser(userData.last_name.includes('superuser'));
-
                 // 3. Guardar los datos obtenidos en sessionStorage para futuras cargas
                 sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.USER_DATA, JSON.stringify(userData));
 

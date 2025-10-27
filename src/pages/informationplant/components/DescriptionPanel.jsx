@@ -35,7 +35,7 @@ function DescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, i
                 { label: "Proceso en ejecución", value: data.processDisplayText, item: 'process' },
                 { label: "Flujo actual", value: data.currentFlowDisplayText, item: 'current_flow' },
             ],
-        ].map(group => 
+        ].map(group =>
             // Filtra el item 'acc_exp' si es un Syrus 4
             isSyrus4 ? group.filter(item => item.item !== 'acc_exp') : group
         );
@@ -68,7 +68,7 @@ function InfoRow({ itemGroups }) {
             {itemGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="flex flex-col gap-1.5 border-b border-b-[#ccc]">
                     {group.map((item, itemIndex) => (
-                        <div className="div grid grid-cols-2 mb-0.5 items-center" key={`${groupIndex}-${itemIndex}`}>                           
+                        <div className="div grid grid-cols-2 mb-0.5 items-center" key={`${groupIndex}-${itemIndex}`}>
                             <span className="item-panel break-words text-gray-600 font-semibold mr-1.5 text-sm md:text-base lg:text-base">
                                 {item.label}:
                             </span>

@@ -39,6 +39,7 @@ export const useAuth = () => {
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN, cloudData?.token);
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN, cloudData?.token_pegasus);
             //Redirige al dashboard.
+            await log('LOGIN_SUCCESS', { user: credentials.username });
             navigate(APP_ROUTES.DASHBOARD);
         } catch (error) {
             //Envía el mensaje al canal de cliq informando que un usuario tuvo un error al iniciar sesión.

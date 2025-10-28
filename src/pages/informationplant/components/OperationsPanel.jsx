@@ -82,7 +82,7 @@ function OperationsPanel({ plant, isOnline, isLoadingStatus, isSyrus4, syrus4Dat
  * @param {object} props Propiedades del componente.
  * @param {string} props.codeOperation - Código de la operación (filtrado, retrolavado... etc).
  * @param {string} props.typeOperation - Tipo de operación que va a ejecutar - Cambiar: filtración || retrolavado || enjuague || alerta gpm || alarma gpm
- * @param {string} props.currentyValue - Valor actual correspondiente a la operación. Filtrado, retrolavado y enjuague: Tiempo. Alertas y alarmas: gpm.
+ * @param {string} props.currentlyValue - Valor actual correspondiente a la operación. Filtrado, retrolavado y enjuague: Tiempo. Alertas y alarmas: gpm.
  * @param {string} props.buttonOperation - Texto que va a tener el botón de la operación.
  * @param {string} props.mvZeroValue - Texto que se obtiene de la descripción de la planta.
  * @param {boolean} props.isOnline - Valor que determina si la planta se encuentra en línea.

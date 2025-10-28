@@ -38,7 +38,7 @@ function PrivateRoutes() {
         {/* Envuelve el layout del dashboard y sus sub-rutas con los proveedores de contexto. */}
         <Route element={<ProtectedProvidersLayout />}>
           {/* Ruta principal del dashboard que utiliza DashboardLayout. */}
-          <Route path={APP_ROUTES.LOGIN} element={<DashboardLayout />}>
+          <Route path="/" element={<DashboardLayout />}>
             {/* Ruta de índice que se muestra en la raíz del dashboard. */}
             <Route index element={<DashboardIndexPage />} />
             {/* Ruta para ver los detalles de una planta específica. */}

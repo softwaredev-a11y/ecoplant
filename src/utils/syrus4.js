@@ -1,4 +1,4 @@
-import { convertVoltageToGpm, convertGpmToVoltage,  } from "./syrus";
+import { convertVoltageToGpm, convertGpmToVoltage, } from "./syrus";
 import { getTime, getFormattedTime } from "./time";
 import { OPERATION_CODES, SYRUS_FOUR_COMMANDS, MAX_VALUE_OPERATIONS, SYRUS4_SET_PARAMETER_KEYS, UI_MESSAGES } from '@/constants/constants'
 import { formatOperationHours, getSyrus4OperationHours } from "./operationHours";
@@ -75,11 +75,11 @@ export function getValueParam(key, responseString) {
 }
 
 const OPERATION_CONFIG = {
-    [OPERATION_CODES.FILTRATION]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.FILTRATION] },
-    [OPERATION_CODES.INVW_TIME]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.INVW_TIME] },
-    [OPERATION_CODES.RINSE]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R], isAlert: false, maxValue: [MAX_VALUE_OPERATIONS.RINSE] },
-    [OPERATION_CODES.FLOW_ALERT]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.FLOW_ALERT] },
-    [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM], isAlert: true, maxValue: [MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM] },
+    [OPERATION_CODES.FILTRATION]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_FIL], isAlert: false, maxValue: MAX_VALUE_OPERATIONS.FILTRATION },
+    [OPERATION_CODES.INVW_TIME]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_B], isAlert: false, maxValue: MAX_VALUE_OPERATIONS.INVW_TIME },
+    [OPERATION_CODES.RINSE]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_R], isAlert: false, maxValue: MAX_VALUE_OPERATIONS.RINSE },
+    [OPERATION_CODES.FLOW_ALERT]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALERT], isAlert: true, maxValue: MAX_VALUE_OPERATIONS.FLOW_ALERT },
+    [OPERATION_CODES.INSUFFICIENT_FLOW_ALARM]: { operation: [SYRUS4_SET_PARAMETER_KEYS.CMD_SET_F_ALARM], isAlert: true, maxValue: MAX_VALUE_OPERATIONS.INSUFFICIENT_FLOW_ALARM },
 };
 /**
  * Construye el comando para establecer un parámetro de operación en un dispositivo Syrus 4.

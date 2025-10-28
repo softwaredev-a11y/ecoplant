@@ -65,7 +65,9 @@ export function useSchedulePicker(currentlyValue) {
         }
 
         if (currentlyValue.toLowerCase() === "24 horas") {
-            selectAll();
+            setRangeStart(hours[8]); // Hora de inicio arbitraria, ya que se interpretará como 24h
+            setRangeEnd(hours[8]);   // Igual que la hora de inicio para la interpretación de 24h
+            setSelectedHours(hours);
             return;
         }
         //Formatea el horario en caso de que tenga el siguiente formato:

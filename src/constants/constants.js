@@ -113,11 +113,11 @@ export const ECOPLANT_GROUPS = {
  * Se usa para validación en el frontend antes de enviar el comando.
  */
 export const MAX_VALUE_OPERATIONS = {
-    FILTRATION: 99999,
-    INVW_TIME: 99999,
-    RINSE: 99999,
-    FLOW_ALERT: 15000,
-    INSUFFICIENT_FLOW_ALARM: 15000
+    FILTRATION: 99999, //Segundos
+    INVW_TIME: 99999, //Segundos
+    RINSE: 99999, //Segundos
+    FLOW_ALERT: 15000, //Voltaje
+    INSUFFICIENT_FLOW_ALARM: 15000 //Voltaje
 }
 
 /**

@@ -33,7 +33,7 @@ export function searchPlant(plants, idPlant) {
  */
 export function getMvZeroText(descripcion) {
     if (!descripcion) return UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
-    const match = descripcion.match(/mv_zero:(.*?)\nEND_PARAMS/s);
+    const match = descripcion.match(/mv_zero:\s*(\d+)/);
     return match ? match[1] : null;
 }
 

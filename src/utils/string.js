@@ -12,7 +12,7 @@ export function buildDate(year, month, day) {
 /**
  * Pone n carácteres a la izquierda de un número
  * @param {int} num  Número a modificar
- * @param {int} padlen Cantidad total de números/caracteres que va a tener.
+ * @param {int} padlen Cantidad total de números/caracteres que va a tener el string que devuelve.
  * @param {char} padchar Caracter que se va a poner a la izquierda, por defecto está en 0.
  * @returns {String} Número formateado con 0 al izquierda.
  */
@@ -41,4 +41,18 @@ export function thousandsSeparator(num) {
 export function replaceAt(str, index, replacement) {
     if (index < 0 || index >= str.length) return str; // índice inválido
     return str.slice(0, index) + replacement + str.slice(index + 1);
+}
+
+/**
+ * Convierte en mayúscula la primera letra, y aquellas que estén después de un espacio de una oración.
+ * @param {string} str - Oración a convertir.
+ * @returns {string} - Palabra formateada.
+ */
+export function titleCase(str) {
+    if (!str) return "";
+    let splitStr = str.toLowerCase().split(' ');
+    for (let i = 0; i < splitStr.length; i++) {
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+    }
+    return splitStr.join(' ');
 }

@@ -21,7 +21,7 @@ export function getFormattedTime(unitTime, time) {
         : parts[0];
 }
 /**
- * Función para obtener el tiempo en horas, minutos  a segundos.
+ * Función para convertir el tiempo de horas o minutos a segundos.
  * @param {String} unitTime Unidad de tiempo (horas, segundos, minutos)
  * @param {int} time Cantidad de tiempo 
  * @returns {int} Tiempo convertido en segundos.
@@ -57,7 +57,7 @@ export function formatHour12(hour24) {
 /**
  * Convierte una hora de GMT-5 a GMT 0.
  * @param {number} hour24 La hora en formato de 24h (GMT-5).
- * @returns {string} La hora convertida a GMT 0, como una cadena de 2 dígitos.
+ * @returns {string} La hora convertida a GMT 0, como una cadena de 2 dígitos en formato 12h.
  */
 export function toGMT0(hour24) {
     return fillLeftText((hour24 + 5) % 24, 2);

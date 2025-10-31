@@ -108,7 +108,7 @@ export function buildSetterCommandSyrus4(codeOperation, timeValue, timeUnit, mvZ
  * Procesa un mensaje de socket de un Syrus 4 para extraer un parámetro de operación actualizado.
  * @param {string} message - El mensaje recibido del socket.
  * @param {string|number} mvZeroValue - El valor de 'mv_zero' para cálculos de GPM.
- * @returns {{key: string, value: any}|null} Un objeto con la clave del parámetro y su nuevo valor, o `null` si el mensaje no es relevante.
+ * @returns {{key: string, value: any}|null} Un objeto con la clave del parámetro y su nuevo valor.
  */
 export function proccessSyrus4SocketMessage(message, mvZeroValue) {
     if (!message) return null;
@@ -135,7 +135,7 @@ export function proccessSyrus4SocketMessage(message, mvZeroValue) {
 }
 
 /**
- * Extrae y formatea el valor de tiempo de filtración de un mensaje de socket de Syrus 4.
+ * Extrae y formatea el valor de tiempo de filtración de un mensaje transformado de socket de Syrus 4.
  * @param {string} message - El mensaje del socket.
  * @returns {string|null} El tiempo de filtración formateado (ej. "10 minutos y 30 segundos") o `null`.
  */

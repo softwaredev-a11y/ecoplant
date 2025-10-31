@@ -36,11 +36,11 @@ export const useAuth = () => {
             //Si es exitoso, almacena la siguiente información en variables de session.
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.PEGASUS_TOKEN, data.auth);
             sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.AUTH, true)
-            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN, cloudData?.token);
-            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN, cloudData?.token_pegasus);
+            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.CLOUD_TOKEN, cloudData?.data?.token);
+            sessionStorage.setItem(SESSION_STORAGE_KEYS_TO_USE.ADM_TOKEN, cloudData?.data?.token_pegasus);
             //Redirige al dashboard.
             await log('LOGIN_SUCCESS', { user: credentials.username });
-            navigate(APP_ROUTES.DASHBOARD);
+            navigate("/dashboard");
         } catch (error) {
             //Envía el mensaje al canal de cliq informando que un usuario tuvo un error al iniciar sesión.
             await log('LOGIN_ERROR', { user: credentials.username, message: error?.message });
@@ -66,7 +66,7 @@ export const useAuth = () => {
             //Elimina información almacenada en variables de session.
             clearAllSessionStorage();
             //Redirige a la página de inicio/login
-            navigate(APP_ROUTES.DASHBOARD.LOGIN);
+            navigate("/");
         }
     };
     /**

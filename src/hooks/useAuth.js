@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useState } from 'react';
 import { clearAllSessionStorage } from "@/utils/syrus"
-import { SESSION_STORAGE_KEYS_TO_USE, APP_ROUTES } from '@/constants/constants';
+import { SESSION_STORAGE_KEYS_TO_USE } from '@/constants/constants';
 import { log } from "@/services/logging.service";
 import authApi from '@/services/auth.service';
 

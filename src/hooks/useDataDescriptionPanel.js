@@ -12,7 +12,7 @@ import { getPlantModel, getSoftwareVersion, getOperationByStatusCode, calculateC
  * @param {object} params.infoConnectionDevice - Objeto con el estado de conexión del dispositivo.
  * @param {boolean} params.isSyrus4 - Booleano que determina si el dispositivo es un Syrus 4.
  * @param {object} params.syrus4Data - Objeto con la información de dispositivo Syrus 4.
- * @param {boolean} params.isLoadingSyrus4 - Booleando que determina si la información del dispositivo Syrus 4 se está consultando.
+ * @param {boolean} params.isLoadingSyrus4 - Booleano que determina si la información del dispositivo Syrus 4 se está consultando.
  */
 export default function useDataDescriptionPanel({ plant, infoConnectionDevice, isSyrus4, syrus4Data, isLoadingSyrus4 }) {
     //Hook para obtener los valores de proceso y flujo actual
@@ -39,12 +39,18 @@ export default function useDataDescriptionPanel({ plant, infoConnectionDevice, i
 
     //Determina la versión del script
     const scriptVersion = useMemo(() => {
-        return isOnline
-            ? isSyrus4
-                ? (isLoadingSyrus4 || !syrus4Data?.apps)
-                    ? UI_MESSAGES.CONSULTANDO : formatEcoplantVersion(syrus4Data.apps)
-                : getSoftwareVersion(plant.configuration)
-            : UI_MESSAGES.INFORMATION_NOT_AVAILABLE;
+        if (!isOnline)
+            return UI_MESSAGES.INFORMATION_NOT_AVAILABLE
+        if (isSyrus4) {
+            if (isLoadingSyrus4) {
+                return UI_MESSAGES.CONSULTANDO;
+            } if (syrus4Data?.apps === undefined) {
+                return UI_MESSAGES.COMMUNICATION_PROBLEMS
+            }
+            return formatEcoplantVersion(syrus4Data?.apps);
+        }
+        return getSoftwareVersion(plant.configuration);
+
     }, [plant.configuration, isSyrus4, isLoadingSyrus4, syrus4Data?.apps, isOnline]);
 
     //Determina el estado de la conectividad del celular

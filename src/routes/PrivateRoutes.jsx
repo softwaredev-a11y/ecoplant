@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { PlantProvider } from "@/context/PlantContext";
 import { UserProvider } from "@/context/UserInfoContext";
-import { UI_MESSAGES, APP_ROUTES } from "@/constants/constants";
+import { UI_MESSAGES } from "@/constants/constants";
 import StatusMessage from '@/components/StatusMessage';
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardIndexPage from "@/pages/dashboard/DashboardIndexPage";
@@ -55,7 +55,7 @@ function PrivateRoutes() {
         </Route>
       </Route>
       {/* Redirige cualquier otra ruta privada no coincidente al dashboard principal. */}
-      <Route path="*" element={<Navigate to={APP_ROUTES.DASHBOARD} />} />
+      <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
   );
 }

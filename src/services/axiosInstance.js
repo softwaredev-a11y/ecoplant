@@ -36,7 +36,6 @@ function createApiInstance(baseURL, tokenKey, authHeader = "Authorization") {
         (error) => {
             if (error.response && error.response.status === 401) {
                 clearAllSessionStorage();
-                window.location.href = '/';
             } else if (error.request) {
                 console.error("No se recibió respuesta del servidor:", error.request);
             } else {
